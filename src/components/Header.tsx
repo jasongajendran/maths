@@ -4,6 +4,7 @@ import { YearLevel, CategoryId } from '../types/math';
 import { mathTopics } from '../data/mathTopics';
 import { AudioButton } from './AudioButton';
 import { ThemeSelector } from './ThemeSelector';
+import { FontSizeControl } from './FontSizeControl';
 
 interface HeaderProps {
   selectedYear: YearLevel | 'All';
@@ -85,8 +86,11 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Theme Selector, Formula Vault & Audio Intro */}
+          {/* Theme Selector, Font Size Control, Formula Vault & Audio Intro */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* Font Size & Typeface Control */}
+            <FontSizeControl />
+
             {/* Theme Selector */}
             <ThemeSelector />
 

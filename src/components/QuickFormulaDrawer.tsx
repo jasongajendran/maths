@@ -142,14 +142,14 @@ export const QuickFormulaDrawer: React.FC<QuickFormulaDrawerProps> = ({
                         {f.topicTitle}
                       </span>
                     </div>
-                    <h4 className="font-bold text-sm mt-1" style={{ color: 'var(--text-primary)' }}>
+                    <h4 className="font-bold text-base mt-1" style={{ color: 'var(--text-primary)' }}>
                       {f.name}
                     </h4>
                   </div>
                 </div>
 
                 <div
-                  className="p-2 rounded-lg border text-center my-1"
+                  className="p-2.5 rounded-xl border text-center my-1.5"
                   style={{
                     backgroundColor: 'var(--bg-card-subtle)',
                     borderColor: 'var(--border-card)',
@@ -158,13 +158,13 @@ export const QuickFormulaDrawer: React.FC<QuickFormulaDrawerProps> = ({
                   <MathView math={f.formula} block={true} className="font-bold" />
                 </div>
 
-                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                   {f.description}
                 </p>
 
                 {f.keyNote && (
                   <p
-                    className="text-[11px] p-2 rounded border"
+                    className="text-xs sm:text-sm p-2.5 rounded-lg border leading-relaxed"
                     style={{
                       backgroundColor: 'var(--bg-card-hover)',
                       borderColor: 'var(--border-card-strong)',

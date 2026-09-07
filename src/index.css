@@ -6,6 +6,42 @@
 */
 
 :root,
+[data-theme="butter"] {
+  /* Buttercup & Honey (Default Theme) - Radiant, warm golden tones with deep contrast */
+  --bg-canvas: #fffdf5; /* Radiant buttercup cream canvas - soft, non-glaring */
+  --bg-card: #fef5dc;   /* Warm golden custard card base */
+  --bg-card-hover: #fdeec2; /* Sunny honey golden card hover */
+  --bg-card-subtle: #fae8b0; /* Soft biscuit amber layer */
+  --border-card: #e8cd8a; /* Refined honey gold border */
+  --border-card-strong: #c89e47; /* Crisp warm amber border */
+  --text-primary: #09090b; /* Crisp carbon black - supreme legibility */
+  --text-secondary: #1c1917; /* Deep stone black */
+  --text-muted: #574630; /* Warm bronze sepia */
+  --accent-primary: #b45309; /* Rich golden honey amber */
+  --accent-hover: #8f3e03; /* Deep caramelized amber */
+  --accent-light: #fef08a; /* Luminous sunny glow */
+  --accent-contrast: #ffffff;
+  --reading-highlight-bg: #fef08a; /* Bright buttercup active reading highlight */
+  --reading-highlight-border: #09090b; /* High-contrast pitch black border when playing/focused */
+  --reading-highlight-ring: rgba(9, 9, 11, 0.28);
+  --badge-bg: #fde047; /* Bright buttercup gold */
+  --badge-text: #09090b; /* Crisp pitch black text */
+  /* High contrast accent tokens */
+  --contrast-black: #09090b;
+  --contrast-black-bg: #18181b;
+  --contrast-warm: #b91c1c; /* Crimson alert */
+  --contrast-warm-bg: #fee2e2;
+  --contrast-warm-border: #f87171;
+  --contrast-amber: #b45309;
+  --contrast-amber-bg: #fef3c7;
+  --contrast-amber-border: #f59e0b;
+  --contrast-indigo: #1e1b4b; /* Deep obsidian indigo */
+  --contrast-indigo-bg: #ede9fe;
+  --contrast-indigo-border: #a5b4fc;
+  --contrast-teal: #064e3b; /* Deep pine emerald */
+  --contrast-teal-bg: #d1fae5;
+}
+
 [data-theme="mint"] {
   --bg-canvas: #ebf5ee;
   --bg-card: #e0f0e6;
@@ -26,6 +62,8 @@
   --badge-bg: #cbeed5;
   --badge-text: #0d4629;
   /* Contrasting accents */
+  --contrast-black: #09090b;
+  --contrast-black-bg: #18181b;
   --contrast-warm: #d9381e;
   --contrast-warm-bg: #fee8e5;
   --contrast-warm-border: #fca597;
@@ -138,44 +176,41 @@
   --contrast-teal-bg: #d1fae5;
 }
 
-[data-theme="butter"] {
-  --bg-canvas: #faf4e5;
-  --bg-card: #f5e9cb;
-  --bg-card-hover: #ebdcba;
-  --bg-card-subtle: #e1cea3;
-  --border-card: #cbb47e;
-  --border-card-strong: #a68c4e;
-  --text-primary: #241604;
-  --text-secondary: #442f10;
-  --text-muted: #694e22;
-  --accent-primary: #92400e;
-  --accent-hover: #713107;
-  --accent-light: #f2e3be;
-  --accent-contrast: #ffffff;
-  --reading-highlight-bg: #f5e6bd;
-  --reading-highlight-border: #92400e;
-  --reading-highlight-ring: rgba(146, 64, 14, 0.35);
-  --badge-bg: #fae4b5;
-  --badge-text: #692c04;
-  /* Contrasting accents */
-  --contrast-warm: #dc2626;
-  --contrast-warm-bg: #fee2e2;
-  --contrast-warm-border: #fca5a5;
-  --contrast-amber: #b45309;
-  --contrast-amber-bg: #fef3c7;
-  --contrast-amber-border: #fcd34d;
-  --contrast-indigo: #1d4ed8;
-  --contrast-indigo-bg: #dbeafe;
-  --contrast-indigo-border: #93c5fd;
-  --contrast-teal: #047857;
-  --contrast-teal-bg: #d1fae5;
+/* Global anti-overflow and typography rules */
+:root {
+  --app-font: 'Lexend', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
-/* Global anti-overflow rules preventing left-right scroll/movement */
+[data-font-family="lexend"] {
+  --app-font: 'Lexend', 'Plus Jakarta Sans', sans-serif;
+}
+
+[data-font-family="nunito"] {
+  --app-font: 'Nunito', 'Plus Jakarta Sans', sans-serif;
+}
+
+[data-font-family="jakarta"] {
+  --app-font: 'Plus Jakarta Sans', sans-serif;
+}
+
 html {
   overflow-x: hidden;
   max-width: 100vw;
   width: 100%;
+  font-size: 17px;
+  -webkit-text-size-adjust: 100%;
+}
+
+html[data-font-size="normal"] {
+  font-size: 17px;
+}
+
+html[data-font-size="large"] {
+  font-size: 19.5px;
+}
+
+html[data-font-size="xlarge"] {
+  font-size: 22px;
 }
 
 body {
@@ -183,9 +218,12 @@ body {
   max-width: 100vw;
   width: 100%;
   position: relative;
+  font-family: var(--app-font) !important;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
   background-color: var(--bg-canvas) !important;
   color: var(--text-primary) !important;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.25s ease, color 0.25s ease, font-size 0.2s ease;
 }
 
 #root {
@@ -205,7 +243,7 @@ body {
 }
 
 .katex {
-  font-size: 1.05em !important;
+  font-size: 1.18em !important;
   color: inherit;
   max-width: 100%;
 }

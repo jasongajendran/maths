@@ -14,6 +14,15 @@ export interface PastelTheme {
 
 export const PASTEL_THEMES: PastelTheme[] = [
   {
+    id: 'butter',
+    name: 'Buttercup & Honey',
+    emoji: '🍯',
+    shortDesc: 'Golden honey with crisp ink contrast (Default)',
+    canvasHex: '#fffdf5',
+    cardHex: '#fef5dc',
+    accentHex: '#b45309',
+  },
+  {
     id: 'mint',
     name: 'Mint & Sage',
     emoji: '🌿',
@@ -49,15 +58,6 @@ export const PASTEL_THEMES: PastelTheme[] = [
     cardHex: '#dcecf6',
     accentHex: '#226ea5',
   },
-  {
-    id: 'butter',
-    name: 'Buttercup & Honey',
-    emoji: '🍯',
-    shortDesc: 'Sunny golden custard pastel',
-    canvasHex: '#faf4e5',
-    cardHex: '#f5edd7',
-    accentHex: '#a76b17',
-  },
 ];
 
 interface ThemeContextType {
@@ -71,12 +71,18 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<PastelThemeId>(() => {
     if (typeof window !== 'undefined') {
+      const v2 = localStorage.getItem('maths-master-default-butter-v1');
+      if (!v2) {
+        localStorage.setItem('maths-master-default-butter-v1', 'true');
+        localStorage.setItem('maths-master-pastel-theme', 'butter');
+        return 'butter';
+      }
       const saved = localStorage.getItem('maths-master-pastel-theme');
       if (saved && PASTEL_THEMES.some((t) => t.id === saved)) {
         return saved as PastelThemeId;
       }
     }
-    return 'mint';
+    return 'butter';
   });
 
   const setTheme = (newTheme: PastelThemeId) => {

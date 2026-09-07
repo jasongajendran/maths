@@ -247,7 +247,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
               </div>
 
               <p
-                className="text-sm sm:text-base leading-relaxed"
+                className="text-base sm:text-lg leading-relaxed"
                 style={{ color: 'var(--text-secondary)' }}
               >
                 {sec.content}
@@ -256,21 +256,21 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
               {/* Creative Mental Model / Visual Metaphor */}
               {sec.visualMetaphor && (
                 <div
-                  className="p-3.5 rounded-xl border flex items-start gap-2.5 shadow-2xs"
+                  className="p-4 rounded-xl border flex items-start gap-3 shadow-2xs"
                   style={{
                     backgroundColor: 'var(--contrast-indigo-bg)',
                     borderColor: 'var(--contrast-indigo-border)',
                   }}
                 >
-                  <Sparkles size={17} className="shrink-0 mt-0.5" style={{ color: 'var(--contrast-indigo)' }} />
-                  <div className="text-xs sm:text-sm">
+                  <Sparkles size={19} className="shrink-0 mt-0.5" style={{ color: 'var(--contrast-indigo)' }} />
+                  <div className="text-sm sm:text-base">
                     <span
-                      className="font-extrabold uppercase tracking-wider block text-[11px]"
+                      className="font-extrabold uppercase tracking-wider block text-xs"
                       style={{ color: 'var(--contrast-indigo)' }}
                     >
                       Creative Mental Picture (How Kids Understand Best)
                     </span>
-                    <p className="mt-0.5 leading-relaxed font-medium" style={{ color: 'var(--text-primary)' }}>
+                    <p className="mt-1 leading-relaxed font-medium" style={{ color: 'var(--text-primary)' }}>
                       {sec.visualMetaphor}
                     </p>
                   </div>
@@ -280,7 +280,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
               {/* Math expressions callout if any */}
               {sec.mathExpressions && sec.mathExpressions.length > 0 && (
                 <div
-                  className="border rounded-xl p-3.5 space-y-2"
+                  className="border rounded-xl p-4 space-y-2"
                   style={{
                     backgroundColor: 'var(--bg-card-subtle)',
                     borderColor: 'var(--border-card)',
@@ -292,7 +292,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                   >
                     Mathematical Formulation:
                   </span>
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     {sec.mathExpressions.map((expr, i) => (
                       <MathView key={i} math={expr} block={true} className="font-bold" />
                     ))}
@@ -303,23 +303,23 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
               {/* Key Takeaways */}
               {sec.keyTakeaways && sec.keyTakeaways.length > 0 && (
                 <div
-                  className="border rounded-xl p-4 space-y-2"
+                  className="border rounded-xl p-4 sm:p-5 space-y-2.5"
                   style={{
                     backgroundColor: 'var(--bg-card-subtle)',
                     borderColor: 'var(--border-card-strong)',
                   }}
                 >
                   <div
-                    className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider"
+                    className="flex items-center gap-1.5 text-xs sm:text-sm font-extrabold uppercase tracking-wider"
                     style={{ color: 'var(--accent-primary)' }}
                   >
-                    <Lightbulb size={15} />
+                    <Lightbulb size={17} />
                     <span>Essential Key Rules</span>
                   </div>
-                  <ul className="space-y-1.5 text-xs sm:text-sm">
+                  <ul className="space-y-2 text-sm sm:text-base leading-relaxed">
                     {sec.keyTakeaways.map((point, pIdx) => (
-                      <li key={pIdx} className="flex items-start gap-2" style={{ color: 'var(--text-secondary)' }}>
-                        <span style={{ color: 'var(--accent-primary)' }} className="font-bold">•</span>
+                      <li key={pIdx} className="flex items-start gap-2.5" style={{ color: 'var(--text-secondary)' }}>
+                        <span style={{ color: 'var(--accent-primary)' }} className="font-bold text-base">•</span>
                         <span>{point}</span>
                       </li>
                     ))}
@@ -486,16 +486,16 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                         {isExpanded && (
                           <div className="p-4 sm:p-5 space-y-4">
                             <div
-                              className="p-3 border rounded-lg text-sm font-medium"
+                              className="p-3.5 sm:p-4 border rounded-xl text-base sm:text-lg font-semibold leading-relaxed"
                               style={{
                                 backgroundColor: 'var(--badge-bg)',
                                 borderColor: 'var(--border-card-strong)',
                                 color: 'var(--badge-text)',
                               }}
                             >
-                              <strong>Question:</strong> {ex.problem}
+                              <strong className="text-base sm:text-lg font-extrabold">Question:</strong> {ex.problem}
                               {ex.mathProblem && (
-                                <div className="mt-1">
+                                <div className="mt-2">
                                   <MathView math={ex.mathProblem} block={true} />
                                 </div>
                               )}
@@ -506,30 +506,32 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                               {ex.steps.map((step) => (
                                 <div
                                   key={step.stepNumber}
-                                  className="flex items-start gap-3 p-3 rounded-lg border transition-all"
+                                  className="flex items-start gap-3 p-3.5 sm:p-4 rounded-xl border transition-all"
                                   style={{
                                     backgroundColor: 'var(--bg-card-hover)',
                                     borderColor: 'var(--border-card)',
                                   }}
                                 >
                                   <span
-                                    className="flex items-center justify-center w-6 h-6 rounded-full text-white text-xs font-bold shrink-0 mt-0.5"
+                                    className="flex items-center justify-center w-7 h-7 rounded-full text-white text-xs sm:text-sm font-bold shrink-0 mt-0.5"
                                     style={{ backgroundColor: 'var(--accent-primary)' }}
                                   >
                                     {step.stepNumber}
                                   </span>
-                                  <div className="space-y-1 text-xs sm:text-sm">
+                                  <div className="space-y-1.5 text-sm sm:text-base flex-1">
                                     <strong
-                                      className="font-bold block"
+                                      className="font-extrabold block text-base sm:text-lg"
                                       style={{ color: 'var(--text-primary)' }}
                                     >
                                       {step.title}
                                     </strong>
-                                    <p style={{ color: 'var(--text-secondary)' }}>
+                                    <p className="leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                                       {step.explanation}
                                     </p>
                                     {step.math && (
-                                      <MathView math={step.math} block={true} />
+                                      <div className="mt-1.5">
+                                        <MathView math={step.math} block={true} />
+                                      </div>
                                     )}
                                   </div>
                                 </div>
@@ -538,28 +540,33 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
 
                             {/* Final Answer */}
                             <div
-                              className="p-3 rounded-lg border text-xs sm:text-sm font-bold flex items-center justify-between"
+                              className="p-3.5 sm:p-4 rounded-xl border text-sm sm:text-base font-bold flex items-center justify-between gap-3"
                               style={{
                                 backgroundColor: 'var(--reading-highlight-bg)',
                                 borderColor: 'var(--reading-highlight-border)',
                                 color: 'var(--text-primary)',
                               }}
                             >
-                              <span>Final Solution:</span>
-                              <span className="font-mono">{ex.finalAnswer}</span>
+                              <span className="font-extrabold flex items-center gap-2">
+                                <CheckCircle2 size={19} className="text-emerald-700 shrink-0" />
+                                <span>Final Solution:</span>
+                              </span>
+                              <span className="font-mono text-base sm:text-lg font-black px-3 py-0.5 rounded-lg border border-black/30 bg-black text-amber-300 shadow-2xs tracking-wide">
+                                {ex.finalAnswer}
+                              </span>
                             </div>
 
                             {/* Pro Tip */}
                             {ex.proTip && (
                               <div
-                                className="text-xs p-2.5 rounded border"
+                                className="text-sm sm:text-base p-3 sm:p-3.5 rounded-xl border leading-relaxed"
                                 style={{
                                   backgroundColor: 'var(--bg-card-hover)',
                                   borderColor: 'var(--border-card-strong)',
                                   color: 'var(--text-primary)',
                                 }}
                               >
-                                💡 <strong>Pro Tip:</strong> {ex.proTip}
+                                💡 <strong className="font-bold">Pro Tip:</strong> {ex.proTip}
                               </div>
                             )}
                           </div>
@@ -628,14 +635,14 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                     </div>
 
                     <h4
-                      className="font-bold text-base"
+                      className="font-bold text-base sm:text-lg"
                       style={{ color: 'var(--text-primary)' }}
                     >
                       {tip.title}
                     </h4>
 
                     <p
-                      className="text-xs sm:text-sm mt-2 leading-relaxed"
+                      className="text-sm sm:text-base mt-2 leading-relaxed"
                       style={{ color: 'var(--text-secondary)' }}
                     >
                       {tip.content}
@@ -650,7 +657,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
 
                   {tip.ruleSummary && (
                     <div
-                      className="mt-3 pt-3 border-t text-xs font-semibold"
+                      className="mt-3 pt-3 border-t text-sm font-semibold"
                       style={{
                         borderColor: 'var(--border-card)',
                         color: 'var(--text-primary)',
@@ -840,20 +847,22 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-2.5">
                         <span
-                          className="flex items-center justify-center w-6 h-6 rounded-full text-white text-xs font-bold shrink-0 mt-0.5"
+                          className="flex items-center justify-center w-7 h-7 rounded-full text-white text-xs sm:text-sm font-bold shrink-0 mt-0.5"
                           style={{ backgroundColor: 'var(--accent-primary)' }}
                         >
                           Q{qIndex + 1}
                         </span>
                         <div>
                           <p
-                            className="font-bold text-sm sm:text-base"
+                            className="font-bold text-base sm:text-lg leading-snug"
                             style={{ color: 'var(--text-primary)' }}
                           >
                             {q.question}
                           </p>
                           {q.mathQuestion && (
-                            <MathView math={q.mathQuestion} block={true} />
+                            <div className="mt-2">
+                              <MathView math={q.mathQuestion} block={true} />
+                            </div>
                           )}
                         </div>
                       </div>
@@ -897,7 +906,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                             type="button"
                             onClick={() => handleSelectAnswer(q.id, optIdx, q.correctIndex)}
                             disabled={isAnswered}
-                            className="p-3 rounded-lg border text-left text-xs sm:text-sm font-medium transition-all flex items-center justify-between cursor-pointer"
+                            className="p-3.5 rounded-xl border text-left text-sm sm:text-base font-semibold transition-all flex items-center justify-between cursor-pointer"
                             style={{
                               backgroundColor: bgStyle,
                               borderColor: borderStyle,
@@ -906,10 +915,10 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                           >
                             <span>{opt}</span>
                             {isAnswered && optIdx === q.correctIndex && (
-                              <CheckCircle2 size={16} className="text-emerald-700 shrink-0 ml-2" />
+                              <CheckCircle2 size={18} className="text-emerald-700 shrink-0 ml-2" />
                             )}
                             {isAnswered && isThisSelected && !isCorrect && (
-                              <XCircle size={16} className="text-rose-700 shrink-0 ml-2" />
+                              <XCircle size={18} className="text-rose-700 shrink-0 ml-2" />
                             )}
                           </button>
                         );
@@ -921,16 +930,16 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                       <button
                         type="button"
                         onClick={() => setShowHints((prev) => ({ ...prev, [q.id]: !prev[q.id] }))}
-                        className="text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                        className="text-xs sm:text-sm font-bold flex items-center gap-1.5 cursor-pointer"
                         style={{ color: 'var(--accent-primary)' }}
                       >
-                        <HelpCircle size={14} />
+                        <HelpCircle size={16} />
                         <span>{showingHint ? 'Hide Hint' : 'Need a Hint?'}</span>
                       </button>
 
                       {isAnswered && (
                         <span
-                          className="text-xs font-bold px-2.5 py-1 rounded-full border"
+                          className="text-xs sm:text-sm font-extrabold px-3 py-1 rounded-full border"
                           style={{
                             backgroundColor: isCorrect ? 'var(--reading-highlight-bg)' : 'var(--contrast-warm-bg)',
                             color: isCorrect ? 'var(--badge-text)' : 'var(--contrast-warm)',
@@ -945,7 +954,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                     {/* Hint Box */}
                     {showingHint && (
                       <div
-                        className="p-3 border rounded-lg text-xs"
+                        className="p-3.5 border rounded-xl text-sm sm:text-base font-medium leading-relaxed"
                         style={{
                           backgroundColor: 'var(--contrast-amber-bg)',
                           borderColor: 'var(--contrast-amber-border)',
@@ -960,7 +969,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                     {showingExplanation && (
                       <div
                         id={`explanation-${q.id}`}
-                        className="p-4 border rounded-xl space-y-2 text-xs sm:text-sm shadow-2xs"
+                        className="p-4 sm:p-5 border rounded-xl space-y-2.5 text-sm sm:text-base shadow-2xs leading-relaxed"
                         style={{
                           backgroundColor: 'var(--bg-card-subtle)',
                           borderColor: 'var(--border-card-strong)',
