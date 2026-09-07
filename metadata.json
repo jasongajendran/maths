@@ -1,0 +1,6 @@
+{
+  "name": "Maths Master (Primary 5+ / Year 5+)",
+  "description": "UK curriculum mathematics companion for 9-year-olds (Primary 5 / Year 5 and above) featuring fractions, BIDMAS, place value, angles, area, Roman numerals, pro tips, and audio reader.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,231 @@
+@import "tailwindcss";
+
+/* 
+  Pastel Theme System for Maths Master
+  NO white backgrounds - soft, comfortable, kid-friendly pastel tones!
+*/
+
+:root,
+[data-theme="mint"] {
+  --bg-canvas: #ebf5ee;
+  --bg-card: #e0f0e6;
+  --bg-card-hover: #d2ebd9;
+  --bg-card-subtle: #c7e6cf;
+  --border-card: #9dcbad;
+  --border-card-strong: #6ea984;
+  --text-primary: #0a2618;
+  --text-secondary: #1a422d;
+  --text-muted: #3a664c;
+  --accent-primary: #197247;
+  --accent-hover: #125635;
+  --accent-light: #cbebd4;
+  --accent-contrast: #ffffff;
+  --reading-highlight-bg: #cbf2d8;
+  --reading-highlight-border: #197247;
+  --reading-highlight-ring: rgba(25, 114, 71, 0.35);
+  --badge-bg: #cbeed5;
+  --badge-text: #0d4629;
+  /* Contrasting accents */
+  --contrast-warm: #d9381e;
+  --contrast-warm-bg: #fee8e5;
+  --contrast-warm-border: #fca597;
+  --contrast-amber: #b45309;
+  --contrast-amber-bg: #fef3c7;
+  --contrast-amber-border: #fcd34d;
+  --contrast-indigo: #3730a3;
+  --contrast-indigo-bg: #e0e7ff;
+  --contrast-indigo-border: #a5b4fc;
+  --contrast-teal: #0f766e;
+  --contrast-teal-bg: #ccfbf1;
+}
+
+[data-theme="lavender"] {
+  --bg-canvas: #f2ebfa;
+  --bg-card: #eae0f6;
+  --bg-card-hover: #ded0ef;
+  --bg-card-subtle: #d3c0e8;
+  --border-card: #b7a0d8;
+  --border-card-strong: #9678c2;
+  --text-primary: #1d0a33;
+  --text-secondary: #391c5a;
+  --text-muted: #59397f;
+  --accent-primary: #6d28d9;
+  --accent-hover: #581c87;
+  --accent-light: #dfd1f6;
+  --accent-contrast: #ffffff;
+  --reading-highlight-bg: #e2d2f7;
+  --reading-highlight-border: #6d28d9;
+  --reading-highlight-ring: rgba(109, 40, 217, 0.35);
+  --badge-bg: #e5d7f7;
+  --badge-text: #45127d;
+  /* Contrasting accents */
+  --contrast-warm: #c2410c;
+  --contrast-warm-bg: #ffedd5;
+  --contrast-warm-border: #fdba74;
+  --contrast-amber: #b45309;
+  --contrast-amber-bg: #fef3c7;
+  --contrast-amber-border: #fcd34d;
+  --contrast-indigo: #0369a1;
+  --contrast-indigo-bg: #e0f2fe;
+  --contrast-indigo-border: #7dd3fc;
+  --contrast-teal: #047857;
+  --contrast-teal-bg: #d1fae5;
+}
+
+[data-theme="peach"] {
+  --bg-canvas: #fcf0e8;
+  --bg-card: #fae1d1;
+  --bg-card-hover: #f4d0ba;
+  --bg-card-subtle: #ecc0a3;
+  --border-card: #e2a585;
+  --border-card-strong: #c87c55;
+  --text-primary: #291007;
+  --text-secondary: #4e2213;
+  --text-muted: #733c2a;
+  --accent-primary: #bf3910;
+  --accent-hover: #982c0a;
+  --accent-light: #fcd8cb;
+  --accent-contrast: #ffffff;
+  --reading-highlight-bg: #fadad0;
+  --reading-highlight-border: #bf3910;
+  --reading-highlight-ring: rgba(191, 57, 16, 0.35);
+  --badge-bg: #f9d8c6;
+  --badge-text: #822206;
+  /* Contrasting accents */
+  --contrast-warm: #be123c;
+  --contrast-warm-bg: #ffe4e6;
+  --contrast-warm-border: #fda4af;
+  --contrast-amber: #b45309;
+  --contrast-amber-bg: #fef3c7;
+  --contrast-amber-border: #fcd34d;
+  --contrast-indigo: #0284c7;
+  --contrast-indigo-bg: #e0f2fe;
+  --contrast-indigo-border: #7dd3fc;
+  --contrast-teal: #0f766e;
+  --contrast-teal-bg: #ccfbf1;
+}
+
+[data-theme="sky"] {
+  --bg-canvas: #e8f3fa;
+  --bg-card: #d7ecf7;
+  --bg-card-hover: #c6e3f3;
+  --bg-card-subtle: #b6d9ee;
+  --border-card: #93c1de;
+  --border-card-strong: #649fc5;
+  --text-primary: #061928;
+  --text-secondary: #13354f;
+  --text-muted: #2c5978;
+  --accent-primary: #0284c7;
+  --accent-hover: #0369a1;
+  --accent-light: #cbe3f5;
+  --accent-contrast: #ffffff;
+  --reading-highlight-bg: #cde7f7;
+  --reading-highlight-border: #0284c7;
+  --reading-highlight-ring: rgba(2, 132, 199, 0.35);
+  --badge-bg: #cce4f5;
+  --badge-text: #044a72;
+  /* Contrasting accents */
+  --contrast-warm: #dc2626;
+  --contrast-warm-bg: #fee2e2;
+  --contrast-warm-border: #fca5a5;
+  --contrast-amber: #d97706;
+  --contrast-amber-bg: #fef3c7;
+  --contrast-amber-border: #fcd34d;
+  --contrast-indigo: #6d28d9;
+  --contrast-indigo-bg: #ede9fe;
+  --contrast-indigo-border: #c4b5fd;
+  --contrast-teal: #059669;
+  --contrast-teal-bg: #d1fae5;
+}
+
+[data-theme="butter"] {
+  --bg-canvas: #faf4e5;
+  --bg-card: #f5e9cb;
+  --bg-card-hover: #ebdcba;
+  --bg-card-subtle: #e1cea3;
+  --border-card: #cbb47e;
+  --border-card-strong: #a68c4e;
+  --text-primary: #241604;
+  --text-secondary: #442f10;
+  --text-muted: #694e22;
+  --accent-primary: #92400e;
+  --accent-hover: #713107;
+  --accent-light: #f2e3be;
+  --accent-contrast: #ffffff;
+  --reading-highlight-bg: #f5e6bd;
+  --reading-highlight-border: #92400e;
+  --reading-highlight-ring: rgba(146, 64, 14, 0.35);
+  --badge-bg: #fae4b5;
+  --badge-text: #692c04;
+  /* Contrasting accents */
+  --contrast-warm: #dc2626;
+  --contrast-warm-bg: #fee2e2;
+  --contrast-warm-border: #fca5a5;
+  --contrast-amber: #b45309;
+  --contrast-amber-bg: #fef3c7;
+  --contrast-amber-border: #fcd34d;
+  --contrast-indigo: #1d4ed8;
+  --contrast-indigo-bg: #dbeafe;
+  --contrast-indigo-border: #93c5fd;
+  --contrast-teal: #047857;
+  --contrast-teal-bg: #d1fae5;
+}
+
+/* Global anti-overflow rules preventing left-right scroll/movement */
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+  position: relative;
+  background-color: var(--bg-canvas) !important;
+  color: var(--text-primary) !important;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+#root {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+}
+
+/* KaTeX custom display within pastel theme */
+.katex-display {
+  margin: 0.5em 0 !important;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25em 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.katex {
+  font-size: 1.05em !important;
+  color: inherit;
+  max-width: 100%;
+}
+
+.katex-html {
+  max-width: 100%;
+}
+
+/* Scrollbars customized to pastel theme */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-card-strong);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
