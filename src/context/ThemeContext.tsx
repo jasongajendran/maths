@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type PastelThemeId = 'mint' | 'lavender' | 'peach' | 'sky' | 'butter';
+export type PastelThemeId = 'butter' | 'oxford' | 'sage' | 'obsidian';
 
 export interface PastelTheme {
   id: PastelThemeId;
@@ -10,6 +10,7 @@ export interface PastelTheme {
   canvasHex: string;
   cardHex: string;
   accentHex: string;
+  isDark?: boolean;
 }
 
 export const PASTEL_THEMES: PastelTheme[] = [
@@ -17,46 +18,41 @@ export const PASTEL_THEMES: PastelTheme[] = [
     id: 'butter',
     name: 'Buttercup & Honey',
     emoji: '🍯',
-    shortDesc: 'Golden honey with crisp ink contrast (Default)',
+    shortDesc: 'Warm golden custard with rich amber & crisp ink contrast (Default)',
     canvasHex: '#fffdf5',
     cardHex: '#fef5dc',
     accentHex: '#b45309',
+    isDark: false,
   },
   {
-    id: 'mint',
-    name: 'Mint & Sage',
+    id: 'oxford',
+    name: 'Royal Oxford & Cobalt',
+    emoji: '🏛️',
+    shortDesc: 'Deep Oxford midnight navy with crisp chalk white text & royal cobalt',
+    canvasHex: '#0b1329',
+    cardHex: '#132042',
+    accentHex: '#3b82f6',
+    isDark: true,
+  },
+  {
+    id: 'sage',
+    name: 'Sage & Terracotta',
     emoji: '🌿',
-    shortDesc: 'Calming minty pastel',
-    canvasHex: '#ebf5ee',
-    cardHex: '#e3f2e8',
-    accentHex: '#277953',
+    shortDesc: 'Calming botanical eucalyptus with warm terracotta & deep pine',
+    canvasHex: '#f2f7f4',
+    cardHex: '#e5efe8',
+    accentHex: '#c2410c',
+    isDark: false,
   },
   {
-    id: 'lavender',
-    name: 'Lavender & Lilac',
-    emoji: '🪻',
-    shortDesc: 'Gentle floral purple pastel',
-    canvasHex: '#f1ebf9',
-    cardHex: '#e9e1f5',
-    accentHex: '#723ebc',
-  },
-  {
-    id: 'peach',
-    name: 'Peach & Apricot',
-    emoji: '🍑',
-    shortDesc: 'Warm cozy apricot pastel',
-    canvasHex: '#fdf0e8',
-    cardHex: '#fae4d7',
-    accentHex: '#cb4e31',
-  },
-  {
-    id: 'sky',
-    name: 'Sky & Cloud',
-    emoji: '☁️',
-    shortDesc: 'Cool peaceful blue pastel',
-    canvasHex: '#e8f3fa',
-    cardHex: '#dcecf6',
-    accentHex: '#226ea5',
+    id: 'obsidian',
+    name: 'Obsidian & Amber (Night)',
+    emoji: '🌙',
+    shortDesc: 'Velvet dark study with glowing honey amber & pure white text',
+    canvasHex: '#0c0f17',
+    cardHex: '#161c28',
+    accentHex: '#fbbf24',
+    isDark: true,
   },
 ];
 

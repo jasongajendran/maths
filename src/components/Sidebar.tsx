@@ -124,10 +124,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   style={{
                     backgroundColor: isSelected ? 'var(--accent-primary)' : 'var(--bg-card)',
                     borderColor: isSelected ? 'var(--accent-primary)' : 'var(--border-card)',
-                    color: isSelected ? '#ffffff' : 'var(--text-primary)',
+                    color: isSelected ? 'var(--accent-contrast)' : 'var(--text-primary)',
                   }}
                 >
-                  <Icon size={13} className={isSelected ? 'text-white' : ''} style={{ color: isSelected ? '#ffffff' : 'var(--accent-primary)' }} />
+                  <Icon size={13} style={{ color: isSelected ? 'var(--accent-contrast)' : 'var(--accent-primary)' }} />
                   <span className="truncate">{meta.name.replace(' & ', ' ')}</span>
                 </button>
               );
@@ -194,7 +194,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       {t.title}
                     </h4>
 
-                    <p className="text-[11px] line-clamp-1" style={{ color: 'var(--text-muted)' }}>
+                    <p className="text-[11px] line-clamp-1" style={{ color: 'var(--text-secondary)' }}>
                       {t.summary}
                     </p>
                   </div>

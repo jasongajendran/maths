@@ -106,7 +106,7 @@ export const BidmasEvaluator: React.FC = () => {
               style={{
                 backgroundColor: selectedExample === idx ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
                 borderColor: selectedExample === idx ? 'var(--accent-primary)' : 'var(--border-card)',
-                color: selectedExample === idx ? '#ffffff' : 'var(--text-primary)',
+                color: selectedExample === idx ? 'var(--accent-contrast)' : 'var(--text-primary)',
               }}
             >
               {p.plain}
@@ -161,8 +161,11 @@ export const BidmasEvaluator: React.FC = () => {
             >
               <div className="flex items-center gap-2.5">
                 <span
-                  className="w-6 h-6 rounded-full text-white font-bold text-xs flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: 'var(--accent-primary)' }}
+                  className="w-6 h-6 rounded-full font-bold text-xs flex items-center justify-center shrink-0"
+                  style={{
+                    backgroundColor: 'var(--accent-primary)',
+                    color: 'var(--accent-contrast)',
+                  }}
                 >
                   {i + 1}
                 </span>
@@ -201,7 +204,7 @@ export const BidmasEvaluator: React.FC = () => {
           <div>
             <span
               className="text-xs font-extrabold uppercase tracking-wider"
-              style={{ color: 'var(--badge-text)' }}
+              style={{ color: 'var(--text-secondary)' }}
             >
               Final Correct Answer
             </span>

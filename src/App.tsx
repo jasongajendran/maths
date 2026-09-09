@@ -6,6 +6,7 @@ import { Sidebar } from './components/Sidebar';
 import { TopicDetail } from './components/TopicDetail';
 import { QuickFormulaDrawer } from './components/QuickFormulaDrawer';
 import { GoToTop } from './components/GoToTop';
+import { FloatingAudioController } from './components/FloatingAudioController';
 
 export default function App() {
   const [selectedTopicId, setSelectedTopicId] = useState<string>('fractions-mastery');
@@ -13,6 +14,8 @@ export default function App() {
   const [selectedYear, setSelectedYear] = useState<YearLevel | 'All'>('All');
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
   const [isFormulaDrawerOpen, setIsFormulaDrawerOpen] = useState<boolean>(false);
+
+  const [targetSectionId, setTargetSectionId] = useState<string | null>(null);
 
   // Filter topics based on category and year level
   const filteredTopics = useMemo(() => {
@@ -68,6 +71,26 @@ export default function App() {
 
     if (matching.length > 0) {
       setSelectedTopicId(matching[0].id);
+      setTargetSectionId(null);
+    }
+  };
+
+  // Handler for selecting a topic directly, ensuring filters do not hide the target topic
+  const handleSelectTopicDirectly = (id: string, sectionId?: string) => {
+    const target = mathTopics.find((t) => t.id === id);
+    if (target) {
+      if (selectedCategory !== 'all' && target.category !== selectedCategory) {
+        setSelectedCategory('all');
+      }
+      if (selectedYear !== 'All' && target.yearLevel !== selectedYear) {
+        setSelectedYear('All');
+      }
+    }
+    setSelectedTopicId(id);
+    if (sectionId) {
+      setTargetSectionId(sectionId);
+    } else {
+      setTargetSectionId(null);
     }
   };
 
@@ -93,7 +116,10 @@ export default function App() {
         <Sidebar
           topics={filteredTopics}
           selectedTopicId={activeTopic.id}
-          onSelectTopic={(id) => setSelectedTopicId(id)}
+          onSelectTopic={(id) => {
+            setSelectedTopicId(id);
+            setTargetSectionId(null);
+          }}
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
           isOpenOnMobile={isMobileNavOpen}
@@ -104,7 +130,9 @@ export default function App() {
         <main className="flex-1 min-w-0 w-full">
           <TopicDetail
             topic={activeTopic}
-            onSelectTopic={(id) => setSelectedTopicId(id)}
+            onSelectTopic={handleSelectTopicDirectly}
+            targetSectionId={targetSectionId}
+            onClearTargetSection={() => setTargetSectionId(null)}
           />
         </main>
       </div>
@@ -112,12 +140,15 @@ export default function App() {
       {/* Floating Go To Top Button */}
       <GoToTop />
 
+      {/* Floating Audio Controller whenever speech is active */}
+      <FloatingAudioController />
+
       {/* Quick Formula Sheet Slide-over */}
       <QuickFormulaDrawer
         isOpen={isFormulaDrawerOpen}
         onClose={() => setIsFormulaDrawerOpen(false)}
         onSelectTopic={(id) => {
-          setSelectedTopicId(id);
+          handleSelectTopicDirectly(id);
           setIsFormulaDrawerOpen(false);
         }}
       />

@@ -1,6 +1,6 @@
 import { MathTopic } from '../types/math';
 
-export const mathTopics: MathTopic[] = [
+const rawMathTopics: MathTopic[] = [
   {
     id: 'fractions-mastery',
     title: 'Fractions: Adding, Subtracting, Multiplying & Quantities',
@@ -49,9 +49,32 @@ export const mathTopics: MathTopic[] = [
     sections: [
       {
         id: 'frac-sec-add',
-        title: 'Adding & Subtracting Fractions with Different Denominators',
+        title: '1. Adding & Subtracting Fractions (LCM & Matching Denominators)',
+        readTimeMinutes: 3,
         visualMetaphor: 'The Pizza Slicing Rule: You cannot add 1 huge slice of a 4-slice pizza to 1 tiny slice of an 8-slice pizza! First, slice them into matching equal-sized pieces (the common denominator), and then simply count how many slices you have altogether.',
         content: 'You can only add or subtract fractions when their bottom numbers (denominators) are identical. If they differ, find the Lowest Common Multiple (LCM) to create equivalent fractions before combining the numerators.',
+        prerequisites: [
+          {
+            term: 'Lowest Common Multiple (LCM)',
+            quickDefinition: 'LCM is the smallest number that appears in the times tables of BOTH bottom numbers (denominators). For example: multiples of 3 are (3, 6, 9, 12...) and multiples of 4 are (4, 8, 12...). Since 12 is the smallest shared number, 12 is the LCM! We use 12 to slice both pizzas into matching 12ths.',
+            targetTopicId: 'multiplication-division-factors',
+            targetTopicTitle: 'Multiplication, Division, Factors & Primes',
+            targetSectionId: 'calc-sec-lcm-hcf',
+            targetSectionTitle: 'LCM vs HCF (Lowest Common Multiple)',
+          },
+          {
+            term: 'Numerator vs Denominator',
+            quickDefinition: 'Numerator is "North" (top number: how many slices you have); Denominator is "Down" (bottom number: total equal slices the pizza is cut into).',
+          },
+          {
+            term: 'Simplifying with HCF',
+            quickDefinition: 'To simplify an answer to its simplest form, divide the numerator and denominator by their Highest Common Factor (HCF).',
+            targetTopicId: 'multiplication-division-factors',
+            targetTopicTitle: 'Multiplication, Division, Factors & Primes',
+            targetSectionId: 'calc-sec-lcm-hcf',
+            targetSectionTitle: 'LCM vs HCF (Highest Common Factor)',
+          },
+        ],
         mathExpressions: [
           '\\frac{1}{3} + \\frac{1}{4} = \\frac{4}{12} + \\frac{3}{12} = \\frac{7}{12}',
           '\\frac{3}{5} - \\frac{1}{2} = \\frac{6}{10} - \\frac{5}{10} = \\frac{1}{10}',
@@ -120,6 +143,30 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: '11/12',
             proTip: 'To check your work fast, use the Butterfly Trick: (2×4 + 1×3) / (3×4) = (8 + 3)/12 = 11/12.',
           },
+        ],
+      },
+      {
+        id: 'frac-sec-mixed',
+        title: '2. Mixed Numbers & Regrouping',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Pizza Box Unboxing: If you have 3 whole pizza boxes and 1 slice (3 1/4), but need to take away 1 box and 5 slices (1 5/6), do not panic! Open up (unbox) the full boxes into improper fraction slices (13/4 and 11/6). Once unboxed into equal twelfths, subtraction is straightforward.',
+        content: 'When subtracting mixed numbers where the fraction to subtract is larger than the starting fraction, convert both mixed numbers into improper fractions first. This completely avoids confusing negative remainder borrowing errors.',
+        prerequisites: [
+          {
+            term: 'Mixed Numbers vs Improper Fractions',
+            quickDefinition: 'A mixed number has a whole number and a fraction (3 1/2). An improper fraction has a numerator larger than or equal to its denominator (7/2).',
+          },
+        ],
+        mathExpressions: [
+          '3\\frac{1}{4} - 1\\frac{5}{6} = \\frac{13}{4} - \\frac{11}{6} = \\frac{39}{12} - \\frac{22}{12} = \\frac{17}{12} = 1\\frac{5}{12}',
+        ],
+        keyTakeaways: [
+          'Convert mixed numbers to improper fractions first: (Whole × Denominator) + Numerator.',
+          'Find the lowest common denominator (LCM) and convert both fractions.',
+          'Subtract numerators, leaving the denominator unchanged.',
+          'Convert the improper fraction back into a clean mixed number at the end.',
+        ],
+        workedExamples: [
           {
             id: 'we-frac-3',
             title: 'Subtracting Mixed Numbers with Regrouping',
@@ -155,6 +202,31 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: '1 5/12',
             proTip: 'Converting to improper fractions avoids messy borrowing errors when the fractional part being subtracted is bigger than the first fraction (5/6 > 1/4)!',
           },
+        ],
+      },
+      {
+        id: 'frac-sec-mult-div',
+        title: '3. Multiplying, Dividing & Fractions of Quantities',
+        readTimeMinutes: 3,
+        visualMetaphor: 'The Recipe Multiplier & KFC Flip: Multiplying fractions is the easiest operation in all of maths—no common denominator needed! Just multiply straight across the road: top × top, bottom × bottom. For division, use KFC (Keep first, Flip second upside down, Change to ×). For fractions of amounts, divide by the bottom to find 1 slice, then times by the top!',
+        content: 'To find a fraction of an amount, divide the total quantity by the denominator, then multiply by the numerator. When solving multi-stage remainder word problems, always calculate the new remainder before taking the next fraction.',
+        prerequisites: [
+          {
+            term: 'Fraction of Amount Formula',
+            quickDefinition: 'Divide by the denominator to find 1 unit part, then multiply by the numerator. E.g. 2/5 of 60: 60 ÷ 5 = 12, then 12 × 2 = 24.',
+          },
+        ],
+        mathExpressions: [
+          '\\frac{6}{1} \\times \\frac{3}{4} = \\frac{18}{4} = \\frac{9}{2} = 4\\frac{1}{2}',
+          '\\frac{2}{5} \\text{ of } 60 = (60 \\div 5) \\times 2 = 24',
+        ],
+        keyTakeaways: [
+          'Multiplying: Multiply numerators together, then denominators together.',
+          'Dividing: Keep first fraction, Flip second fraction upside down, Change ÷ to ×.',
+          'Fraction of amount: Divide by the denominator, multiply by the numerator.',
+          'Word problems: When a problem says "of the remainder", recalculate the new total pool first!',
+        ],
+        workedExamples: [
           {
             id: 'we-frac-4',
             title: 'Multiplying Fractions & Recipe Scaling',
@@ -322,6 +394,20 @@ export const mathTopics: MathTopic[] = [
         title: 'Why Mathematical Priority Rules Exist',
         visualMetaphor: 'The VIP Cinema Entrance: Brackets have the VIP diamond pass—they jump straight to the front of the queue! Next enter the Superheroes with power capes (Indices like 5²). The Royal Guards (Division & Multiplication) enter together, left to right. Finally, the general public (Addition & Subtraction) enter last, left to right.',
         content: 'Without strict order rules, 3 + 4 × 5 could mean (3 + 4) × 5 = 35 OR 3 + (4 × 5) = 23! Math requires universal consistency: multiplication has higher priority than addition, so 3 + 4 × 5 is ALWAYS 23 unless brackets command otherwise.',
+        prerequisites: [
+          {
+            term: 'Indices / Orders (Powers & Squares)',
+            quickDefinition: 'An index (power) is the small raised number that tells you to multiply a number by itself. For example, 4² = 4 × 4 = 16 and 2³ = 2 × 2 × 2 = 8. Refer to Multiplication, Division, Factors & Primes for square numbers!',
+            targetTopicId: 'multiplication-division-factors',
+            targetTopicTitle: 'Multiplication, Division, Factors & Primes',
+            targetSectionId: 'calc-sec-factors-primes',
+            targetSectionTitle: 'Factor Rainbows, Primes & Square Numbers',
+          },
+          {
+            term: 'Equal Priority Rule (D & M, A & S)',
+            quickDefinition: 'Division does NOT outrank Multiplication; they are equal rank partners! Solve them in whatever order they appear from left to right. The same applies to Addition and Subtraction.',
+          },
+        ],
         mathExpressions: [
           '3 + 4 \\times 5 = 3 + 20 = 23 \\quad (\\text{Correct: } \\times \\text{ before } +)',
           '(3 + 4) \\times 5 = 7 \\times 5 = 35 \\quad (\\text{Brackets override standard priority})',
@@ -356,6 +442,30 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: '32',
             proTip: 'If you mistakenly worked left to right: 14 + 6 = 20, then 20 × 3 = 60 (Wrong!). Always spot × and ÷ first.',
           },
+        ],
+      },
+      {
+        id: 'bidmas-sec-brackets-indices',
+        title: '2. VIP Brackets & Indices (Powers & Squares)',
+        readTimeMinutes: 3,
+        visualMetaphor: 'The VIP Diamond Shield & Superhero Powers: Brackets act like a diamond shield—you must resolve what is protected inside before anything from the outside world can interact with it. Next, indices (powers) give numbers superhero status (4² is not 8, but 16!). Always expand indices before multiplying.',
+        content: 'Brackets command total priority in mathematics. When you have brackets containing multiple steps, apply BIDMAS inside the brackets first. Indices belong strictly to their base number.',
+        prerequisites: [
+          {
+            term: 'Indices (Powers)',
+            quickDefinition: 'Small raised number indicating repeated multiplication of the base number: 4² = 4 × 4 = 16; 2³ = 2 × 2 × 2 = 8.',
+          },
+        ],
+        mathExpressions: [
+          '(15 - 7) \\times 4 + 10 = 8 \\times 4 + 10 = 32 + 10 = 42',
+          '50 - 2 \\times 4^2 = 50 - 2 \\times 16 = 50 - 32 = 18',
+        ],
+        keyTakeaways: [
+          'Always crack inside the brackets first before looking at outside operations.',
+          'Powers/indices attach strictly to the number directly below them.',
+          'Never multiply first before evaluating a power (2 × 4² is 2 × 16 = 32, NOT 8² = 64!).',
+        ],
+        workedExamples: [
           {
             id: 'we-bidmas-2',
             title: 'Brackets Override Standard Priority',
@@ -414,6 +524,30 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: '18',
             proTip: 'A common mistake is multiplying 2 × 4 first to get 8, then squaring to get 64. Indices belong strictly to their base number (4), not the 2 in front!',
           },
+        ],
+      },
+      {
+        id: 'bidmas-sec-realworld',
+        title: '3. Real-World Modeling & The Left-to-Right Trap',
+        readTimeMinutes: 3,
+        visualMetaphor: 'The Left-to-Right Conveyor Belt: When two operations have equal rank (like Division and Multiplication, or Addition and Subtraction), they travel along a conveyor belt strictly from left to right. Never jump ahead to multiply just because the letter M comes after D in the acronym BIDMAS!',
+        content: 'When translating real-world story problems into mathematics, use brackets to bundle items together (e.g. ticket prices before subtracting discounts). When operations share equal priority, work strictly from left to right.',
+        prerequisites: [
+          {
+            term: 'Left-to-Right Equal Rank',
+            quickDefinition: 'In 12 ÷ 3 × 4, solve 12 ÷ 3 = 4 first, then 4 × 4 = 16. Do NOT do 3 × 4 = 12 first!',
+          },
+        ],
+        mathExpressions: [
+          '(2 \\times 15 + 3 \\times 8) - 10 = (30 + 24) - 10 = 54 - 10 = 44',
+          '12 \\div 3 \\times 4 = 4 \\times 4 = 16 \\quad (\\text{NOT } 12 \\div 12 = 1!)',
+        ],
+        keyTakeaways: [
+          'Use brackets to group real-world totals before applying discounts or dividing among people.',
+          'Equal rank rule: Division and multiplication are equal partners. Do whichever is on the left first.',
+          'Equal rank rule: Addition and subtraction are equal partners. Do whichever is on the left first.',
+        ],
+        workedExamples: [
           {
             id: 'we-bidmas-4',
             title: 'Theme Park Tickets & Group Discount',
@@ -573,9 +707,20 @@ export const mathTopics: MathTopic[] = [
     sections: [
       {
         id: 'pv-sec-rounding',
-        title: 'The Roller Coaster Rule for Rounding Numbers',
+        title: '1. The Roller Coaster Rule for Rounding Numbers',
+        readTimeMinutes: 3,
         visualMetaphor: 'The Roller Coaster Hill: Imagine driving up a steep coaster hill marked 0, 1, 2, 3, 4, 5, 6, 7, 8, 9. If you run out of fuel at 1, 2, 3, or 4, you roll back down (round down to the base). If you reach 5 or higher, you crest the top and zoom forward to the next peak (round up)!',
         content: 'To round any number: 1. Underline the place value column you want to round to. 2. Circle the digit immediately to its right (the decision maker). 3. If the circled digit is 4 or less, let the underlined digit rest. If it is 5 or more, add 1 to the underlined digit! 4. Turn all digits to the right into zeros.',
+        prerequisites: [
+          {
+            term: 'Place Value Columns (Base-10)',
+            quickDefinition: 'In our Base-10 system, moving one column left multiplies by 10 (Ones, Tens, Hundreds, Thousands...), while moving one column right divides by 10 (Tenths 1/10, Hundredths 1/100, Thousandths 1/1000).',
+          },
+          {
+            term: 'The Rounding Decision Maker',
+            quickDefinition: 'Only the single digit directly to the right of your underlined target column decides whether you round up or stay put. 5, 6, 7, 8, 9 rounds up (+1); 0, 1, 2, 3, 4 lets it rest!',
+          },
+        ],
         mathExpressions: [
           '4,\\underline{3}62 \\text{ rounded to nearest hundred} \\to 4,400 \\quad (6 \\ge 5 \\implies \\text{round up})',
           '8,\\underline{2}39 \\text{ rounded to nearest hundred} \\to 8,200 \\quad (3 < 5 \\implies \\text{round down})',
@@ -609,6 +754,53 @@ export const mathTopics: MathTopic[] = [
             proTip: 'Rounding down never means subtracting 1; it simply keeps the target digit and replaces everything to the right with zeros.',
           },
           {
+            id: 'we-pv-3',
+            title: 'Rounding Decimals with the "Cascading Nine" Trap',
+            level: 'Level 3: Multi-Step',
+            problem: 'Round 4.996 to: A) 2 decimal places (hundredths), and B) 1 decimal place (tenths).',
+            steps: [
+              {
+                stepNumber: 1,
+                title: 'Part A: Round to 2 decimal places (hundredths)',
+                explanation: 'Target digit is second 9 in 4.9_9_6. Look right at thousandths digit (6). Since 6 ≥ 5, add 1 to the 9! 9 + 1 = 10, so it carries over to the tenths digit, which also rolls from 9 to 10 and carries into the ones: 4.996 becomes 5.00.',
+                math: '4.996 \\to 5.00 \\quad (2 \\text{ d.p.})',
+              },
+              {
+                stepNumber: 2,
+                title: 'Part B: Round to 1 decimal place (tenths)',
+                explanation: 'Target digit is first 9 in 4._9_96. Look right at hundredths digit (9). Since 9 ≥ 5, round up: 4.9 rolls up to 5.0.',
+                math: '4.996 \\to 5.0 \\quad (1 \\text{ d.p.})',
+              },
+            ],
+            finalAnswer: 'A) 5.00, B) 5.0',
+            proTip: 'Crucial exam rule: In Part A you MUST write 5.00 (NOT just 5) to prove precision to 2 decimal places! In Part B you MUST write 5.0.',
+          },
+        ],
+      },
+      {
+        id: 'pv-sec-columns',
+        title: '2. Place Value Columns & Powers of 10',
+        readTimeMinutes: 3,
+        visualMetaphor: 'The Shifting Train: Numbers sit on train tracks where each carriage is a place value column (Thousands, Hundreds, Tens, Ones, Tenths, Hundredths). Multiplying by 10/100/1000 shoves the whole train to the LEFT into bigger carriages. Dividing by 10/100/1000 shoves the train to the RIGHT into smaller carriages. The decimal point is an immovable signal post!',
+        content: 'In our base-10 system, moving one column left makes a digit 10 times bigger. Moving one column right makes it 10 times smaller. When multiplying or dividing decimals by 10, 100, or 1000, shift the digits across the columns — never move the decimal point.',
+        prerequisites: [
+          {
+            term: 'Shifting vs Adding Zeros',
+            quickDefinition: 'Never tell yourself to "just add zeros" when working with decimals: adding a zero to 4.3 makes 4.30, which has unchanged value! Multiplying by 10 shifts the digits left to make 43.',
+          },
+        ],
+        mathExpressions: [
+          '4.35 \\times 100 = 435 \\quad (\\text{Shift 2 columns left})',
+          '67.2 \\div 10 = 6.72 \\quad (\\text{Shift 1 column right})',
+          '0.085 \\times 1000 = 85 \\quad (\\text{Shift 3 columns left})',
+        ],
+        keyTakeaways: [
+          'Multiplying by 10/100/1000: digits move LEFT by the number of zeros.',
+          'Dividing by 10/100/1000: digits move RIGHT by the number of zeros.',
+          'Decimal point stays anchored; digits shift past it.',
+        ],
+        workedExamples: [
+          {
             id: 'we-pv-2',
             title: 'Multiplying and Dividing Decimals by 10, 100 & 1,000',
             level: 'Level 2: Medium',
@@ -636,28 +828,30 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: 'A) 435, B) 6.72, C) 85',
             proTip: 'Count the zeros: ×10 shifts 1 place, ×100 shifts 2 places, ×1000 shifts 3 places left. Division shifts right!',
           },
+        ],
+      },
+      {
+        id: 'pv-sec-deduction',
+        title: '3. Real-World Estimation & Mystery Number Deduction',
+        readTimeMinutes: 3,
+        visualMetaphor: 'The Detective Magnifying Glass: Clues about rounding give you upper and lower fences. If a number rounds to 3,500 to the nearest 100, it lives between 3,450 and 3,549. Like a detective, test candidate digits until the digit sum satisfies the case!',
+        content: 'Rounding boundaries define a range of possible numbers. When solving multi-step deduction problems, combine rounding interval clues with place value digit arithmetic.',
+        prerequisites: [
           {
-            id: 'we-pv-3',
-            title: 'Rounding Decimals with the "Cascading Nine" Trap',
-            level: 'Level 3: Multi-Step',
-            problem: 'Round 4.996 to: A) 2 decimal places (hundredths), and B) 1 decimal place (tenths).',
-            steps: [
-              {
-                stepNumber: 1,
-                title: 'Part A: Round to 2 decimal places (hundredths)',
-                explanation: 'Target digit is second 9 in 4.9_9_6. Look right at thousandths digit (6). Since 6 ≥ 5, add 1 to the 9! 9 + 1 = 10, so it carries over to the tenths digit, which also rolls from 9 to 10 and carries into the ones: 4.996 becomes 5.00.',
-                math: '4.996 \\to 5.00 \\quad (2 \\text{ d.p.})',
-              },
-              {
-                stepNumber: 2,
-                title: 'Part B: Round to 1 decimal place (tenths)',
-                explanation: 'Target digit is first 9 in 4._9_96. Look right at hundredths digit (9). Since 9 ≥ 5, round up: 4.9 rolls up to 5.0.',
-                math: '4.996 \\to 5.0 \\quad (1 \\text{ d.p.})',
-              },
-            ],
-            finalAnswer: 'A) 5.00, B) 5.0',
-            proTip: 'Crucial exam rule: In Part A you MUST write 5.00 (NOT just 5) to prove precision to 2 decimal places! In Part B you MUST write 5.0.',
+            term: 'Rounding Boundaries (Lower & Upper Bounds)',
+            quickDefinition: 'For a number to round to 3,500 to the nearest 100, it must be at least 3,450 and strictly less than 3,550.',
           },
+        ],
+        mathExpressions: [
+          '48,652 + 37,489 = 86,141 \\to 86,000 \\text{ (nearest thousand)}',
+          '3 + 4 + 7 + 7 = 21 \\implies N = 3,477',
+        ],
+        keyTakeaways: [
+          'Calculate exact values before rounding unless asked to estimate upfront.',
+          'To find rounding boundaries: subtract half of the rounding unit for the lower bound.',
+          'Test clues step by step to eliminate impossible candidate numbers.',
+        ],
+        workedExamples: [
           {
             id: 'we-pv-4',
             title: 'Stadium Attendance & Two-Stage Estimation',
@@ -810,17 +1004,23 @@ export const mathTopics: MathTopic[] = [
     sections: [
       {
         id: 'ang-sec-types',
-        title: 'Classifying Angles & Solving Missing Angle Clues',
+        title: '1. Angle Types & Straight Line Rules (180° & 360°)',
+        readTimeMinutes: 3,
         visualMetaphor: 'The Skateboarder & Clock Face: When a skateboarder spins a full circle, they complete a 360! Half of that full spin is a 180 (a straight line). Every missing angle problem is simply detective work: you know the total target (180° or 360°), so you subtract the known angles to unmask the secret missing angle.',
-        content: 'Angles measure rotation in degrees (°). Acute angles are sharp (<90°), Right angles are square (90°), Obtuse angles are wide (90°–180°), and Reflex angles are bent backwards (>180°).',
+        content: 'Angles measure rotation in degrees (°). Acute angles are sharp (<90°), Right angles are square (90°), Obtuse angles are wide (90°–180°), and Reflex angles are bent backwards (>180°). Angles on a straight line always sum to 180°, and angles around a full point sum to 360°.',
+        prerequisites: [
+          {
+            term: 'Angle Types & Degrees (°)',
+            quickDefinition: 'Angles measure circular turns: Acute (<90°), Right Angle (90° square), Obtuse (90°–180°), Straight Line (180° half turn), Reflex (>180°), and Full Turn (360°).',
+          },
+        ],
         mathExpressions: [
-          '\\text{Missing angle on line: } x = 180^\\circ - 115^\\circ = 65^\\circ',
-          '\\text{Missing angle in triangle: } y = 180^\\circ - (70^\\circ + 55^\\circ) = 55^\\circ',
+          '\\text{Missing angle on line: } x = 180^\\circ - 124^\\circ = 56^\\circ',
+          '\\angle AOC = 130^\\circ \\implies \\angle DOB = 130^\\circ \\quad (\\text{Vertically opposite})',
         ],
         keyTakeaways: [
-          'Look for the right-angle square symbol (∟) — it always gives you 90° even if no number is written!',
-          'Isosceles triangles have 2 equal sides AND 2 equal base angles.',
-          'Equilateral triangles have 3 equal sides and 3 equal angles: each is always 60° (180° ÷ 3).',
+          'Angles on a straight line always sum to 180°.',
+          'Angles around a full point always sum to 360°.',
           'Vertically opposite angles formed by an X-crossing are always exactly equal.',
         ],
         workedExamples: [
@@ -845,29 +1045,6 @@ export const mathTopics: MathTopic[] = [
             ],
             finalAnswer: '56°',
             proTip: 'Quick check: 124 + 56 = 180. The missing angle is acute (<90°), which matches visual intuition.',
-          },
-          {
-            id: 'we-ang-2',
-            title: 'Isosceles Triangle Missing Angles',
-            level: 'Level 2: Medium',
-            problem: 'An isosceles triangle has a top apex angle of 44°. Find the size of each base angle.',
-            mathProblem: '44^\\circ + 2b = 180^\\circ',
-            steps: [
-              {
-                stepNumber: 1,
-                title: 'Find the remaining degrees in the triangle',
-                explanation: 'All 3 angles inside any triangle must equal 180°. Subtract the known top apex angle: 180° - 44° = 136°.',
-                math: '180^\\circ - 44^\\circ = 136^\\circ',
-              },
-              {
-                stepNumber: 2,
-                title: 'Divide equally between the two base angles',
-                explanation: 'In an isosceles triangle, the two base angles are identical. Divide 136° by 2: 136 ÷ 2 = 68°.',
-                math: 'b = 136^\\circ \\div 2 = 68^\\circ',
-              },
-            ],
-            finalAnswer: '68° each',
-            proTip: 'Double check: 68° + 68° + 44° = 180°. The base angles sit opposite the two equal-length sides marked with tick marks.',
           },
           {
             id: 'we-ang-3',
@@ -898,6 +1075,77 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: 'y = 90° (a right angle), angle AOD = 50°',
             proTip: 'Whenever two straight lines cross, you get 2 pairs of equal angles, and every side-by-side pair adds to 180°.',
           },
+        ],
+      },
+      {
+        id: 'ang-sec-triangles',
+        title: '2. Triangles (180°) & Isosceles Base Angles',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Triangle Tepee: Tear off the three corners of any paper triangle and line them up edge-to-edge—they will always form a perfectly flat straight line (180°)! In an isosceles triangle, the two legs are identical twins, meaning their shoe sizes (base angles) must also be identical.',
+        content: 'The three interior angles of ANY triangle always add up to 180°. For isosceles triangles, subtract the apex angle from 180° and divide by 2 to find each base angle.',
+        prerequisites: [
+          {
+            term: 'The 180° Triangle Rule',
+            quickDefinition: 'The 3 interior angles of any triangle always add up to 180°. For equilateral triangles, 180° ÷ 3 = 60° each.',
+          },
+        ],
+        mathExpressions: [
+          'A + B + C = 180^\\circ',
+          'b = \\frac{180^\\circ - 44^\\circ}{2} = 68^\\circ \\quad (\\text{Isosceles})',
+        ],
+        keyTakeaways: [
+          'All triangles have interior angles summing to 180°.',
+          'Isosceles triangles: 2 equal sides and 2 equal base angles.',
+          'Equilateral triangles: 3 equal sides and 3 equal angles of 60°.',
+        ],
+        workedExamples: [
+          {
+            id: 'we-ang-2',
+            title: 'Isosceles Triangle Missing Angles',
+            level: 'Level 2: Medium',
+            problem: 'An isosceles triangle has a top apex angle of 44°. Find the size of each base angle.',
+            mathProblem: '44^\\circ + 2b = 180^\\circ',
+            steps: [
+              {
+                stepNumber: 1,
+                title: 'Find the remaining degrees in the triangle',
+                explanation: 'All 3 angles inside any triangle must equal 180°. Subtract the known top apex angle: 180° - 44° = 136°.',
+                math: '180^\\circ - 44^\\circ = 136^\\circ',
+              },
+              {
+                stepNumber: 2,
+                title: 'Divide equally between the two base angles',
+                explanation: 'In an isosceles triangle, the two base angles are identical. Divide 136° by 2: 136 ÷ 2 = 68°.',
+                math: 'b = 136^\\circ \\div 2 = 68^\\circ',
+              },
+            ],
+            finalAnswer: '68° each',
+            proTip: 'Double check: 68° + 68° + 44° = 180°. The base angles sit opposite the two equal-length sides marked with tick marks.',
+          },
+        ],
+      },
+      {
+        id: 'ang-sec-parallel',
+        title: '3. Parallel Line Clues (Z & F) & Regular Polygons',
+        readTimeMinutes: 3,
+        visualMetaphor: 'The Robot Walker: If a robot walks around the perimeter of any closed polygon and returns to where it started, it turns a complete 360° circle! Dividing 360° by the number of sides gives each exterior turn angle instantly.',
+        content: 'When parallel lines are crossed by a transversal, look for Z-angles (alternate angles are equal) and F-angles (corresponding angles are equal). For any regular polygon, exterior angle = 360° ÷ n, and interior angle = 180° - exterior angle.',
+        prerequisites: [
+          {
+            term: 'Transversal on Parallel Lines',
+            quickDefinition: 'Alternate angles form a Z shape and are equal. Corresponding angles form an F shape and are equal. Co-interior angles form a C shape and sum to 180°.',
+          },
+        ],
+        mathExpressions: [
+          '\\text{Exterior angle of regular polygon} = \\frac{360^\\circ}{n}',
+          '\\text{Interior angle} = 180^\\circ - \\text{Exterior angle}',
+        ],
+        keyTakeaways: [
+          'Look for the letter clues on parallel lines: Z for Alternate, F for Corresponding, C for Co-interior.',
+          'Exterior angles of ANY polygon always sum to 360°.',
+          'Ninja shortcut: Find exterior angle first (360° ÷ n), then subtract from 180° for interior angle.',
+        ],
+        workedExamples: [
           {
             id: 'we-ang-4',
             title: 'Climbing Frame Parallel Bars (Z & F Angle Detective)',
@@ -1048,9 +1296,22 @@ export const mathTopics: MathTopic[] = [
     sections: [
       {
         id: 'meas-sec-diff',
-        title: 'The Clear Difference: Fence vs Carpet vs Water',
+        title: '1. The Clear Difference: Fence vs Carpet (Perimeter & Rectangle Area)',
+        readTimeMinutes: 2,
         visualMetaphor: 'The Garden Fence, Lawn Grass & Swimming Pool: Perimeter is the wooden fence around the outside edge of the garden (1D linear measure in cm/m). Area is the grass turf rolled out to carpet the flat ground (2D square units in cm²). Volume is the water filling a 3D swimming pool (3D cubic units in cm³)!',
         content: 'Perimeter is measured in cm or m (power 1). Area is measured in cm² or m² (power 2). Volume is measured in cm³ or m³ (power 3). Never mix up the units!',
+        prerequisites: [
+          {
+            term: '1D vs 2D vs 3D Measurements',
+            quickDefinition: 'Perimeter is 1D distance (cm: walking along a line); Area is 2D tiles covering a flat floor (cm²); Volume is 3D unit cubes filling a space (cm³). Always check the small power number!',
+          },
+          {
+            term: 'Area Multiplication (Length × Width)',
+            quickDefinition: 'Calculating area requires formal multiplication (Length × Width for rectangles, or Base × Height ÷ 2 for triangles). Refer to Multiplication, Division, Factors & Primes!',
+            targetTopicId: 'multiplication-division-factors',
+            targetTopicTitle: 'Multiplication, Division, Factors & Primes',
+          },
+        ],
         mathExpressions: [
           '\\text{Perimeter (cm)} = \\text{Side}_1 + \\text{Side}_2 + \\text{Side}_3 + \\dots',
           '\\text{Area (cm}^2\\text{)} = \\text{Base} \\times \\text{Height}',
@@ -1084,6 +1345,30 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: 'Perimeter = 26 m, Area = 40 m²',
             proTip: 'Notice the units: perimeter has linear m, while area has square m².',
           },
+        ],
+      },
+      {
+        id: 'meas-sec-triangles-compound',
+        title: '2. Triangles, Trapeziums & Compound L-Shapes',
+        readTimeMinutes: 3,
+        visualMetaphor: 'The Half-Rectangle & The Cookie Cutter: Every triangle is exactly half of a bounding rectangle with the same base and height (that is why we divide by 2!). For compound L-shapes, cut the strange shape into two friendly rectangles with a single straight pencil cut.',
+        content: 'To find the area of a triangle, multiply base by the perpendicular (upright) height, then divide by 2. Ignore slant sides. For trapeziums, average the parallel sides and multiply by the height. For L-shapes, split into two rectangles and sum their areas.',
+        prerequisites: [
+          {
+            term: 'Perpendicular Height (90° Square)',
+            quickDefinition: 'Always use the vertical height that forms a right angle with the base. Never use slant sloping sides for area calculations!',
+          },
+        ],
+        mathExpressions: [
+          '\\text{Area of Triangle} = \\frac{\\text{base} \\times \\text{height}}{2}',
+          '\\text{Area of Trapezium} = \\frac{a + b}{2} \\times h',
+        ],
+        keyTakeaways: [
+          'For triangles: look for the 90° square symbol for true height.',
+          'For trapeziums: (Top + Bottom) ÷ 2 × Height.',
+          'For compound L-shapes: split with a pencil line, find both areas, and add them.',
+        ],
+        workedExamples: [
           {
             id: 'we-meas-2',
             title: 'Triangle Area with Distractor Slant Side',
@@ -1155,6 +1440,30 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: 'Perimeter = 32 m, Area = 47 m²',
             proTip: 'Shortcut: The perimeter of an L-shape is identical to the perimeter of the bounding box that encloses it: 2 × (9 + 7) = 32 m!',
           },
+        ],
+      },
+      {
+        id: 'meas-sec-volume',
+        title: '3. 3D Cuboids, Capacity & Water Depth (cm³ to Litres)',
+        readTimeMinutes: 3,
+        visualMetaphor: 'The Sugar Cube Box & 1-Litre Bottle: Volume measures how many 1×1×1 cm sugar cubes pack snugly inside a 3D box (Length × Width × Height). Exactly 1,000 of these 1 cm³ cubes fill up a 1-litre bottle of water (1,000 cm³ = 1 L)!',
+        content: 'Volume of a cuboid is Length × Width × Height in cm³ or m³. To convert cm³ to litres, divide by 1,000. To find water depth when a volume is poured into a tank, divide volume by base area (Length × Width).',
+        prerequisites: [
+          {
+            term: 'Capacity Conversion Rule',
+            quickDefinition: '1,000 cm³ = 1 Litre (1,000 ml). 1 m³ = 1,000 Litres.',
+          },
+        ],
+        mathExpressions: [
+          '\\text{Volume} = L \\times W \\times H',
+          '\\text{Depth} = \\frac{\\text{Volume}}{\\text{Length} \\times \\text{Width}}',
+        ],
+        keyTakeaways: [
+          'Volume is 3D space measured in cubic units (cm³, m³).',
+          '1,000 cm³ = 1 litre = 1,000 ml (so 1 cm³ = 1 ml).',
+          'Depth = Volume ÷ Base Area.',
+        ],
+        workedExamples: [
           {
             id: 'we-meas-5',
             title: '3D Aquarium Volume, Water Depth & Capacity Challenge',
@@ -1275,9 +1584,28 @@ export const mathTopics: MathTopic[] = [
     sections: [
       {
         id: 'fdp-sec-mental',
-        title: 'The Mental Lego Blocks of Percentages',
-        visualMetaphor: 'The 100-Square Currency Exchange: Fractions, decimals, and percentages are just 3 different languages saying the exact same truth! To find tricky percentages like 35% or 17.5%, never use a complicated formula—just snap together easy Lego blocks: 10% (divide by 10) and 1% (divide by 100)!',
-        content: 'You can build ANY percentage using 5 quick building blocks: 50% (half it), 25% (half of 50%), 10% (divide by 10), 5% (half of 10%), and 1% (divide by 100).',
+        title: '1. Mental Percentage Lego Blocks & Friendly Denominators',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The 100-Square Currency Exchange: Fractions, decimals, and percentages are just 3 different languages saying the exact same truth! To find tricky percentages like 15% or 35%, never use a complicated formula—just snap together easy Lego blocks: 10% (divide by 10) and 1% (divide by 100)!',
+        content: 'You can build ANY percentage using 5 quick building blocks: 50% (half it), 25% (half of 50%), 10% (divide by 10), 5% (half of 10%), and 1% (divide by 100). To turn friendly fractions into percentages, scale the denominator to 100.',
+        prerequisites: [
+          {
+            term: 'What Percent (%) Means',
+            quickDefinition: 'Percent translates from Latin as "per centum" (out of 100). 35% literally means 35 parts out of 100 (35/100 = 0.35). Refer to Fractions Mastery to review equivalent fractions!',
+            targetTopicId: 'fractions-mastery',
+            targetTopicTitle: 'Fractions Mastery: Addition to Division',
+            targetSectionId: 'frac-sec-add',
+            targetSectionTitle: 'Adding & Subtracting Fractions',
+          },
+          {
+            term: 'Finding 10% & 1% with Place Value',
+            quickDefinition: 'To find 10%, divide by 10 (shift digits 1 column right). To find 1%, divide by 100 (shift digits 2 columns right). Refer to Place Value & Rounding!',
+            targetTopicId: 'place-value-and-rounding',
+            targetTopicTitle: 'Place Value, Decimals & Rounding',
+            targetSectionId: 'pv-sec-columns',
+            targetSectionTitle: 'Place Value Columns & Powers of 10',
+          },
+        ],
         mathExpressions: [
           '35\\% \\text{ of } 240 = (3 \\times 10\\%) + 5\\% = (3 \\times 24) + 12 = 72 + 12 = 84',
           '15\\% \\text{ tip on } £40 = 10\\% (£4) + 5\\% (£2) = £6',
@@ -1286,7 +1614,7 @@ export const mathTopics: MathTopic[] = [
           'To find 10%: shift digits one place right (divide by 10).',
           'To find 5%: simply halve your 10% value.',
           'To find 1%: shift digits two places right (divide by 100).',
-          'To convert fraction to percentage: find an equivalent fraction with 100 on the bottom.',
+          'Friendly denominators scale directly to 100: 2 (×50), 4 (×25), 5 (×20), 10 (×10), 20 (×5), 25 (×4), 50 (×2).',
         ],
         workedExamples: [
           {
@@ -1339,6 +1667,31 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: 'A) 35% and 0.35, B) 52% and 0.52',
             proTip: 'The "Friendly Denominator Club": 2 (×50), 4 (×25), 5 (×20), 10 (×10), 20 (×5), 25 (×4), 50 (×2) all convert effortlessly into hundredths!',
           },
+        ],
+      },
+      {
+        id: 'fdp-sec-strategies',
+        title: '2. Multi-Strategy Percentages & The Reverse Magic Trick',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Percentage Mirror: x% of y is ALWAYS mathematically equal to y% of x! If 18% of 50 looks frightening, look in the mirror: 50% of 18 is simply half of 18 = 9! Multiplying numbers can be flipped in any order.',
+        content: 'When calculating percentages of amounts, explore flexible pathways: 35% can be found via (3 × 10%) + 5% or via 25% + 10%. Furthermore, because multiplication is commutative, flipping the numbers often turns a tricky exam question into basic mental division.',
+        prerequisites: [
+          {
+            term: 'Commutative Property of Multiplication',
+            quickDefinition: 'Order of multiplication does not change the product: a × b = b × a. Therefore, 16% × 50 = 50% × 16.',
+          },
+        ],
+        mathExpressions: [
+          'x\\% \\text{ of } y = y\\% \\text{ of } x',
+          '18\\% \\text{ of } 50 = 50\\% \\text{ of } 18 = \\frac{18}{2} = 9',
+          '8\\% \\text{ of } 25 = 25\\% \\text{ of } 8 = \\frac{8}{4} = 2',
+        ],
+        keyTakeaways: [
+          'Whenever you see "something% of 50", flip it to "50% of something" (half it!).',
+          'Whenever you see "something% of 25", flip it to "25% of something" (quarter it!).',
+          'For 35%: 10% × 3 + 5% or 25% + 10%.',
+        ],
+        workedExamples: [
           {
             id: 'we-fdp-3',
             title: 'Finding 35% of a Quantity (Multiple Strategies)',
@@ -1384,6 +1737,29 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: 'A) £9 discount, B) 2 bonus coins',
             proTip: 'Whenever you see "something% of 50" or "something% of 25", immediately FLIP it: finding half or a quarter is lightning fast!',
           },
+        ],
+      },
+      {
+        id: 'fdp-sec-realworld',
+        title: '3. Double Discounts & Multi-Step Financial Math',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Successive Cash Register: When a store has a 20% sale and a VIP loyalty member gets an EXTRA 10% off the sale price, the 10% discount applies to the NEW REDUCED PRICE, not the original sticker! Never add sequential percentage discounts together (20% + 10% is NOT 30%).',
+        content: 'In multi-step percentage changes and successive financial discounts, each percentage must be calculated from the updated intermediate amount. This is a classic 11+ and GCSE exam trap.',
+        prerequisites: [
+          {
+            term: 'Sequential Percentage Calculation',
+            quickDefinition: 'Always calculate step 1 to find the intermediate price, then apply step 2 to that new price.',
+          },
+        ],
+        mathExpressions: [
+          '\\text{Original: } £120 \\xrightarrow{-20\\% (£24)} \\text{Sale: } £96 \\xrightarrow{-10\\% (£9.60)} \\text{Final: } £86.40',
+        ],
+        keyTakeaways: [
+          'Successive discounts (e.g. 20% then 10%) NEVER add up to 30%.',
+          'Calculate discount 1, subtract it to find the intermediate price.',
+          'Calculate discount 2 on the new intermediate price, then subtract to get the final price.',
+        ],
+        workedExamples: [
           {
             id: 'we-fdp-5',
             title: 'Double Discount Store Sale Challenge',
@@ -1509,18 +1885,25 @@ export const mathTopics: MathTopic[] = [
     ],
     sections: [
       {
-        id: 'calc-sec-busstop',
-        title: 'The Factor Rainbow & Bus Stop Division',
-        visualMetaphor: 'The Factor Rainbow & The Bus Stop Shelter: When finding factors, pair them like colors of a rainbow: 1 holds hands with 36, 2 holds hands with 18, 3 holds hands with 12... they meet in the middle! For division, the big number sits inside the bus shelter while the divisor waits outside in the rain.',
-        content: 'Long multiplication requires setting columns properly and never forgetting the bossy placeholder zero in row 2! Short division carries remainders onto the next neighbor digit.',
+        id: 'calc-sec-factors-primes',
+        title: '1. Factor Rainbows, Primes & Square Numbers',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Factor Rainbow & The Prime Vault: Factors fit inside a number like rainbow arcs (1 and 36, 2 and 18, 3 and 12, 4 and 9, 6 and 6). Square numbers like 36 always have an ODD number of factors because the middle number pairs with itself. Prime numbers are the pure unbreakable atoms of mathematics—they only have exactly TWO factors (1 and itself).',
+        content: 'A factor is a whole number that divides evenly into another number with no remainder. Prime numbers (2, 3, 5, 7, 11, 13, 17, 19, 23, 29...) have exactly two distinct factors. Remember: 1 is NOT a prime number, and 2 is the ONLY even prime number in mathematics.',
+        prerequisites: [
+          {
+            term: 'Factors vs Multiples (The Golden Difference)',
+            quickDefinition: 'Factors are FEW: they divide into a number evenly without remainders (e.g. factors of 12 are 1, 2, 3, 4, 6, 12). Multiples are MANY: they are times table results (e.g. multiples of 12 are 12, 24, 36, 48...).',
+          },
+        ],
         mathExpressions: [
-          '\\text{Factors of 24: } 1, 2, 3, 4, 6, 8, 12, 24',
+          '\\text{Factors of 36: } 1, 2, 3, 4, 6, 9, 12, 18, 36 \\quad (9 \\text{ factors - Odd!})',
           '\\text{First 10 Primes: } 2, 3, 5, 7, 11, 13, 17, 19, 23, 29',
         ],
         keyTakeaways: [
           '2 is the ONLY even prime number in the entire universe!',
-          'In long multiplication: row 1 multiplies the ones digit; row 2 puts a placeholder 0, then multiplies the tens digit.',
-          'Divisibility by 3: add all digits together. If the sum is in the 3 times table, the whole number is divisible by 3.',
+          'Square numbers always have an ODD number of factors because the center pair is identical (e.g. 6 × 6).',
+          '1 is NOT a prime number because it only has one factor (itself).',
         ],
         workedExamples: [
           {
@@ -1550,6 +1933,30 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: 'Factors: 1, 2, 3, 4, 6, 9, 12, 18, 36. Square numbers always have an odd number of factors!',
             proTip: 'Whenever a math challenge asks "Which numbers have an odd number of factors?", the secret answer is always SQUARE NUMBERS (1, 4, 9, 16, 25, 36...)!',
           },
+        ],
+      },
+      {
+        id: 'calc-sec-mult-div',
+        title: '2. Column Multiplication & Bus Stop Division',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Train Platform & The Bus Stop Shelter: In long multiplication, row 1 multiplies the ones digit; row 2 places a placeholder zero (because you are multiplying tens!). For division, the dividend sits sheltered inside the bus stop while remainders jump over to the next digit.',
+        content: 'Use formal short division (bus stop method) to divide large numbers digit by digit, carrying remainders to the next column. For multi-digit multiplication, always write down the placeholder 0 before multiplying by the tens digit.',
+        prerequisites: [
+          {
+            term: 'Place Value in Multiplication',
+            quickDefinition: 'When multiplying by the tens column (e.g. 38 × 46, multiplying by the 3 in 38 means multiplying by 30), so we write a 0 in the ones place first.',
+          },
+        ],
+        mathExpressions: [
+          '438 \\div 3 = 146',
+          '46 \\times 38 = (46 \\times 8) + (46 \\times 30) = 368 + 1,380 = 1,748',
+        ],
+        keyTakeaways: [
+          'In long multiplication: row 1 multiplies the ones; row 2 puts a placeholder 0, then multiplies the tens.',
+          'Divisibility by 3: add all digits together. If the sum is in the 3 times table, the whole number is divisible by 3.',
+          'Always check division by multiplying the quotient by the divisor.',
+        ],
+        workedExamples: [
           {
             id: 'we-calc-2',
             title: 'Short Division with Remainder (Bus Stop)',
@@ -1601,6 +2008,38 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: '1,748',
             proTip: 'Never forget the placeholder 0 on row 2! Multiplying by 30 is 10 times bigger than multiplying by 3.',
           },
+        ],
+      },
+      {
+        id: 'calc-sec-lcm-hcf',
+        title: '3. LCM vs HCF: Treat Bags & Synchronized Lighthouses',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Cookie Cutter (HCF) vs The Trampoline Bounce (LCM): HCF cuts things down into the LARGEST shared equal portion (like sharing treats equally into identical gift bags). LCM bounces upward into times tables to find when repeating cycles meet (like flashing lighthouses or finding matching pizza slice denominators).',
+        content: 'Highest Common Factor (HCF) is used to find the largest equal groups or simplify fractions in one step. Lowest Common Multiple (LCM) is used to synchronize repeating cycles or find common denominators when adding fractions.',
+        prerequisites: [
+          {
+            term: 'Prime Factor Trees',
+            quickDefinition: 'Break a composite number down into prime factors (e.g. 12 = 2² × 3). To find LCM, take highest powers of all prime factors. To find HCF, take lowest shared powers.',
+          },
+          {
+            term: 'Application in Fractions',
+            quickDefinition: 'LCM is used to find common denominators for addition/subtraction. HCF is used to simplify fractions into lowest terms.',
+            targetTopicId: 'fractions-mastery',
+            targetTopicTitle: 'Fractions Mastery: Addition to Division',
+            targetSectionId: 'frac-sec-add',
+            targetSectionTitle: 'Adding & Subtracting Fractions',
+          },
+        ],
+        mathExpressions: [
+          '\\text{HCF}(48, 36) = 12 \\quad (\\text{Largest shared factor})',
+          '\\text{LCM}(12, 18, 30) = 2^2 \\times 3^2 \\times 5 = 180 \\quad (\\text{Smallest shared multiple})',
+        ],
+        keyTakeaways: [
+          'HCF divides: use it for grouping items into equal parcels with no leftovers.',
+          'LCM multiplies: use it for finding when events happen at the same time or finding common denominators.',
+          'To find LCM of 3 numbers, multiply the highest powers of all appearing prime factors.',
+        ],
+        workedExamples: [
           {
             id: 'we-calc-4',
             title: 'Party Favor Gift Bags (Highest Common Factor - HCF)',
@@ -1742,18 +2181,29 @@ export const mathTopics: MathTopic[] = [
     ],
     sections: [
       {
-        id: 'rn-sec-build',
-        title: 'Building Roman Numerals & Time Bridges',
-        visualMetaphor: 'The Ancient Spy Code & The Number Line Bridge: Roman numerals are like secret spy codes. When a smaller symbol stands to the left of a giant, it takes away power (IV = 5 - 1 = 4). When it stands to the right, it adds power (VI = 5 + 1 = 6)! For elapsed time, never subtract hours and minutes like regular decimals—always jump to the next hour like stepping stones across a river.',
-        content: 'Break standard numbers into thousands, hundreds, tens, and ones before converting to Roman numerals. For time, remember there are 60 minutes in an hour, not 100!',
+        id: 'rn-sec-symbols',
+        title: '1. The 7 Roman Symbols & Subtractive Principle',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Ancient Spy Code: Roman numerals are like secret spy codes. When a smaller symbol stands to the right of a larger symbol, it adds (VI = 5 + 1 = 6; LX = 50 + 10 = 60). When a smaller symbol stands to the LEFT of a larger symbol, it subtracts (IV = 5 - 1 = 4; IX = 10 - 1 = 9; XL = 50 - 10 = 40; XC = 100 - 10 = 90; CD = 500 - 100 = 400; CM = 1000 - 100 = 900)!',
+        content: 'There are 7 fundamental Roman numeral letters: I (1), V (5), X (10), L (50), C (100), D (500), and M (1,000). You cannot repeat any symbol more than 3 times consecutively. Subtraction is only permitted with specific pairs.',
+        prerequisites: [
+          {
+            term: 'Place Value Decomposition',
+            quickDefinition: 'Always break standard base-10 numbers into thousands, hundreds, tens, and ones before converting each chunk to Roman letters.',
+            targetTopicId: 'place-value-and-rounding',
+            targetTopicTitle: 'Place Value, Decimals & Rounding',
+            targetSectionId: 'pv-sec-columns',
+            targetSectionTitle: 'Place Value Columns & Powers of 10',
+          },
+        ],
         mathExpressions: [
-          '2024 = 2000 + 20 + 4 = \\text{MM} + \\text{XX} + \\text{IV} = \\text{MMXXIV}',
-          '1984 = 1000 + 900 + 80 + 4 = \\text{M} + \\text{CM} + \\text{LXXX} + \\text{IV} = \\text{MCMLXXXIV}',
+          '\\mathbf{IV} = 4, \\quad \\mathbf{IX} = 9, \\quad \\mathbf{XL} = 40, \\quad \\mathbf{XC} = 90, \\quad \\mathbf{CD} = 400, \\quad \\mathbf{CM} = 900',
+          '1994 = 1000 (\\text{M}) + 900 (\\text{CM}) + 90 (\\text{XC}) + 4 (\\text{IV}) = \\text{MCMXCIV}',
         ],
         keyTakeaways: [
-          'You cannot repeat any symbol more than 3 times in a row! (Write 4 as IV, never IIII).',
+          'No symbol can repeat more than 3 times in a row (e.g. 4 is IV, never IIII; 40 is XL, never XXXX).',
           'V, L, and D are NEVER repeated or subtracted.',
-          'Time calculations: use a timeline number line. Bridge to the next whole hour first!',
+          'Zero does NOT exist in the Roman number system.',
         ],
         workedExamples: [
           {
@@ -1802,6 +2252,29 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: 'MCMXCIV',
             proTip: 'Always convert place-value by place-value. Never try to guess the whole code at once!',
           },
+        ],
+      },
+      {
+        id: 'rn-sec-historical',
+        title: '2. Monument Inscriptions & Multi-Step Year Decoding',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Archaeologist’s Cipher: When decoding long monument inscriptions like MMCDXLIX, isolate the subtraction pairs first! Circle CD (400), XL (40), and IX (9) before adding the thousands.',
+        content: 'Historical buildings, movie copyright dates, and clock towers use Roman numerals. To decode large numbers, scan for adjacent letters where the first letter is smaller than the second, group them as subtraction pairs, and add all components.',
+        prerequisites: [
+          {
+            term: 'Subtractive Pair Recognition',
+            quickDefinition: 'Spot IV (4), IX (9), XL (40), XC (90), CD (400), and CM (900) as single composite units.',
+          },
+        ],
+        mathExpressions: [
+          '\\text{MMCDXLIX} = \\text{MM (2000)} + \\text{CD (400)} + \\text{XL (40)} + \\text{IX (9)} = 2,449',
+          '2024 = \\text{MM (2000)} + \\text{XX (20)} + \\text{IV (4)} = \\text{MMXXIV}',
+        ],
+        keyTakeaways: [
+          'Group symbols by place value: thousands (M), hundreds (C/D/M combinations), tens (X/L/C combinations), ones (I/V/X combinations).',
+          'Double check that no subtraction pair violates the rules: I only precedes V and X; X only precedes L and C; C only precedes D and M.',
+        ],
+        workedExamples: [
           {
             id: 'we-rn-3',
             title: 'Decoding Complex Subtractive Roman Numerals',
@@ -1824,6 +2297,29 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: '2,449',
             proTip: 'Look for the subtraction pairs first (IV, IX, XL, XC, CD, CM) before adding the rest!',
           },
+        ],
+      },
+      {
+        id: 'rn-sec-time',
+        title: '3. 24-Hour Clocks, Timetable Bridges & Time Zones',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Base-60 Stepping Stones: Never subtract hours and minutes like regular decimals—there are 60 minutes in an hour, not 100! Always bridge forward on a number line to the next whole hour like stepping stones across a river.',
+        content: 'Calculate elapsed journey times across timetable schedules by bridging through intermediate whole hours. For multi-time-zone and overnight travel, calculate local arrival in the departure time zone first, then adjust for timezone differences.',
+        prerequisites: [
+          {
+            term: '24-Hour Clock Conversion',
+            quickDefinition: 'After 12:00 noon, add 12 to the hour for PM (e.g. 5:30 PM = 17:30). From 24-hour PM to 12-hour, subtract 12 (20:15 = 8:15 PM).',
+          },
+        ],
+        mathExpressions: [
+          '14:48 \\xrightarrow{+12\\text{m}} 15:00 \\xrightarrow{+3\\text{h}} 18:00 \\xrightarrow{+22\\text{m}} 18:22 \\implies 3\\text{h } 34\\text{m}',
+        ],
+        keyTakeaways: [
+          'Time is Base-60: 1 hour = 60 minutes. Never subtract 14.48 from 18.22 as decimals!',
+          'Use the Timeline Jump Method: jump minutes to the next whole hour, jump whole hours, then add extra minutes.',
+          'For time zone travel: calculate touchdown in departure timezone first, then add/subtract the destination hour difference.',
+        ],
+        workedExamples: [
           {
             id: 'we-rn-4',
             title: 'Train Timetable Duration with Hour Boundaries',
@@ -1976,19 +2472,38 @@ export const mathTopics: MathTopic[] = [
     ],
     sections: [
       {
-        id: 'stat-sec-poem',
-        title: 'The Famous Averages Rhyme & Reverse Mean',
-        visualMetaphor: 'The Nursery Rhyme: "Hey diddle diddle, the MEDIAN\'s the middle; you add and divide for the MEAN. The MODE is the one that appears the most; and the RANGE is the difference between!"',
-        content: 'Always arrange your numbers in ascending order from smallest to largest before doing anything else. This makes finding the median, mode, and range effortless.',
+        id: 'stat-sec-basics',
+        title: '1. The Four Measures: Mean, Median, Mode & Range',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Nursery Rhyme: "Hey diddle diddle, the MEDIAN\'s the middle; you add and divide for the MEAN. The MODE is the one that appears the most; and the RANGE is the difference between!" Always arrange your list in ascending order first.',
+        content: 'To analyze any set of numbers, start by sorting them in ascending order. The Mean is the fair-share arithmetic average (sum ÷ count). The Median is the central value (or the midpoint of the two central values). The Mode is the most frequent value. The Range is the measure of spread (highest minus lowest).',
+        prerequisites: [
+          {
+            term: 'Ordering Numbers for Median & Range',
+            quickDefinition: 'Before finding the middle value (Median) or calculating Highest minus Lowest (Range), you MUST order your numbers from least to greatest! Refer to Place Value & Rounding.',
+            targetTopicId: 'place-value-and-rounding',
+            targetTopicTitle: 'Place Value, Decimals & Rounding',
+            targetSectionId: 'pv-sec-columns',
+            targetSectionTitle: 'Place Value Columns & Powers of 10',
+          },
+          {
+            term: 'Calculating the Mean (Division)',
+            quickDefinition: 'To find the Mean, add up all the values and divide by how many numbers there are. Refer to Multiplication, Division, Factors & Primes for short bus stop division!',
+            targetTopicId: 'multiplication-division-factors',
+            targetTopicTitle: 'Multiplication, Division, Factors & Primes',
+            targetSectionId: 'calc-sec-mult-div',
+            targetSectionTitle: 'Column Multiplication & Bus Stop Division',
+          },
+        ],
         mathExpressions: [
           '\\text{Data: } 3, 5, 5, 6, 8, 9 \\implies \\text{Median} = \\frac{5 + 6}{2} = 5.5',
           '\\text{Mean} = \\frac{3 + 5 + 5 + 6 + 8 + 9}{6} = \\frac{36}{6} = 6',
         ],
         keyTakeaways: [
-          'Mode = Most common. There can be one mode, more than one mode, or no mode at all!',
-          'Median = Middle number when ordered. If there is an EVEN number of items, average the two middle values.',
-          'Mean = Fair share (total ÷ count).',
-          'Reverse Mean: Total sum = Mean × Count.',
+          'Mode = Most common (can have no mode, one mode, or bimodal).',
+          'Median = Middle value when ordered. For even counts, average the two middle numbers.',
+          'Mean = Fair share (total sum ÷ total count).',
+          'Range = Highest - Lowest (a measure of spread, NOT an average!).',
         ],
         workedExamples: [
           {
@@ -2048,6 +2563,30 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: '13',
             proTip: 'The median does not have to be one of the original numbers in the data list!',
           },
+        ],
+      },
+      {
+        id: 'stat-sec-tables',
+        title: '2. Frequency Tables & Reverse Mean Target Scores',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Fair-Share Seesaw: If an exam asks what score you need on your next test to get an average of 17, multiply the target mean by the NEW total number of tests (17 × 5 = 85 points needed total). Then simply subtract what you already scored!',
+        content: 'When data is organized in frequency tables, multiply each value by its frequency to find the subtotal points, sum the subtotal column, and divide by total frequency. For reverse mean problems, use Total Sum = Target Mean × Count.',
+        prerequisites: [
+          {
+            term: 'Sum of Products in Tables',
+            quickDefinition: 'Multiply (Value × Frequency) for each row before adding to find the true grand total.',
+          },
+        ],
+        mathExpressions: [
+          '\\text{Total Sum} = \\text{Mean} \\times \\text{Count}',
+          '\\text{Mean} = \\frac{\\sum (\\text{Value} \\times \\text{Frequency})}{\\sum \\text{Frequency}}',
+        ],
+        keyTakeaways: [
+          'Never average the value column in a frequency table directly; each value must be weighted by its frequency.',
+          'For target average questions: Total Required = Desired Mean × Total Number of Tests.',
+          'Next Score Needed = Total Required - Sum of Previous Scores.',
+        ],
+        workedExamples: [
           {
             id: 'we-stat-3',
             title: 'Calculating Mean from a Frequency Table',
@@ -2105,6 +2644,29 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: '22 points',
             proTip: 'Reverse mean questions are common in 11+ exams! Always multiply the target mean by the new total count of items first.',
           },
+        ],
+      },
+      {
+        id: 'stat-sec-weighted',
+        title: '3. Weighted Combined Averages & Outlier Impacts',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Tug-of-War Average: A class of 30 students exerts 1.5 times more pull on the combined average than a class of 20 students! Never average two averages directly: (80 + 90) ÷ 2 = 85 is incorrect because the larger class has more weight.',
+        content: 'When combining datasets of different sizes, compute total points for each dataset before dividing by the grand total number of items. Extreme outliers pull the Mean up or down, whereas the Median remains resilient.',
+        prerequisites: [
+          {
+            term: 'Understanding Outliers',
+            quickDefinition: 'An outlier is an extreme value far from the rest. Outliers distort the Mean significantly, making the Median a fairer representative average.',
+          },
+        ],
+        mathExpressions: [
+          '\\text{Combined Mean} = \\frac{(N_1 \\times \\bar{X}_1) + (N_2 \\times \\bar{X}_2)}{N_1 + N_2} = \\frac{1600 + 2700}{20 + 30} = \\frac{4300}{50} = 86\\%',
+        ],
+        keyTakeaways: [
+          'Never average two averages directly unless group sizes are identical.',
+          'Always revert to total points = group size × group average.',
+          'Outliers heavily skew the mean, but the median is resistant to outliers.',
+        ],
+        workedExamples: [
           {
             id: 'we-stat-5',
             title: 'Weighted Combined Mean of Two Unequal Classes',
@@ -2216,19 +2778,33 @@ export const mathTopics: MathTopic[] = [
     ],
     sections: [
       {
-        id: 'coord-sec-quads',
-        title: 'Four Quadrants & Geometric Transformations',
-        visualMetaphor: 'The Walking Robot & The Carnival Funhouse Mirror: The robot stands at the center origin (0, 0). Positive x moves right, negative x moves left into the shadow. Positive y moves up the elevator, negative y moves down into the basement parking! For reflection, every point must be the exact same number of footsteps away from the mirror line as its twin.',
-        content: 'Coordinates are written as an ordered pair (x, y) inside brackets. Quadrant 1 has (+, +), Quadrant 2 has (-, +), Quadrant 3 has (-, -), and Quadrant 4 has (+, -).',
+        id: 'coord-sec-plotting',
+        title: '1. 4 Quadrants & Finding Rectangle Missing Vertices',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Walking Robot: The robot starts at origin (0, 0). Positive x walks right, negative x walks left. Positive y takes the elevator up, negative y drops down into the basement. In rectangles, matching coordinate pairs make locating the missing corner intuitive.',
+        content: 'Coordinates are written as (x, y) inside parentheses. The x-axis is horizontal and the y-axis is vertical. In axis-aligned rectangles, the x-values and y-values must each appear in pairs.',
+        prerequisites: [
+          {
+            term: 'Along the Corridor, Up the Stairs',
+            quickDefinition: 'Coordinates are always (x, y). X is horizontal (left/right); Y is vertical (up/down). Alphabetical order: X comes before Y!',
+          },
+          {
+            term: 'Negative Numbers on a Coordinate Grid',
+            quickDefinition: 'Moving left of the center origin (0, 0) gives negative x values (-1, -2...). Moving down gives negative y values. Refer to Place Value & Rounding!',
+            targetTopicId: 'place-value-and-rounding',
+            targetTopicTitle: 'Place Value, Decimals & Rounding',
+            targetSectionId: 'pv-sec-columns',
+            targetSectionTitle: 'Place Value Columns & Powers of 10',
+          },
+        ],
         mathExpressions: [
           '\\text{Origin} = (0, 0)',
-          '\\text{Translation by } \\begin{pmatrix} +3 \\\\ -2 \\end{pmatrix} \\implies (x+3, y-2)',
+          '\\text{Quadrant 1: } (+, +), \\quad \\text{Quadrant 2: } (-, +), \\quad \\text{Quadrant 3: } (-, -), \\quad \\text{Quadrant 4: } (+, -)',
         ],
         keyTakeaways: [
           'X is horizontal (left/right); Y is vertical (up/down).',
-          'Reflection in the y-axis flips the sign of x, leaving y unchanged: (x, y) -> (-x, y).',
-          'Reflection in the x-axis flips the sign of y, leaving x unchanged: (x, y) -> (x, -y).',
-          'In rectangles and parallelograms, parallel opposite sides have identical coordinate step distances.',
+          'Origin is (0, 0).',
+          'In rectangles, x and y coordinates each pair up twice.',
         ],
         workedExamples: [
           {
@@ -2282,6 +2858,31 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: 'D(-2, -3)',
             proTip: 'Notice the coordinate pairing in rectangles: x-values (-2, 4) and y-values (1, -3) must each appear exactly twice!',
           },
+        ],
+      },
+      {
+        id: 'coord-sec-transforms',
+        title: '2. Translation Vectors & Mirror Reflection Lines',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Carnival Funhouse Mirror: In reflection, every point sits the exact same perpendicular distance from the mirror line as its reflection image. In translation, the entire shape slides like a chess piece without rotating or resizing.',
+        content: 'Translation shifts every point by an identical amount (dx, dy). Reflection flips a shape across a mirror line (such as the x-axis, y-axis, or vertical/horizontal lines like x = 2 or y = -1).',
+        prerequisites: [
+          {
+            term: 'Perpendicular Distance in Reflections',
+            quickDefinition: 'Count the grid squares from each vertex straight to the mirror line at 90°, then count the same distance on the opposite side.',
+          },
+        ],
+        mathExpressions: [
+          '\\text{Translation by } \\begin{pmatrix} +3 \\\\ -2 \\end{pmatrix} \\implies (x+3, y-2)',
+          '\\text{Reflection in } y\\text{-axis}: (x, y) \\to (-x, y)',
+          '\\text{Reflection in } x\\text{-axis}: (x, y) \\to (x, -y)',
+        ],
+        keyTakeaways: [
+          'Translation changes position, but never size, angle, or orientation.',
+          'Reflection in the y-axis flips the sign of x: (x, y) -> (-x, y).',
+          'Reflection in the x-axis flips the sign of y: (x, y) -> (x, -y).',
+        ],
+        workedExamples: [
           {
             id: 'we-coord-3',
             title: 'Translating a Geometric Shape by a Vector',
@@ -2333,6 +2934,28 @@ export const mathTopics: MathTopic[] = [
             finalAnswer: 'A\'\'(-1, -1)',
             proTip: 'Break multi-stage transformations into clear separate steps. Never try to calculate reflection and translation simultaneously in your head.',
           },
+        ],
+      },
+      {
+        id: 'coord-sec-vectors',
+        title: '3. Parallelograms & Vector Displacement Mastery',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The Vector Shift Compass: The step vector from corner P to Q must be identical to the step from S to R on opposite parallel sides. This works even when shapes are tilted at odd angles on the grid!',
+        content: 'For slanted parallelograms, rhombuses, and geometric polygons, use coordinate displacement vectors: calculate the horizontal change (dx) and vertical change (dy) along one side and apply the same shift to the parallel opposite side.',
+        prerequisites: [
+          {
+            term: 'Vector Displacement Calculation',
+            quickDefinition: 'Vector = (x₂ - x₁, y₂ - y₁). Equal and parallel sides must have identical vector components.',
+          },
+        ],
+        mathExpressions: [
+          '\\vec{PQ} = \\vec{SR} \\implies S = R - \\vec{PQ}',
+        ],
+        keyTakeaways: [
+          'In any parallelogram, opposite vectors are equal in magnitude and direction.',
+          'Vector displacement is 100% reliable for tilted geometric shapes on coordinate grids.',
+        ],
+        workedExamples: [
           {
             id: 'we-coord-5',
             title: 'Parallelogram Missing 4th Vertex using Vector Shifts',
@@ -2425,3 +3048,34 @@ export const mathTopics: MathTopic[] = [
     ],
   },
 ];
+
+// Curated pedagogical learning order:
+// 1. Place Value & Rounding (Number system foundations)
+// 2. Multiplication, Division, Factors & Primes (LCM & HCF)
+// 3. Fractions Mastery (Uses LCM for addition/subtraction, HCF for simplifying)
+// 4. Decimals & Percentages (Conversions and mental benchmark Lego blocks)
+// 5. BIDMAS / Order of Operations (Calculating expressions with priority rules)
+// 6. Perimeter, Area & Volume (1D, 2D, 3D measurement)
+// 7. Geometry: Angles, Polygons & Triangles (Angle sums, missing angles)
+// 8. Coordinates & Reflection (4-Quadrant grid system)
+// 9. Roman Numerals & Time (Historical numbering & elapsed time bridges)
+// 10. Averages & Data Handling (Mean, Median, Mode, Range)
+const TOPIC_ORDER: string[] = [
+  'place-value-and-rounding',
+  'multiplication-division-factors',
+  'fractions-mastery',
+  'decimals-and-percentages',
+  'bidmas-order-of-operations',
+  'perimeter-area-and-volume',
+  'geometry-angles-and-shapes',
+  'coordinates-and-reflection',
+  'roman-numerals-and-time',
+  'averages-and-data-handling',
+];
+
+export const mathTopics: MathTopic[] = [...rawMathTopics].sort((a, b) => {
+  const indexA = TOPIC_ORDER.indexOf(a.id);
+  const indexB = TOPIC_ORDER.indexOf(b.id);
+  return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+});
+

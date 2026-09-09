@@ -44,10 +44,11 @@ export const GoToTop: React.FC = () => {
       onClick={scrollToTop}
       aria-label="Scroll to top of page"
       title="Back to top"
-      className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-30 flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-full text-white shadow-md hover:scale-105 active:scale-95 transition-all duration-300 focus:outline-none cursor-pointer group border"
+      className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-30 flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-full shadow-md hover:scale-105 active:scale-95 transition-all duration-300 focus:outline-none cursor-pointer group border"
       style={{
         backgroundColor: 'var(--accent-primary)',
         borderColor: 'var(--border-card-strong)',
+        color: 'var(--accent-contrast)',
       }}
     >
       {/* Background Progress Ring */}
@@ -56,7 +57,8 @@ export const GoToTop: React.FC = () => {
           cx="19"
           cy="19"
           r={radius}
-          stroke="rgba(255, 255, 255, 0.3)"
+          stroke="currentColor"
+          strokeOpacity="0.3"
           strokeWidth="2.5"
           fill="transparent"
         />
@@ -64,7 +66,7 @@ export const GoToTop: React.FC = () => {
           cx="19"
           cy="19"
           r={radius}
-          stroke="#ffffff"
+          stroke="currentColor"
           strokeWidth="2.5"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}

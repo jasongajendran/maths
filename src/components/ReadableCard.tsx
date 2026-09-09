@@ -10,6 +10,8 @@ interface ReadableCardProps {
   as?: 'div' | 'article' | 'section';
   highlightStyle?: 'full' | 'subtle' | 'inner';
   ariaLabel?: string;
+  label?: string;
+  enableClickToRead?: boolean;
 }
 
 export const ReadableCard: React.FC<ReadableCardProps> = ({
@@ -21,18 +23,25 @@ export const ReadableCard: React.FC<ReadableCardProps> = ({
   as: Component = 'div',
   highlightStyle = 'full',
   ariaLabel,
+  label,
+  enableClickToRead = true,
 }) => {
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = audioSpeech.subscribe((activeId, isSpeaking) => {
-      setIsActive(activeId === id && isSpeaking);
+    const unsubscribe = audioSpeech.subscribe((state) => {
+      setIsActive(state.activeId === id && state.isSpeaking);
     });
     return unsubscribe;
   }, [id]);
 
   const handleCardClick = (e: React.MouseEvent) => {
-    // If the click originated from an interactive element (button, input, slider, link, or elements marked with data-no-speech),
+    if (!enableClickToRead) return;
+
+    // CRITICAL: Stop propagation so child clicks never bubble to a parent section or card!
+    e.stopPropagation();
+
+    // If the click originated from an interactive element (button, input, slider, link, etc.),
     // let that element handle its own interaction without toggling card audio
     const target = e.target as HTMLElement | null;
     if (target) {
@@ -44,10 +53,10 @@ export const ReadableCard: React.FC<ReadableCardProps> = ({
       }
     }
 
-    if (isActive) {
+    if (isActive || audioSpeech.getCurrentId() === id) {
       audioSpeech.stop();
     } else {
-      audioSpeech.speak(id, textToRead);
+      audioSpeech.speak(id, textToRead, { label: label || ariaLabel });
     }
   };
 

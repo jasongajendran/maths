@@ -3,6 +3,7 @@ import { X, Search, Award } from 'lucide-react';
 import { mathTopics } from '../data/mathTopics';
 import { MathView } from './MathView';
 import { ReadableCard } from './ReadableCard';
+import { AudioButton } from './AudioButton';
 
 interface QuickFormulaDrawerProps {
   isOpen: boolean;
@@ -116,37 +117,48 @@ export const QuickFormulaDrawer: React.FC<QuickFormulaDrawerProps> = ({
               No formulas matched your search.
             </div>
           ) : (
-            filtered.map((f) => (
-              <ReadableCard
-                key={`${f.topicId}-${f.id}`}
-                id={`vault-${f.id}`}
-                textToRead={`Formula: ${f.name} from topic ${f.topicTitle}. Equation: ${f.formula}. Description: ${f.description}. ${f.keyNote ? `Tip: ${f.keyNote}` : ''}`}
-                className="p-4 rounded-xl border space-y-2 shadow-2xs"
-                highlightStyle="inner"
-                ariaLabel={`Formula: ${f.name}`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border"
-                        style={{
-                          backgroundColor: 'var(--bg-card-subtle)',
-                          borderColor: 'var(--border-card)',
-                          color: 'var(--text-secondary)',
-                        }}
-                      >
-                        {f.yearLevel.replace(' (Age 9-10)', '').replace(' (Age 10-11)', '').replace(' (Age 11-12)', '').replace(' (Age 12+)', '')}
-                      </span>
-                      <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
-                        {f.topicTitle}
-                      </span>
+            filtered.map((f) => {
+              const formulaSpeechText = `Formula: ${f.name} from topic ${f.topicTitle}. Equation: ${f.formula}. Description: ${f.description}. ${f.keyNote ? `Tip: ${f.keyNote}` : ''}`;
+              return (
+                <ReadableCard
+                  key={`${f.topicId}-${f.id}`}
+                  id={`vault-${f.id}`}
+                  textToRead={formulaSpeechText}
+                  label={`Formula: ${f.name}`}
+                  className="p-4 rounded-xl border space-y-2 shadow-2xs"
+                  highlightStyle="inner"
+                  ariaLabel={`Formula: ${f.name}`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border"
+                          style={{
+                            backgroundColor: 'var(--bg-card-subtle)',
+                            borderColor: 'var(--border-card)',
+                            color: 'var(--text-secondary)',
+                          }}
+                        >
+                          {f.yearLevel.replace(' (Age 9-10)', '').replace(' (Age 10-11)', '').replace(' (Age 11-12)', '').replace(' (Age 12+)', '')}
+                        </span>
+                        <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+                          {f.topicTitle}
+                        </span>
+                      </div>
+                      <h4 className="font-bold text-base mt-1" style={{ color: 'var(--text-primary)' }}>
+                        {f.name}
+                      </h4>
                     </div>
-                    <h4 className="font-bold text-base mt-1" style={{ color: 'var(--text-primary)' }}>
-                      {f.name}
-                    </h4>
+
+                    <AudioButton
+                      id={`vault-${f.id}`}
+                      textToRead={formulaSpeechText}
+                      label={`Formula: ${f.name}`}
+                      title="Listen to formula"
+                      size="sm"
+                    />
                   </div>
-                </div>
 
                 <div
                   className="p-2.5 rounded-xl border text-center my-1.5"
@@ -189,8 +201,9 @@ export const QuickFormulaDrawer: React.FC<QuickFormulaDrawerProps> = ({
                   </button>
                 </div>
               </ReadableCard>
-            ))
-          )}
+            );
+          })
+        )}
         </div>
       </div>
     </div>

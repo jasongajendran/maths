@@ -30,15 +30,29 @@ export interface WorkedExample {
   proTip?: string;
 }
 
+export interface PrerequisiteIndicator {
+  term: string;
+  quickDefinition: string;
+  targetTopicId?: string;
+  targetTopicTitle?: string;
+  targetSectionId?: string;
+  targetSectionTitle?: string;
+}
+
 export interface TopicSection {
   id: string;
   title: string;
+  readTimeMinutes?: number;
   visualMetaphor?: string;
   content: string;
+  prerequisites?: PrerequisiteIndicator[];
   mathExpressions?: string[];
   keyTakeaways: string[];
   workedExamples?: WorkedExample[];
 }
+
+export type TopicPage = 'concepts' | 'examples' | 'tips' | 'formulas' | 'practice' | 'tools';
+
 
 export interface TipOrTrick {
   id: string;

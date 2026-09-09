@@ -42,138 +42,112 @@
   --contrast-teal-bg: #d1fae5;
 }
 
-[data-theme="mint"] {
-  --bg-canvas: #ebf5ee;
-  --bg-card: #e0f0e6;
-  --bg-card-hover: #d2ebd9;
-  --bg-card-subtle: #c7e6cf;
-  --border-card: #9dcbad;
-  --border-card-strong: #6ea984;
-  --text-primary: #0a2618;
-  --text-secondary: #1a422d;
-  --text-muted: #3a664c;
-  --accent-primary: #197247;
-  --accent-hover: #125635;
-  --accent-light: #cbebd4;
+[data-theme="oxford"] {
+  /* Royal Oxford Navy & Cobalt - Prestigious scholastic dark midnight navy with crisp white chalk */
+  --bg-canvas: #0b1329;
+  --bg-card: #132042;
+  --bg-card-hover: #1b2c5b;
+  --bg-card-subtle: #0f1936;
+  --border-card: #25396b;
+  --border-card-strong: #3b5598;
+  --text-primary: #ffffff; /* 100% crisp white, maximum legibility */
+  --text-secondary: #e2e8f0; /* Bright chalk silver */
+  --text-muted: #94a3b8; /* Crisp slate chalk */
+  --accent-primary: #3b82f6; /* Luminous Royal Cobalt */
+  --accent-hover: #60a5fa;
+  --accent-light: #1e3a8a;
+  --accent-contrast: #ffffff; /* Crisp white on royal cobalt */
+  --reading-highlight-bg: #1e3a8a;
+  --reading-highlight-border: #60a5fa;
+  --reading-highlight-ring: rgba(96, 165, 250, 0.45);
+  --badge-bg: #2563eb;
+  --badge-text: #ffffff;
+  /* High-contrast accessible accents for dark background */
+  --contrast-black: #ffffff;
+  --contrast-black-bg: #0b1329;
+  --contrast-warm: #f87171; /* Vivid luminous coral red */
+  --contrast-warm-bg: #450a0a;
+  --contrast-warm-border: #ef4444;
+  --contrast-amber: #fbbf24; /* Radiant warm gold */
+  --contrast-amber-bg: #451a03;
+  --contrast-amber-border: #f59e0b;
+  --contrast-indigo: #a5b4fc; /* Radiant lavender indigo */
+  --contrast-indigo-bg: #1e1b4b;
+  --contrast-indigo-border: #6366f1;
+  --contrast-teal: #34d399; /* Bright luminous mint emerald */
+  --contrast-teal-bg: #064e3b;
+}
+
+[data-theme="sage"] {
+  /* Sage & Terracotta - Calming botanical eucalyptus, deep pine ink & warm terracotta */
+  --bg-canvas: #f2f7f4;
+  --bg-card: #e5efe8;
+  --bg-card-hover: #d7e7dc;
+  --bg-card-subtle: #c8ded0;
+  --border-card: #98bfa5;
+  --border-card-strong: #4a7c5c;
+  --text-primary: #072314; /* Deep evergreen pine */
+  --text-secondary: #133923;
+  --text-muted: #386048;
+  --accent-primary: #c2410c; /* Warm Terracotta */
+  --accent-hover: #9a3412;
+  --accent-light: #ffedd5;
   --accent-contrast: #ffffff;
-  --reading-highlight-bg: #cbf2d8;
-  --reading-highlight-border: #197247;
-  --reading-highlight-ring: rgba(25, 114, 71, 0.35);
-  --badge-bg: #cbeed5;
-  --badge-text: #0d4629;
+  --reading-highlight-bg: #d1fae5;
+  --reading-highlight-border: #072314;
+  --reading-highlight-ring: rgba(7, 35, 20, 0.28);
+  --badge-bg: #22543d;
+  --badge-text: #ffffff;
   /* Contrasting accents */
   --contrast-black: #09090b;
   --contrast-black-bg: #18181b;
-  --contrast-warm: #d9381e;
-  --contrast-warm-bg: #fee8e5;
-  --contrast-warm-border: #fca597;
-  --contrast-amber: #b45309;
-  --contrast-amber-bg: #fef3c7;
-  --contrast-amber-border: #fcd34d;
-  --contrast-indigo: #3730a3;
-  --contrast-indigo-bg: #e0e7ff;
-  --contrast-indigo-border: #a5b4fc;
-  --contrast-teal: #0f766e;
-  --contrast-teal-bg: #ccfbf1;
-}
-
-[data-theme="lavender"] {
-  --bg-canvas: #f2ebfa;
-  --bg-card: #eae0f6;
-  --bg-card-hover: #ded0ef;
-  --bg-card-subtle: #d3c0e8;
-  --border-card: #b7a0d8;
-  --border-card-strong: #9678c2;
-  --text-primary: #1d0a33;
-  --text-secondary: #391c5a;
-  --text-muted: #59397f;
-  --accent-primary: #6d28d9;
-  --accent-hover: #581c87;
-  --accent-light: #dfd1f6;
-  --accent-contrast: #ffffff;
-  --reading-highlight-bg: #e2d2f7;
-  --reading-highlight-border: #6d28d9;
-  --reading-highlight-ring: rgba(109, 40, 217, 0.35);
-  --badge-bg: #e5d7f7;
-  --badge-text: #45127d;
-  /* Contrasting accents */
   --contrast-warm: #c2410c;
   --contrast-warm-bg: #ffedd5;
   --contrast-warm-border: #fdba74;
   --contrast-amber: #b45309;
   --contrast-amber-bg: #fef3c7;
   --contrast-amber-border: #fcd34d;
-  --contrast-indigo: #0369a1;
-  --contrast-indigo-bg: #e0f2fe;
-  --contrast-indigo-border: #7dd3fc;
-  --contrast-teal: #047857;
+  --contrast-indigo: #312e81;
+  --contrast-indigo-bg: #e0e7ff;
+  --contrast-indigo-border: #a5b4fc;
+  --contrast-teal: #065f46;
   --contrast-teal-bg: #d1fae5;
 }
 
-[data-theme="peach"] {
-  --bg-canvas: #fcf0e8;
-  --bg-card: #fae1d1;
-  --bg-card-hover: #f4d0ba;
-  --bg-card-subtle: #ecc0a3;
-  --border-card: #e2a585;
-  --border-card-strong: #c87c55;
-  --text-primary: #291007;
-  --text-secondary: #4e2213;
-  --text-muted: #733c2a;
-  --accent-primary: #bf3910;
-  --accent-hover: #982c0a;
-  --accent-light: #fcd8cb;
-  --accent-contrast: #ffffff;
-  --reading-highlight-bg: #fadad0;
-  --reading-highlight-border: #bf3910;
-  --reading-highlight-ring: rgba(191, 57, 16, 0.35);
-  --badge-bg: #f9d8c6;
-  --badge-text: #822206;
-  /* Contrasting accents */
-  --contrast-warm: #be123c;
-  --contrast-warm-bg: #ffe4e6;
-  --contrast-warm-border: #fda4af;
-  --contrast-amber: #b45309;
-  --contrast-amber-bg: #fef3c7;
-  --contrast-amber-border: #fcd34d;
-  --contrast-indigo: #0284c7;
-  --contrast-indigo-bg: #e0f2fe;
-  --contrast-indigo-border: #7dd3fc;
-  --contrast-teal: #0f766e;
-  --contrast-teal-bg: #ccfbf1;
-}
-
-[data-theme="sky"] {
-  --bg-canvas: #e8f3fa;
-  --bg-card: #d7ecf7;
-  --bg-card-hover: #c6e3f3;
-  --bg-card-subtle: #b6d9ee;
-  --border-card: #93c1de;
-  --border-card-strong: #649fc5;
-  --text-primary: #061928;
-  --text-secondary: #13354f;
-  --text-muted: #2c5978;
-  --accent-primary: #0284c7;
-  --accent-hover: #0369a1;
-  --accent-light: #cbe3f5;
-  --accent-contrast: #ffffff;
-  --reading-highlight-bg: #cde7f7;
-  --reading-highlight-border: #0284c7;
-  --reading-highlight-ring: rgba(2, 132, 199, 0.35);
-  --badge-bg: #cce4f5;
-  --badge-text: #044a72;
-  /* Contrasting accents */
-  --contrast-warm: #dc2626;
-  --contrast-warm-bg: #fee2e2;
-  --contrast-warm-border: #fca5a5;
-  --contrast-amber: #d97706;
-  --contrast-amber-bg: #fef3c7;
-  --contrast-amber-border: #fcd34d;
-  --contrast-indigo: #6d28d9;
-  --contrast-indigo-bg: #ede9fe;
-  --contrast-indigo-border: #c4b5fd;
-  --contrast-teal: #059669;
-  --contrast-teal-bg: #d1fae5;
+[data-theme="obsidian"] {
+  /* Obsidian & Amber - High-contrast dark study mode, velvet slate with honey amber glow */
+  --bg-canvas: #0c0f17;
+  --bg-card: #161c28;
+  --bg-card-hover: #222b3d;
+  --bg-card-subtle: #111520;
+  --border-card: #2c364c;
+  --border-card-strong: #47556e;
+  --text-primary: #ffffff; /* 100% pure brilliant white, maximum contrast */
+  --text-secondary: #e2e8f0; /* Crisp light platinum */
+  --text-muted: #a0aec0; /* Clear soft silver */
+  --accent-primary: #fbbf24; /* Luminous Honey Amber */
+  --accent-hover: #fde047;
+  --accent-light: #451a03;
+  --accent-contrast: #09090b; /* Pure pitch-black on bright amber for WCAG AAA contrast */
+  --reading-highlight-bg: #242e42;
+  --reading-highlight-border: #fbbf24;
+  --reading-highlight-ring: rgba(251, 191, 36, 0.45);
+  --badge-bg: #fbbf24;
+  --badge-text: #09090b;
+  /* High-contrast accessible accents for dark background */
+  --contrast-black: #ffffff;
+  --contrast-black-bg: #0c0f17;
+  --contrast-warm: #fca5a5; /* Vivid bright rose */
+  --contrast-warm-bg: #450a0a;
+  --contrast-warm-border: #ef4444;
+  --contrast-amber: #fde047; /* Vivid bright golden amber */
+  --contrast-amber-bg: #451a03;
+  --contrast-amber-border: #f59e0b;
+  --contrast-indigo: #c7d2fe; /* Vivid bright periwinkle */
+  --contrast-indigo-bg: #1e1b4b;
+  --contrast-indigo-border: #818cf8;
+  --contrast-teal: #6ee7b7; /* Vivid bright mint */
+  --contrast-teal-bg: #064e3b;
 }
 
 /* Global anti-overflow and typography rules */
@@ -242,14 +216,15 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-.katex {
-  font-size: 1.18em !important;
-  color: inherit;
-  max-width: 100%;
+.katex,
+.katex *,
+.katex-html,
+.katex-html * {
+  color: inherit !important;
 }
 
-.katex-html {
-  max-width: 100%;
+.katex .frac-line {
+  border-bottom-color: currentColor !important;
 }
 
 /* Scrollbars customized to pastel theme */

@@ -208,7 +208,7 @@ export const FontSizeControl: React.FC = () => {
                             className="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.2 rounded-full border"
                             style={{
                               backgroundColor: 'var(--accent-primary)',
-                              color: '#ffffff',
+                              color: 'var(--accent-contrast)',
                               borderColor: 'var(--accent-primary)',
                             }}
                           >

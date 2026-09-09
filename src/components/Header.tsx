@@ -5,6 +5,7 @@ import { mathTopics } from '../data/mathTopics';
 import { AudioButton } from './AudioButton';
 import { ThemeSelector } from './ThemeSelector';
 import { FontSizeControl } from './FontSizeControl';
+import { FullscreenToggle } from './FullscreenToggle';
 
 interface HeaderProps {
   selectedYear: YearLevel | 'All';
@@ -56,9 +57,10 @@ export const Header: React.FC<HeaderProps> = ({
 
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <div
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-white flex items-center justify-center shadow-xs shrink-0"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shadow-xs shrink-0"
                 style={{
                   backgroundColor: 'var(--accent-primary)',
+                  color: 'var(--accent-contrast)',
                 }}
               >
                 <span className="font-serif font-black text-lg sm:text-xl tracking-tighter">∑</span>
@@ -94,6 +96,9 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Theme Selector */}
             <ThemeSelector />
 
+            {/* Fullscreen Mode Toggle */}
+            <FullscreenToggle />
+
             <button
               type="button"
               onClick={onOpenFormulaDrawer}
@@ -112,7 +117,8 @@ export const Header: React.FC<HeaderProps> = ({
             <AudioButton
               id="audio-header-global"
               textToRead="Welcome to Maths Master for Primary 5, Primary 6, and Primary 7 pupils. Select any topic to study step-by-step worked examples, key rules, and practice questions."
-              title="Audio Player & Controller"
+              title="Welcome Audio Guide (click to toggle)"
+              label="Maths Master Welcome Guide"
               isGlobal={true}
               size="sm"
             />
@@ -145,15 +151,15 @@ export const Header: React.FC<HeaderProps> = ({
                 style={{
                   backgroundColor: isSelected ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
                   borderColor: isSelected ? 'var(--accent-primary)' : 'var(--border-card)',
-                  color: isSelected ? '#ffffff' : 'var(--text-primary)',
+                  color: isSelected ? 'var(--accent-contrast)' : 'var(--text-primary)',
                 }}
               >
                 <span>{cleanName}</span>
                 <span
                   className="px-1.5 py-0.2 rounded-full text-[10px] font-bold"
                   style={{
-                    backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.25)' : 'var(--border-card)',
-                    color: isSelected ? '#ffffff' : 'var(--text-muted)',
+                    backgroundColor: isSelected ? 'rgba(0, 0, 0, 0.15)' : 'var(--border-card)',
+                    color: isSelected ? 'var(--accent-contrast)' : 'var(--text-muted)',
                   }}
                 >
                   {count}

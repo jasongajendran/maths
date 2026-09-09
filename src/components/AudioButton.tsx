@@ -8,6 +8,7 @@ interface AudioButtonProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   title?: string;
+  label?: string;
   isGlobal?: boolean;
 }
 
@@ -17,16 +18,17 @@ export const AudioButton: React.FC<AudioButtonProps> = ({
   size = 'md',
   className = '',
   title = 'Read aloud',
+  label,
   isGlobal = false,
 }) => {
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = audioSpeech.subscribe((activeId, isSpeaking) => {
+    const unsubscribe = audioSpeech.subscribe((state) => {
       if (isGlobal) {
-        setIsActive(isSpeaking);
+        setIsActive(state.isSpeaking);
       } else {
-        setIsActive(activeId === id && isSpeaking);
+        setIsActive(state.activeId === id && state.isSpeaking);
       }
     });
     return unsubscribe;
@@ -34,10 +36,10 @@ export const AudioButton: React.FC<AudioButtonProps> = ({
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isActive) {
+    if (isActive || audioSpeech.getCurrentId() === id) {
       audioSpeech.stop();
     } else {
-      audioSpeech.speak(id, textToRead);
+      audioSpeech.speak(id, textToRead, { label: label || title });
     }
   };
 
@@ -70,15 +72,15 @@ export const AudioButton: React.FC<AudioButtonProps> = ({
       style={{
         backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
         borderColor: isActive ? 'var(--accent-primary)' : 'var(--border-card-strong)',
-        color: isActive ? '#ffffff' : 'var(--accent-primary)',
+        color: isActive ? 'var(--accent-contrast)' : 'var(--accent-primary)',
       }}
     >
       {isActive ? (
         <span className="flex items-center justify-center gap-0.5">
           {/* Animated mini sound bars */}
           <span className="flex items-end gap-0.5 h-3">
-            <span className="w-0.5 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-            <span className="w-0.5 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+            <span className="w-0.5 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'currentColor', animationDelay: '0ms' }} />
+            <span className="w-0.5 h-3 rounded-full animate-bounce" style={{ backgroundColor: 'currentColor', animationDelay: '150ms' }} />
           </span>
           <Square size={iconSizes[size] - 3} className="fill-current ml-0.5" />
         </span>

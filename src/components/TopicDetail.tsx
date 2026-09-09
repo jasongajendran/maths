@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import {
   BookOpen,
@@ -13,6 +13,12 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronUp,
+  ChevronRight,
+  ChevronLeft,
+  Layers,
+  LayoutGrid,
+  ArrowRight,
+  ArrowLeft,
   Cpu,
 } from 'lucide-react';
 import { MathTopic } from '../types/math';
@@ -27,13 +33,24 @@ import { RomanNumeralsConverter } from './tools/RomanNumeralsConverter';
 
 interface TopicDetailProps {
   topic: MathTopic;
-  onSelectTopic?: (topicId: string) => void;
+  onSelectTopic?: (topicId: string, sectionId?: string) => void;
+  targetSectionId?: string | null;
+  onClearTargetSection?: () => void;
 }
 
 type TabType = 'theory' | 'tips' | 'formulas' | 'practice' | 'tools';
 
-export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
+export const TopicDetail: React.FC<TopicDetailProps> = ({
+  topic,
+  onSelectTopic,
+  targetSectionId,
+  onClearTargetSection,
+}) => {
   const [activeTab, setActiveTab] = useState<TabType>('theory');
+  const [activeSectionIndex, setActiveSectionIndex] = useState<number>(0);
+  const [viewMode, setViewMode] = useState<'paginated' | 'all'>('paginated');
+  const [highlightedSectionId, setHighlightedSectionId] = useState<string | null>(null);
+
   const [selectedExampleLevel, setSelectedExampleLevel] = useState<string>('All');
   const [expandedExamples, setExpandedExamples] = useState<Record<string, boolean>>({
     [topic.sections[0]?.workedExamples?.[0]?.id || '']: true,
@@ -43,6 +60,41 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
   const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
   const [showExplanations, setShowExplanations] = useState<Record<string, boolean>>({});
   const [showHints, setShowHints] = useState<Record<string, boolean>>({});
+
+  // Handle targetSectionId changes (e.g. from "Refer to..." deep links)
+  useEffect(() => {
+    if (targetSectionId) {
+      const foundIdx = topic.sections.findIndex((s) => s.id === targetSectionId);
+      if (foundIdx !== -1) {
+        setActiveSectionIndex(foundIdx);
+        setActiveTab('theory');
+        setHighlightedSectionId(targetSectionId);
+
+        // Allow DOM to update before smooth scrolling
+        const scrollTimer = setTimeout(() => {
+          const el =
+            document.getElementById(`sec-container-${targetSectionId}`) ||
+            document.getElementById(targetSectionId);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 120);
+
+        const clearHighlightTimer = setTimeout(() => {
+          setHighlightedSectionId(null);
+          if (onClearTargetSection) onClearTargetSection();
+        }, 3000);
+
+        return () => {
+          clearTimeout(scrollTimer);
+          clearTimeout(clearHighlightTimer);
+        };
+      }
+    } else {
+      // Default to first section when switching topics without targetSectionId
+      setActiveSectionIndex(0);
+    }
+  }, [targetSectionId, topic.id]);
 
   const toggleExample = (id: string) => {
     setExpandedExamples((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -64,14 +116,36 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
     }
   };
 
+  const handleJumpToSection = (idx: number, secId: string) => {
+    setActiveSectionIndex(idx);
+    if (viewMode === 'all') {
+      const el = document.getElementById(`sec-container-${secId}`) || document.getElementById(secId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else {
+      const el = document.getElementById('sub-sections-anchor');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
+  const currentSections =
+    viewMode === 'paginated'
+      ? [topic.sections[activeSectionIndex] || topic.sections[0]]
+      : topic.sections;
+
   return (
     <div className="space-y-6">
-      {/* Topic Header Card - Click anywhere to read! */}
-      <ReadableCard
+      {/* Topic Header Card - Standalone container with isolated audio button */}
+      <div
         id={`topic-header-${topic.id}`}
-        textToRead={`${topic.title}. For ${topic.yearLevel}. ${topic.summary}`}
-        className="p-5 sm:p-7 relative overflow-hidden shadow-xs border"
-        ariaLabel="Topic Header Overview"
+        className="rounded-2xl border p-5 sm:p-7 relative overflow-hidden shadow-xs space-y-4"
+        style={{
+          backgroundColor: 'var(--bg-card)',
+          borderColor: 'var(--border-card)',
+        }}
       >
         <div className="space-y-3">
           {/* Top Row: Metadata badges & Audio indicator cleanly aligned at top right */}
@@ -108,6 +182,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
             <AudioButton
               id={`topic-header-${topic.id}`}
               textToRead={`${topic.title}. For ${topic.yearLevel}. ${topic.summary}`}
+              label={`${topic.title} Overview`}
               title="Listen to topic overview"
               size="md"
               className="shrink-0"
@@ -129,7 +204,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
           </p>
         </div>
 
-        {/* Navigation Tabs */}
+        {/* Navigation Tabs - Cleanly outside any speech container */}
         <div
           className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-6 pt-5 border-t"
           style={{ borderColor: 'var(--border-card)' }}
@@ -141,7 +216,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
             style={{
               backgroundColor: activeTab === 'theory' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: activeTab === 'theory' ? 'var(--accent-primary)' : 'var(--border-card)',
-              color: activeTab === 'theory' ? '#ffffff' : 'var(--text-primary)',
+              color: activeTab === 'theory' ? 'var(--accent-contrast)' : 'var(--text-primary)',
             }}
           >
             <BookOpen size={16} />
@@ -155,7 +230,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
             style={{
               backgroundColor: activeTab === 'tips' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: activeTab === 'tips' ? 'var(--accent-primary)' : 'var(--border-card)',
-              color: activeTab === 'tips' ? '#ffffff' : 'var(--text-primary)',
+              color: activeTab === 'tips' ? 'var(--accent-contrast)' : 'var(--text-primary)',
             }}
           >
             <Sparkles size={16} />
@@ -169,7 +244,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
             style={{
               backgroundColor: activeTab === 'formulas' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: activeTab === 'formulas' ? 'var(--accent-primary)' : 'var(--border-card)',
-              color: activeTab === 'formulas' ? '#ffffff' : 'var(--text-primary)',
+              color: activeTab === 'formulas' ? 'var(--accent-contrast)' : 'var(--text-primary)',
             }}
           >
             <Award size={16} />
@@ -183,7 +258,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
             style={{
               backgroundColor: activeTab === 'practice' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: activeTab === 'practice' ? 'var(--accent-primary)' : 'var(--border-card)',
-              color: activeTab === 'practice' ? '#ffffff' : 'var(--text-primary)',
+              color: activeTab === 'practice' ? 'var(--accent-contrast)' : 'var(--text-primary)',
             }}
           >
             <GraduationCap size={16} />
@@ -198,7 +273,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
               style={{
                 backgroundColor: activeTab === 'tools' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
                 borderColor: activeTab === 'tools' ? 'var(--accent-primary)' : 'var(--border-card)',
-                color: activeTab === 'tools' ? '#ffffff' : 'var(--text-primary)',
+                color: activeTab === 'tools' ? 'var(--accent-contrast)' : 'var(--text-primary)',
               }}
             >
               <Cpu size={16} />
@@ -206,92 +281,359 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
             </button>
           )}
         </div>
-      </ReadableCard>
+      </div>
 
       {/* Tab 1: Concepts & Worked Examples */}
       {activeTab === 'theory' && (
-        <div className="space-y-6">
-          {topic.sections.map((sec, idx) => (
-            <ReadableCard
-              key={sec.id}
-              id={`sec-${sec.id}`}
-              textToRead={`${sec.title}. ${sec.content}. Essential Key Rules: ${sec.keyTakeaways.join('. ')}`}
-              className="p-5 sm:p-7 space-y-4 shadow-xs border"
-              ariaLabel={`Section: ${sec.title}`}
+        <div id="sub-sections-anchor" className="space-y-6">
+          {/* Sub-section Navigation & Page Controls Banner */}
+          {topic.sections.length > 1 && (
+            <div
+              className="rounded-2xl border p-4 sm:p-5 space-y-4 shadow-2xs"
+              style={{
+                backgroundColor: 'var(--bg-card)',
+                borderColor: 'var(--border-card)',
+              }}
             >
-              <div
-                className="flex items-start justify-between gap-3 pb-3 border-b"
-                style={{ borderColor: 'var(--border-card)' }}
-              >
-                <div className="flex items-center gap-2.5">
+              {/* Header: Status & View Mode Toggle */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b" style={{ borderColor: 'var(--border-card)' }}>
+                <div className="flex items-center gap-2.5 min-w-0">
                   <span
-                    className="flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold text-white shrink-0"
-                    style={{ backgroundColor: 'var(--accent-primary)' }}
+                    className="flex items-center justify-center p-1.5 rounded-lg border text-xs font-black shrink-0"
+                    style={{
+                      backgroundColor: 'var(--badge-bg)',
+                      borderColor: 'var(--border-card-strong)',
+                      color: 'var(--accent-primary)',
+                    }}
                   >
-                    {idx + 1}
+                    <Layers size={16} />
                   </span>
-                  <h2
-                    className="text-lg sm:text-xl font-bold"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    {sec.title}
-                  </h2>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-extrabold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
+                        {viewMode === 'paginated'
+                          ? `Sub-Section ${activeSectionIndex + 1} of ${topic.sections.length}`
+                          : `All ${topic.sections.length} Sub-Sections`}
+                      </span>
+                      <span className="text-xs px-2 py-0.5 rounded-md font-bold" style={{ backgroundColor: 'var(--bg-card-subtle)', color: 'var(--text-secondary)' }}>
+                        {viewMode === 'paginated' ? 'Bite-Sized Focus' : 'Continuous View'}
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm font-semibold truncate mt-0.5" style={{ color: 'var(--text-primary)' }}>
+                      {viewMode === 'paginated' ? topic.sections[activeSectionIndex]?.title : 'Exploring the complete topic breakdown'}
+                    </p>
+                  </div>
                 </div>
 
-                <AudioButton
-                  id={`sec-${sec.id}`}
-                  textToRead={`${sec.title}. ${sec.content}. Essential Key Rules: ${sec.keyTakeaways.join('. ')}`}
-                  title="Listen to this section"
-                  size="sm"
-                />
+                {/* View Mode Switcher (Step-by-step page vs All) */}
+                <div className="flex items-center gap-1.5 self-start sm:self-center shrink-0 p-1 rounded-xl border" style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('paginated')}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs"
+                    style={{
+                      backgroundColor: viewMode === 'paginated' ? 'var(--accent-primary)' : 'transparent',
+                      color: viewMode === 'paginated' ? 'var(--accent-contrast)' : 'var(--text-secondary)',
+                    }}
+                    title="View 1 sub-section at a time for easy step-by-step learning"
+                  >
+                    <LayoutGrid size={13} />
+                    <span>Page View</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('all')}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs"
+                    style={{
+                      backgroundColor: viewMode === 'all' ? 'var(--accent-primary)' : 'transparent',
+                      color: viewMode === 'all' ? 'var(--accent-contrast)' : 'var(--text-secondary)',
+                    }}
+                    title="View all sub-sections in one long scrolling page"
+                  >
+                    <Layers size={13} />
+                    <span>View All</span>
+                  </button>
+                </div>
               </div>
 
-              <p
-                className="text-base sm:text-lg leading-relaxed"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                {sec.content}
-              </p>
+              {/* Sub-section Navigation Jump Pills */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-extrabold uppercase tracking-wider mr-1 shrink-0" style={{ color: 'var(--text-muted)' }}>
+                  Jump To Sub-Section:
+                </span>
+                {topic.sections.map((sec, sIdx) => {
+                  const isActive = viewMode === 'paginated' ? activeSectionIndex === sIdx : false;
+                  return (
+                    <button
+                      key={sec.id}
+                      type="button"
+                      onClick={() => handleJumpToSection(sIdx, sec.id)}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border shadow-2xs hover:scale-[1.02] active:scale-95"
+                      style={{
+                        backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
+                        borderColor: isActive ? 'var(--accent-primary)' : 'var(--border-card)',
+                        color: isActive ? 'var(--accent-contrast)' : 'var(--text-primary)',
+                      }}
+                    >
+                      <span
+                        className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-black shrink-0"
+                        style={{
+                          backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : 'var(--badge-bg)',
+                          color: isActive ? 'var(--accent-contrast)' : 'var(--accent-primary)',
+                        }}
+                      >
+                        {sIdx + 1}
+                      </span>
+                      <span className="truncate max-w-[180px] sm:max-w-[260px]">{sec.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
-              {/* Creative Mental Model / Visual Metaphor */}
+          {/* Sections List (Paginated or All) */}
+          {currentSections.map((sec, loopIdx) => {
+            const actualIdx = viewMode === 'paginated' ? activeSectionIndex : loopIdx;
+            const isHighlighted = highlightedSectionId === sec.id;
+
+            return (
+              <section
+                key={sec.id}
+                id={`sec-container-${sec.id}`}
+                className={`rounded-2xl border p-5 sm:p-7 space-y-6 shadow-xs transition-all duration-300 ${
+                  isHighlighted ? 'ring-4 ring-offset-2 scale-[1.005]' : ''
+                }`}
+                style={{
+                  backgroundColor: 'var(--bg-card)',
+                  borderColor: isHighlighted ? 'var(--accent-primary)' : 'var(--border-card)',
+                }}
+              >
+                {/* Section Header Banner in Page View */}
+                {viewMode === 'paginated' && topic.sections.length > 1 && (
+                  <div
+                    className="flex items-center justify-between gap-2 px-3.5 py-2 rounded-xl border text-xs font-bold"
+                    style={{
+                      backgroundColor: 'var(--bg-card-subtle)',
+                      borderColor: 'var(--border-card)',
+                      color: 'var(--text-secondary)',
+                    }}
+                  >
+                    <span>Sub-Section {actualIdx + 1} of {topic.sections.length}</span>
+                    <span style={{ color: 'var(--accent-primary)' }}>{topic.title}</span>
+                  </div>
+                )}
+
+                {/* Separate Subsection A: Core Concept & Explanation */}
+                <ReadableCard
+                  id={`sec-concept-${sec.id}`}
+                  textToRead={`Section ${actualIdx + 1}: ${sec.title}. ${sec.content}`}
+                  label={`Section ${actualIdx + 1}: ${sec.title}`}
+                  highlightStyle="inner"
+                  className="p-5 sm:p-6 rounded-xl border space-y-3"
+                  ariaLabel={`Concept Explanation: ${sec.title}`}
+                >
+                  <div
+                    className="flex items-start justify-between gap-3 pb-3 border-b"
+                    style={{ borderColor: 'var(--border-card)' }}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className="flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shrink-0"
+                        style={{
+                          backgroundColor: 'var(--accent-primary)',
+                          color: 'var(--accent-contrast)',
+                        }}
+                      >
+                        {actualIdx + 1}
+                      </span>
+                      <h2
+                        className="text-lg sm:text-xl font-bold"
+                        style={{ color: 'var(--text-primary)' }}
+                      >
+                        {sec.title}
+                      </h2>
+                    </div>
+
+                    <AudioButton
+                      id={`sec-concept-${sec.id}`}
+                      textToRead={`Section ${actualIdx + 1}: ${sec.title}. ${sec.content}`}
+                      label={`Section ${actualIdx + 1}: ${sec.title}`}
+                      title="Listen to concept explanation"
+                      size="sm"
+                    />
+                  </div>
+
+                  <p
+                    className="text-base sm:text-lg leading-relaxed"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    {sec.content}
+                  </p>
+                </ReadableCard>
+
+              {/* Prerequisite & Term Indicators (e.g. "Wait, what is LCM?") */}
+              {sec.prerequisites && sec.prerequisites.length > 0 && (
+                <div className="space-y-3">
+                  {sec.prerequisites.map((prereq, pIdx) => (
+                    <ReadableCard
+                      key={pIdx}
+                      id={`sec-prereq-${sec.id}-${pIdx}`}
+                      textToRead={`Concept Refresher: What is ${prereq.term}? ${prereq.quickDefinition}. ${
+                        prereq.targetTopicTitle
+                          ? `You can refer to the topic ${prereq.targetTopicTitle} to study this in depth.`
+                          : ''
+                      }`}
+                      label={`Refresher: ${prereq.term}`}
+                      highlightStyle="inner"
+                      className="p-3.5 sm:p-4 rounded-xl border space-y-2.5 shadow-2xs transition-all"
+                      ariaLabel={`Prerequisite Guide for ${prereq.term}`}
+                      style={{
+                        backgroundColor: 'var(--badge-bg)',
+                        borderColor: 'var(--border-card-strong)',
+                      }}
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span
+                            className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-black shrink-0 shadow-2xs"
+                            style={{
+                              backgroundColor: 'var(--accent-primary)',
+                              color: 'var(--accent-contrast)',
+                            }}
+                          >
+                            ?
+                          </span>
+                          <span
+                            className="text-xs sm:text-sm font-black tracking-tight"
+                            style={{ color: 'var(--text-primary)' }}
+                          >
+                            Wait, what is{' '}
+                            <span style={{ color: 'var(--accent-primary)' }}>{prereq.term}</span>?
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 self-start sm:self-center shrink-0">
+                          {prereq.targetTopicId && onSelectTopic && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                onSelectTopic(prereq.targetTopicId!, prereq.targetSectionId);
+                              }}
+                              className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer hover:scale-105 border shadow-2xs active:scale-95"
+                              style={{
+                                backgroundColor: 'var(--accent-primary)',
+                                borderColor: 'var(--border-card-strong)',
+                                color: 'var(--accent-contrast)',
+                              }}
+                              title={`Refer to ${
+                                prereq.targetSectionTitle
+                                  ? `${prereq.targetTopicTitle} → ${prereq.targetSectionTitle}`
+                                  : prereq.targetTopicTitle || 'Section'
+                              }`}
+                            >
+                              <span>
+                                Refer to {prereq.targetSectionTitle || prereq.targetTopicTitle || 'Section'}
+                              </span>
+                              <ChevronRight size={13} />
+                            </button>
+                          )}
+
+                          <AudioButton
+                            id={`sec-prereq-${sec.id}-${pIdx}`}
+                            textToRead={`What is ${prereq.term}? ${prereq.quickDefinition}. ${
+                              prereq.targetTopicTitle ? `Refer to topic: ${prereq.targetTopicTitle}.` : ''
+                            }`}
+                            label={`Refresher: ${prereq.term}`}
+                            title={`Listen to explanation of ${prereq.term}`}
+                            size="sm"
+                          />
+                        </div>
+                      </div>
+
+                      <div
+                        className="p-2.5 sm:p-3 rounded-lg border text-xs sm:text-sm leading-relaxed"
+                        style={{
+                          backgroundColor: 'var(--bg-card)',
+                          borderColor: 'var(--border-card)',
+                          color: 'var(--text-primary)',
+                        }}
+                      >
+                        <span className="font-extrabold" style={{ color: 'var(--accent-primary)' }}>
+                          Quick Guide:{' '}
+                        </span>
+                        <span>{prereq.quickDefinition}</span>
+                      </div>
+                    </ReadableCard>
+                  ))}
+                </div>
+              )}
+
+              {/* Separate Subsection B: Creative Mental Model / Visual Metaphor */}
               {sec.visualMetaphor && (
-                <div
-                  className="p-4 rounded-xl border flex items-start gap-3 shadow-2xs"
+                <ReadableCard
+                  id={`sec-metaphor-${sec.id}`}
+                  textToRead={`Creative Mental Picture for ${sec.title}: ${sec.visualMetaphor}`}
+                  label={`Mental Picture: ${sec.title}`}
+                  highlightStyle="inner"
+                  className="p-4 sm:p-5 rounded-xl border space-y-2 shadow-2xs"
+                  ariaLabel="Creative Mental Picture"
                   style={{
                     backgroundColor: 'var(--contrast-indigo-bg)',
                     borderColor: 'var(--contrast-indigo-border)',
                   }}
                 >
-                  <Sparkles size={19} className="shrink-0 mt-0.5" style={{ color: 'var(--contrast-indigo)' }} />
-                  <div className="text-sm sm:text-base">
-                    <span
-                      className="font-extrabold uppercase tracking-wider block text-xs"
-                      style={{ color: 'var(--contrast-indigo)' }}
-                    >
-                      Creative Mental Picture (How Kids Understand Best)
-                    </span>
-                    <p className="mt-1 leading-relaxed font-medium" style={{ color: 'var(--text-primary)' }}>
-                      {sec.visualMetaphor}
-                    </p>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Sparkles size={18} className="shrink-0" style={{ color: 'var(--contrast-indigo)' }} />
+                      <span
+                        className="font-extrabold uppercase tracking-wider text-xs"
+                        style={{ color: 'var(--contrast-indigo)' }}
+                      >
+                        Creative Mental Picture (How Kids Understand Best)
+                      </span>
+                    </div>
+
+                    <AudioButton
+                      id={`sec-metaphor-${sec.id}`}
+                      textToRead={`Creative Mental Picture for ${sec.title}: ${sec.visualMetaphor}`}
+                      label={`Mental Picture: ${sec.title}`}
+                      title="Listen to mental picture"
+                      size="sm"
+                    />
                   </div>
-                </div>
+
+                  <p className="mt-1 leading-relaxed font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>
+                    {sec.visualMetaphor}
+                  </p>
+                </ReadableCard>
               )}
 
-              {/* Math expressions callout if any */}
+              {/* Separate Subsection C: Math expressions callout if any */}
               {sec.mathExpressions && sec.mathExpressions.length > 0 && (
                 <div
-                  className="border rounded-xl p-4 space-y-2"
+                  className="border rounded-xl p-4 sm:p-5 space-y-3"
                   style={{
                     backgroundColor: 'var(--bg-card-subtle)',
                     borderColor: 'var(--border-card)',
                   }}
                 >
-                  <span
-                    className="text-xs uppercase font-extrabold tracking-wider block"
-                    style={{ color: 'var(--text-muted)' }}
-                  >
-                    Mathematical Formulation:
-                  </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span
+                      className="text-xs uppercase font-extrabold tracking-wider block"
+                      style={{ color: 'var(--text-muted)' }}
+                    >
+                      Mathematical Formulation:
+                    </span>
+                    <AudioButton
+                      id={`sec-math-${sec.id}`}
+                      textToRead={`Mathematical formulations for ${sec.title}: ${sec.mathExpressions.join('. ')}`}
+                      label={`Math Formulation: ${sec.title}`}
+                      title="Listen to mathematical formulations"
+                      size="sm"
+                    />
+                  </div>
                   <div className="space-y-1.5">
                     {sec.mathExpressions.map((expr, i) => (
                       <MathView key={i} math={expr} block={true} className="font-bold" />
@@ -300,22 +642,34 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                 </div>
               )}
 
-              {/* Key Takeaways */}
+              {/* Separate Subsection D: Key Takeaways / Essential Rules */}
               {sec.keyTakeaways && sec.keyTakeaways.length > 0 && (
-                <div
-                  className="border rounded-xl p-4 sm:p-5 space-y-2.5"
-                  style={{
-                    backgroundColor: 'var(--bg-card-subtle)',
-                    borderColor: 'var(--border-card-strong)',
-                  }}
+                <ReadableCard
+                  id={`sec-rules-${sec.id}`}
+                  textToRead={`Essential Key Rules for ${sec.title}: ${sec.keyTakeaways.join('. ')}`}
+                  label={`Key Rules: ${sec.title}`}
+                  highlightStyle="inner"
+                  className="p-4 sm:p-5 rounded-xl border space-y-2.5 shadow-2xs"
+                  ariaLabel="Essential Key Rules"
                 >
-                  <div
-                    className="flex items-center gap-1.5 text-xs sm:text-sm font-extrabold uppercase tracking-wider"
-                    style={{ color: 'var(--accent-primary)' }}
-                  >
-                    <Lightbulb size={17} />
-                    <span>Essential Key Rules</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <div
+                      className="flex items-center gap-1.5 text-xs sm:text-sm font-extrabold uppercase tracking-wider"
+                      style={{ color: 'var(--accent-primary)' }}
+                    >
+                      <Lightbulb size={17} />
+                      <span>Essential Key Rules</span>
+                    </div>
+
+                    <AudioButton
+                      id={`sec-rules-${sec.id}`}
+                      textToRead={`Essential Key Rules for ${sec.title}: ${sec.keyTakeaways.join('. ')}`}
+                      label={`Key Rules: ${sec.title}`}
+                      title="Listen to key rules"
+                      size="sm"
+                    />
                   </div>
+
                   <ul className="space-y-2 text-sm sm:text-base leading-relaxed">
                     {sec.keyTakeaways.map((point, pIdx) => (
                       <li key={pIdx} className="flex items-start gap-2.5" style={{ color: 'var(--text-secondary)' }}>
@@ -324,13 +678,13 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                       </li>
                     ))}
                   </ul>
-                </div>
+                </ReadableCard>
               )}
 
-              {/* Worked Examples */}
+              {/* Separate Subsection E: Progressive Worked Examples */}
               {sec.workedExamples && sec.workedExamples.length > 0 && (
                 <div
-                  className="mt-4 pt-4 border-t space-y-4"
+                  className="mt-6 pt-5 border-t space-y-4"
                   style={{ borderColor: 'var(--border-card)' }}
                 >
                   {/* Worked Examples Level Filter Bar */}
@@ -376,7 +730,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                             style={{
                               backgroundColor: isSelected ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
                               borderColor: isSelected ? 'var(--accent-primary)' : 'var(--border-card)',
-                              color: isSelected ? '#ffffff' : 'var(--text-secondary)',
+                              color: isSelected ? 'var(--accent-contrast)' : 'var(--text-secondary)',
                             }}
                           >
                             {lvl.label}
@@ -434,7 +788,9 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                         key={ex.id}
                         id={`example-${ex.id}`}
                         textToRead={exampleSpeechText}
+                        label={`Example: ${ex.title}`}
                         highlightStyle="inner"
+                        enableClickToRead={false}
                         className="rounded-xl border overflow-hidden p-0 shadow-2xs"
                         ariaLabel={`Worked Example: ${ex.title}`}
                       >
@@ -465,7 +821,8 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                             <AudioButton
                               id={`example-${ex.id}`}
                               textToRead={exampleSpeechText}
-                              title="Listen to worked example"
+                              label={`Example: ${ex.title}`}
+                              title="Listen to full worked example"
                               size="sm"
                             />
                             <button
@@ -486,56 +843,92 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                         {isExpanded && (
                           <div className="p-4 sm:p-5 space-y-4">
                             <div
-                              className="p-3.5 sm:p-4 border rounded-xl text-base sm:text-lg font-semibold leading-relaxed"
+                              className="p-3.5 sm:p-4 border rounded-xl text-base sm:text-lg font-semibold leading-relaxed relative flex items-start justify-between gap-3"
                               style={{
-                                backgroundColor: 'var(--badge-bg)',
+                                backgroundColor: 'var(--bg-card-subtle)',
                                 borderColor: 'var(--border-card-strong)',
-                                color: 'var(--badge-text)',
+                                color: 'var(--text-primary)',
                               }}
                             >
-                              <strong className="text-base sm:text-lg font-extrabold">Question:</strong> {ex.problem}
-                              {ex.mathProblem && (
-                                <div className="mt-2">
-                                  <MathView math={ex.mathProblem} block={true} />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1.5">
+                                  <span
+                                    className="px-2 py-0.5 rounded text-xs font-black uppercase tracking-wider"
+                                    style={{
+                                      backgroundColor: 'var(--badge-bg)',
+                                      color: 'var(--badge-text)',
+                                    }}
+                                  >
+                                    Question
+                                  </span>
                                 </div>
-                              )}
+                                <span className="leading-relaxed">{ex.problem}</span>
+                                {ex.mathProblem && (
+                                  <div className="mt-2">
+                                    <MathView math={ex.mathProblem} block={true} />
+                                  </div>
+                                )}
+                              </div>
+                              <AudioButton
+                                id={`question-${ex.id}`}
+                                textToRead={`Question for ${ex.title}: ${ex.problem}.${ex.mathProblem ? ` Formula: ${ex.mathProblem}` : ''}`}
+                                label={`Question: ${ex.title}`}
+                                title="Listen to question"
+                                size="sm"
+                                className="shrink-0 mt-0.5"
+                              />
                             </div>
 
-                            {/* Steps */}
+                            {/* Steps with individual Step Audio buttons */}
                             <div className="space-y-3">
-                              {ex.steps.map((step) => (
-                                <div
-                                  key={step.stepNumber}
-                                  className="flex items-start gap-3 p-3.5 sm:p-4 rounded-xl border transition-all"
-                                  style={{
-                                    backgroundColor: 'var(--bg-card-hover)',
-                                    borderColor: 'var(--border-card)',
-                                  }}
-                                >
-                                  <span
-                                    className="flex items-center justify-center w-7 h-7 rounded-full text-white text-xs sm:text-sm font-bold shrink-0 mt-0.5"
-                                    style={{ backgroundColor: 'var(--accent-primary)' }}
+                              {ex.steps.map((step) => {
+                                const stepAudioText = `Step ${step.stepNumber}, ${step.title}: ${step.explanation}.${step.math ? ` Math: ${step.math}` : ''}`;
+                                return (
+                                  <div
+                                    key={step.stepNumber}
+                                    className="flex items-start gap-3 p-3.5 sm:p-4 rounded-xl border transition-all"
+                                    style={{
+                                      backgroundColor: 'var(--bg-card-hover)',
+                                      borderColor: 'var(--border-card)',
+                                    }}
                                   >
-                                    {step.stepNumber}
-                                  </span>
-                                  <div className="space-y-1.5 text-sm sm:text-base flex-1">
-                                    <strong
-                                      className="font-extrabold block text-base sm:text-lg"
-                                      style={{ color: 'var(--text-primary)' }}
+                                    <span
+                                      className="flex items-center justify-center w-7 h-7 rounded-full text-xs sm:text-sm font-bold shrink-0 mt-0.5"
+                                      style={{
+                                        backgroundColor: 'var(--accent-primary)',
+                                        color: 'var(--accent-contrast)',
+                                      }}
                                     >
-                                      {step.title}
-                                    </strong>
-                                    <p className="leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                                      {step.explanation}
-                                    </p>
-                                    {step.math && (
-                                      <div className="mt-1.5">
-                                        <MathView math={step.math} block={true} />
+                                      {step.stepNumber}
+                                    </span>
+                                    <div className="space-y-1.5 text-sm sm:text-base flex-1 min-w-0">
+                                      <div className="flex items-center justify-between gap-2">
+                                        <strong
+                                          className="font-extrabold block text-base sm:text-lg"
+                                          style={{ color: 'var(--text-primary)' }}
+                                        >
+                                          {step.title}
+                                        </strong>
+                                        <AudioButton
+                                          id={`step-${ex.id}-${step.stepNumber}`}
+                                          textToRead={stepAudioText}
+                                          label={`Step ${step.stepNumber}: ${step.title}`}
+                                          title={`Listen to Step ${step.stepNumber}`}
+                                          size="sm"
+                                        />
                                       </div>
-                                    )}
+                                      <p className="leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                                        {step.explanation}
+                                      </p>
+                                      {step.math && (
+                                        <div className="mt-1.5">
+                                          <MathView math={step.math} block={true} />
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
+                                );
+                              })}
                             </div>
 
                             {/* Final Answer */}
@@ -548,25 +941,51 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                               }}
                             >
                               <span className="font-extrabold flex items-center gap-2">
-                                <CheckCircle2 size={19} className="text-emerald-700 shrink-0" />
+                                <CheckCircle2 size={19} className="shrink-0" style={{ color: 'var(--contrast-teal)' }} />
                                 <span>Final Solution:</span>
                               </span>
-                              <span className="font-mono text-base sm:text-lg font-black px-3 py-0.5 rounded-lg border border-black/30 bg-black text-amber-300 shadow-2xs tracking-wide">
-                                {ex.finalAnswer}
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className="font-mono text-base sm:text-lg font-black px-3 py-1 rounded-lg border shadow-2xs tracking-wide"
+                                  style={{
+                                    backgroundColor: 'var(--bg-card-subtle)',
+                                    borderColor: 'var(--border-card-strong)',
+                                    color: 'var(--accent-primary)',
+                                  }}
+                                >
+                                  {ex.finalAnswer}
+                                </span>
+                                <AudioButton
+                                  id={`solution-${ex.id}`}
+                                  textToRead={`Final solution for ${ex.title} is: ${ex.finalAnswer}`}
+                                  label={`Solution: ${ex.title}`}
+                                  title="Listen to final solution"
+                                  size="sm"
+                                />
+                              </div>
                             </div>
 
                             {/* Pro Tip */}
                             {ex.proTip && (
                               <div
-                                className="text-sm sm:text-base p-3 sm:p-3.5 rounded-xl border leading-relaxed"
+                                className="text-sm sm:text-base p-3 sm:p-3.5 rounded-xl border leading-relaxed flex items-start justify-between gap-3"
                                 style={{
                                   backgroundColor: 'var(--bg-card-hover)',
                                   borderColor: 'var(--border-card-strong)',
                                   color: 'var(--text-primary)',
                                 }}
                               >
-                                💡 <strong className="font-bold">Pro Tip:</strong> {ex.proTip}
+                                <div className="flex-1">
+                                  💡 <strong className="font-bold">Pro Tip:</strong> {ex.proTip}
+                                </div>
+                                <AudioButton
+                                  id={`protip-${ex.id}`}
+                                  textToRead={`Pro tip for ${ex.title}: ${ex.proTip}`}
+                                  label="Pro Tip"
+                                  title="Listen to pro tip"
+                                  size="sm"
+                                  className="shrink-0"
+                                />
                               </div>
                             )}
                           </div>
@@ -576,10 +995,87 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                   })}
                 </div>
               )}
-            </ReadableCard>
-          ))}
-        </div>
-      )}
+
+              {/* Sub-section Page-by-Page Bottom Navigation Footer */}
+              {viewMode === 'paginated' && topic.sections.length > 1 && (
+                <div
+                  className="pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-3"
+                  style={{ borderColor: 'var(--border-card)' }}
+                >
+                  {/* Previous Button */}
+                  <button
+                    type="button"
+                    disabled={activeSectionIndex === 0}
+                    onClick={() => handleJumpToSection(activeSectionIndex - 1, topic.sections[activeSectionIndex - 1].id)}
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all border shadow-2xs disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    style={{
+                      backgroundColor: 'var(--bg-card-subtle)',
+                      borderColor: 'var(--border-card)',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    <ArrowLeft size={16} />
+                    <span>Previous: {topic.sections[activeSectionIndex - 1]?.title || 'Start'}</span>
+                  </button>
+
+                  {/* Step Dots indicator */}
+                  <div className="flex items-center gap-1.5">
+                    {topic.sections.map((_, dotIdx) => (
+                      <button
+                        key={dotIdx}
+                        type="button"
+                        onClick={() => handleJumpToSection(dotIdx, topic.sections[dotIdx].id)}
+                        className="w-2.5 h-2.5 rounded-full transition-all cursor-pointer"
+                        style={{
+                          backgroundColor:
+                            dotIdx === activeSectionIndex ? 'var(--accent-primary)' : 'var(--border-card)',
+                          transform: dotIdx === activeSectionIndex ? 'scale(1.3)' : 'scale(1)',
+                        }}
+                        aria-label={`Jump to sub-section ${dotIdx + 1}`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Next Button or Finish to Practice */}
+                  {activeSectionIndex < topic.sections.length - 1 ? (
+                    <button
+                      type="button"
+                      onClick={() => handleJumpToSection(activeSectionIndex + 1, topic.sections[activeSectionIndex + 1].id)}
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all border shadow-2xs cursor-pointer hover:scale-[1.02] active:scale-95"
+                      style={{
+                        backgroundColor: 'var(--accent-primary)',
+                        borderColor: 'var(--border-card-strong)',
+                        color: 'var(--accent-contrast)',
+                      }}
+                    >
+                      <span>Next: {topic.sections[activeSectionIndex + 1]?.title}</span>
+                      <ArrowRight size={16} />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveTab('practice');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all border shadow-2xs cursor-pointer hover:scale-[1.02] active:scale-95"
+                      style={{
+                        backgroundColor: 'var(--accent-primary)',
+                        borderColor: 'var(--border-card-strong)',
+                        color: 'var(--accent-contrast)',
+                      }}
+                    >
+                      <span>Try Practice Questions ({topic.practiceQuestions.length})</span>
+                      <GraduationCap size={16} />
+                    </button>
+                  )}
+                </div>
+              )}
+            </section>
+          );
+        })}
+      </div>
+    )}
 
       {/* Tab 2: Tips & Tricks */}
       {activeTab === 'tips' && (
@@ -611,6 +1107,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                   key={tip.id}
                   id={`tip-${tip.id}`}
                   textToRead={tipSpeechText}
+                  label={`Tip: ${tip.title}`}
                   className="p-5 space-y-3 relative flex flex-col justify-between shadow-xs border"
                   ariaLabel={`Tip: ${tip.title}`}
                 >
@@ -629,6 +1126,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                       <AudioButton
                         id={`tip-${tip.id}`}
                         textToRead={tipSpeechText}
+                        label={`Tip: ${tip.title}`}
                         title="Listen to tip"
                         size="sm"
                       />
@@ -700,6 +1198,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                     key={f.id}
                     id={`formula-${f.id}`}
                     textToRead={formulaSpeechText}
+                    label={`Formula: ${f.name}`}
                     highlightStyle="inner"
                     className="p-4 space-y-2 flex flex-col justify-between shadow-xs border"
                     ariaLabel={`Formula: ${f.name}`}
@@ -712,6 +1211,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                         <AudioButton
                           id={`formula-${f.id}`}
                           textToRead={formulaSpeechText}
+                          label={`Formula: ${f.name}`}
                           title="Listen to formula"
                           size="sm"
                         />
@@ -764,6 +1264,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                       key={info.id}
                       id={`important-info-${info.id}`}
                       textToRead={infoSpeechText}
+                      label={`Note: ${info.title}`}
                       highlightStyle="inner"
                       className="p-4 rounded-xl border space-y-1.5 shadow-xs"
                       ariaLabel={`Note: ${info.title}`}
@@ -780,6 +1281,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                         <AudioButton
                           id={`important-info-${info.id}`}
                           textToRead={infoSpeechText}
+                          label={`Note: ${info.title}`}
                           title="Listen to note"
                           size="sm"
                         />
@@ -840,6 +1342,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                     key={q.id}
                     id={`practice-${q.id}`}
                     textToRead={questionSpeechText}
+                    label={`Question ${qIndex + 1}`}
                     highlightStyle="inner"
                     className="p-5 rounded-xl border space-y-4 shadow-xs"
                     ariaLabel={`Question ${qIndex + 1}`}
@@ -847,8 +1350,11 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-2.5">
                         <span
-                          className="flex items-center justify-center w-7 h-7 rounded-full text-white text-xs sm:text-sm font-bold shrink-0 mt-0.5"
-                          style={{ backgroundColor: 'var(--accent-primary)' }}
+                          className="flex items-center justify-center w-7 h-7 rounded-full text-xs sm:text-sm font-bold shrink-0 mt-0.5"
+                          style={{
+                            backgroundColor: 'var(--accent-primary)',
+                            color: 'var(--accent-contrast)',
+                          }}
                         >
                           Q{qIndex + 1}
                         </span>
@@ -870,6 +1376,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                       <AudioButton
                         id={`practice-${q.id}`}
                         textToRead={questionSpeechText}
+                        label={`Question ${qIndex + 1}`}
                         title="Listen to question"
                         size="sm"
                       />
@@ -892,11 +1399,11 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                           } else if (isThisSelected && !isCorrect) {
                             bgStyle = 'var(--contrast-warm-bg)';
                             borderStyle = 'var(--contrast-warm-border)';
-                            textColor = 'var(--contrast-warm)';
+                            textColor = 'var(--text-primary)';
                           } else {
                             bgStyle = 'var(--bg-card-subtle)';
                             borderStyle = 'var(--border-card)';
-                            textColor = 'var(--text-muted)';
+                            textColor = 'var(--text-secondary)';
                           }
                         }
 
@@ -915,10 +1422,10 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                           >
                             <span>{opt}</span>
                             {isAnswered && optIdx === q.correctIndex && (
-                              <CheckCircle2 size={18} className="text-emerald-700 shrink-0 ml-2" />
+                              <CheckCircle2 size={18} className="shrink-0 ml-2" style={{ color: 'var(--contrast-teal)' }} />
                             )}
                             {isAnswered && isThisSelected && !isCorrect && (
-                              <XCircle size={18} className="text-rose-700 shrink-0 ml-2" />
+                              <XCircle size={18} className="shrink-0 ml-2" style={{ color: 'var(--contrast-warm)' }} />
                             )}
                           </button>
                         );
@@ -951,21 +1458,31 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                       )}
                     </div>
 
-                    {/* Hint Box */}
+                    {/* Hint Box with isolated Audio button */}
                     {showingHint && (
                       <div
-                        className="p-3.5 border rounded-xl text-sm sm:text-base font-medium leading-relaxed"
+                        className="p-3.5 border rounded-xl text-sm sm:text-base font-medium leading-relaxed flex items-start justify-between gap-3"
                         style={{
                           backgroundColor: 'var(--contrast-amber-bg)',
                           borderColor: 'var(--contrast-amber-border)',
                           color: 'var(--text-primary)',
                         }}
                       >
-                        💡 <strong>Hint:</strong> {q.hint}
+                        <div className="flex-1 min-w-0">
+                          💡 <strong>Hint:</strong> {q.hint}
+                        </div>
+                        <AudioButton
+                          id={`hint-${q.id}`}
+                          textToRead={`Hint for question ${qIndex + 1}: ${q.hint}`}
+                          label={`Hint: Q${qIndex + 1}`}
+                          title="Listen to hint"
+                          size="sm"
+                          className="shrink-0"
+                        />
                       </div>
                     )}
 
-                    {/* Explanation Box */}
+                    {/* Explanation Box with isolated Audio button */}
                     {showingExplanation && (
                       <div
                         id={`explanation-${q.id}`}
@@ -986,6 +1503,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
                           <AudioButton
                             id={`explanation-${q.id}`}
                             textToRead={`Explanation for question ${qIndex + 1}: ${q.explanation}`}
+                            label={`Explanation: Q${qIndex + 1}`}
                             title="Listen to explanation"
                             size="sm"
                           />

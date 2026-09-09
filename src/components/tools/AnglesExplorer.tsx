@@ -173,7 +173,7 @@ export const AnglesExplorer: React.FC = () => {
                 style={{
                   backgroundColor: angleDeg === preset ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
                   borderColor: angleDeg === preset ? 'var(--accent-primary)' : 'var(--border-card)',
-                  color: angleDeg === preset ? '#ffffff' : 'var(--text-primary)',
+                  color: angleDeg === preset ? 'var(--accent-contrast)' : 'var(--text-primary)',
                 }}
               >
                 {preset}°
@@ -185,14 +185,14 @@ export const AnglesExplorer: React.FC = () => {
           <div
             className="p-3.5 rounded-xl border space-y-1"
             style={{
-              backgroundColor: 'var(--badge-bg)',
+              backgroundColor: 'var(--bg-card-subtle)',
               borderColor: 'var(--border-card-strong)',
             }}
           >
-            <span className="text-[11px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--text-muted)' }}>
+            <span className="text-[11px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--accent-primary)' }}>
               Angle Classification
             </span>
-            <p className="text-sm sm:text-base font-extrabold" style={{ color: 'var(--badge-text)' }}>
+            <p className="text-sm sm:text-base font-extrabold" style={{ color: 'var(--text-primary)' }}>
               {cat.label}
             </p>
           </div>

@@ -65,10 +65,10 @@ export const ThemeSelector: React.FC = () => {
         >
           <div className="px-2.5 py-1.5 border-b mb-1" style={{ borderColor: 'var(--border-card)' }}>
             <span className="text-[11px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--text-secondary)' }}>
-              Choose Pastel Theme
+              Choose Distinct Theme
             </span>
             <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
-              Soft eye-friendly pastel tones (No white background)
+              4 distinct, eye-safe high-contrast palettes
             </span>
           </div>
 

@@ -120,7 +120,7 @@ export const RomanNumeralsConverter: React.FC = () => {
                 style={{
                   backgroundColor: numInput === yr ? 'var(--accent-primary)' : 'var(--bg-card)',
                   borderColor: numInput === yr ? 'var(--accent-primary)' : 'var(--border-card)',
-                  color: numInput === yr ? '#ffffff' : 'var(--text-primary)',
+                  color: numInput === yr ? 'var(--accent-contrast)' : 'var(--text-primary)',
                 }}
               >
                 {yr}
@@ -132,26 +132,32 @@ export const RomanNumeralsConverter: React.FC = () => {
 
       {/* Big Roman Result Display */}
       <div
-        className="p-6 rounded-2xl text-center space-y-2 border shadow-xs"
+        className="p-6 rounded-2xl text-center space-y-3 border-2 shadow-xs"
         style={{
           backgroundColor: 'var(--bg-card-subtle)',
           borderColor: 'var(--border-card-strong)',
         }}
       >
         <span
-          className="text-xs font-extrabold uppercase tracking-wider block"
+          className="text-xs font-black uppercase tracking-wider block"
           style={{ color: 'var(--accent-primary)' }}
         >
           Roman Numeral Translation
         </span>
         <div
-          className="text-3xl sm:text-4xl font-black font-serif tracking-widest"
-          style={{ color: 'var(--text-primary)' }}
+          className="inline-block px-6 py-2.5 rounded-2xl border-2 shadow-md"
+          style={{
+            backgroundColor: 'var(--bg-card)',
+            borderColor: 'var(--border-card-strong)',
+            color: 'var(--accent-primary)',
+          }}
         >
-          {currentResult.roman}
+          <div className="text-3xl sm:text-5xl font-black font-serif tracking-widest">
+            {currentResult.roman}
+          </div>
         </div>
-        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-          Standard Number: {numInput}
+        <p className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
+          Standard Hindu-Arabic Numeral: <span className="font-black text-sm" style={{ color: 'var(--text-primary)' }}>{numInput}</span>
         </p>
       </div>
 

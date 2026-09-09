@@ -78,7 +78,7 @@ export const AreaPerimeterSandbox: React.FC = () => {
             style={{
               backgroundColor: shape === s ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: shape === s ? 'var(--accent-primary)' : 'var(--border-card)',
-              color: shape === s ? '#ffffff' : 'var(--text-primary)',
+              color: shape === s ? 'var(--accent-contrast)' : 'var(--text-primary)',
             }}
           >
             {s}
