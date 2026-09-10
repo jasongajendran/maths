@@ -13,6 +13,8 @@ interface HeaderProps {
   onOpenFormulaDrawer: () => void;
   isMobileNavOpen: boolean;
   onToggleMobileNav: () => void;
+  isDesktopSidebarOpen?: boolean;
+  onToggleDesktopSidebar?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -21,7 +23,32 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenFormulaDrawer,
   isMobileNavOpen,
   onToggleMobileNav,
+  isDesktopSidebarOpen = true,
+  onToggleDesktopSidebar,
 }) => {
+  const [isDesktop, setIsDesktop] = React.useState<boolean>(() =>
+    typeof window !== 'undefined' ? window.innerWidth >= 1024 : false
+  );
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const handleMenuClick = () => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+      if (onToggleDesktopSidebar) {
+        onToggleDesktopSidebar();
+      }
+    } else {
+      onToggleMobileNav();
+    }
+  };
+
+  const isCurrentMenuOpen = isDesktop ? isDesktopSidebarOpen : isMobileNavOpen;
   const yearOptions: (YearLevel | 'All')[] = [
     'All',
     'Primary 5 / Year 5 (Age 9-10)',
@@ -40,19 +67,38 @@ export const Header: React.FC<HeaderProps> = ({
     >
       <div className="max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-2 sm:gap-4 w-full">
-          {/* Logo & Mobile Menu Toggle */}
+          {/* Logo & Navigation Menu Toggle (Visible across Mobile, Tablet Landscape, and Desktop) */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
+              id="header-menu-toggle-btn"
               type="button"
-              onClick={onToggleMobileNav}
-              className="lg:hidden p-1.5 sm:p-2 rounded-lg cursor-pointer transition-colors shrink-0"
+              onClick={handleMenuClick}
+              className="p-1.5 sm:p-2 rounded-lg cursor-pointer transition-all shrink-0 flex items-center justify-center border"
               style={{
-                color: 'var(--text-secondary)',
-                backgroundColor: 'var(--bg-card-subtle)',
+                color: isCurrentMenuOpen ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                backgroundColor: isCurrentMenuOpen ? 'var(--reading-highlight-bg)' : 'var(--bg-card-subtle)',
+                borderColor: isCurrentMenuOpen ? 'var(--accent-primary)' : 'var(--border-card)',
               }}
-              aria-label="Toggle Navigation Menu"
+              aria-label={
+                isDesktop
+                  ? isDesktopSidebarOpen
+                    ? 'Collapse Navigation Menu'
+                    : 'Expand Navigation Menu'
+                  : isMobileNavOpen
+                  ? 'Close Navigation Menu'
+                  : 'Open Navigation Menu'
+              }
+              title={
+                isDesktop
+                  ? isDesktopSidebarOpen
+                    ? 'Collapse Topic Menu'
+                    : 'Expand Topic Menu'
+                  : isMobileNavOpen
+                  ? 'Close Navigation Menu'
+                  : 'Open Navigation Menu'
+              }
             >
-              {isMobileNavOpen ? <X size={19} /> : <Menu size={19} />}
+              {!isDesktop && isMobileNavOpen ? <X size={19} /> : <Menu size={19} />}
             </button>
 
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">

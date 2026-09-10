@@ -8,6 +8,9 @@ export function cleanMathForSpeech(text: string): string {
 
   let speech = text;
 
+  // Clean redundant section labels: e.g. "Section 1: 1. The Roller..." -> "Section 1: The Roller..."
+  speech = speech.replace(/\bSection\s+(\d+):\s*\1\.\s*/gi, 'Section $1: ');
+
   // Replace Markdown headers and bold/italic syntax
   speech = speech.replace(/#{1,6}\s+/g, '');
   speech = speech.replace(/\*\*(.*?)\*\*/g, '$1');
@@ -18,6 +21,7 @@ export function cleanMathForSpeech(text: string): string {
   speech = speech.replace(/\\text\{([^}]+)\}/g, '$1');
   speech = speech.replace(/\\mathrm\{([^}]+)\}/g, '$1');
   speech = speech.replace(/\\mathbf\{([^}]+)\}/g, '$1');
+  speech = speech.replace(/\\underline\{([^}]+)\}/g, 'underlined $1');
 
   // LaTeX Vectors & Matrices
   speech = speech.replace(
@@ -71,10 +75,60 @@ export function cleanMathForSpeech(text: string): string {
   speech = speech.replace(/\\\\/g, ' ');
   speech = speech.replace(/\$/g, '');
 
+  // Clarify numbered pedagogical steps (e.g. "1. Underline... 2. Circle..." -> "Step 1: Underline... Step 2: Circle...")
+  speech = speech.replace(/(?<=(?:^|[.:!?\n]|\bto\b|\bnumber\b|\binstead:))\s*(\d+)\.\s+([A-Z])/gi, ' Step $1: $2');
+
   // Clean extra spaces and punctuation
   speech = speech.replace(/\s+/g, ' ').trim();
 
   return speech;
+}
+
+/**
+ * Splits text into bite-sized spoken chunks (100-130 characters max).
+ * This eliminates the 15-second browser speech synthesis cutoff bug completely,
+ * allows smooth continuous playback, and ensures crystal-clear articulation.
+ */
+export function splitTextIntoSpeechChunks(text: string, maxChars = 130): string[] {
+  if (!text) return [];
+
+  const clean = text.replace(/\s+/g, ' ').trim();
+  if (clean.length <= maxChars) {
+    return [clean];
+  }
+
+  // Split on sentence-ending punctuation: [.!?;\n] followed by space and capital letter, digit, or end
+  // Keeps decimal numbers like 3.14 intact
+  const rawSentences = clean.split(/(?<=[.!?;\n])\s+(?=[A-Z0-9])/);
+  const chunks: string[] = [];
+
+  for (let s of rawSentences) {
+    s = s.trim();
+    if (!s) continue;
+
+    if (s.length <= maxChars) {
+      chunks.push(s);
+    } else {
+      // Long sentence: split on natural clause boundaries (commas, colons, dashes, or conjunctions)
+      const subClauses = s.split(/(?<=[,:\u2014\-])\s+|(?=\b(?:and|but|which|where|because)\b\s+)/i);
+      let buffer = '';
+      for (const sub of subClauses) {
+        const subTrimmed = sub.trim();
+        if (!subTrimmed) continue;
+        if (!buffer) {
+          buffer = subTrimmed;
+        } else if (buffer.length + subTrimmed.length + 1 <= maxChars) {
+          buffer += ' ' + subTrimmed;
+        } else {
+          chunks.push(buffer);
+          buffer = subTrimmed;
+        }
+      }
+      if (buffer) chunks.push(buffer);
+    }
+  }
+
+  return chunks;
 }
 
 export interface AudioSpeechState {
@@ -96,7 +150,12 @@ class AudioSpeechManager {
   private _isSpeaking: boolean = false;
   private _isPaused: boolean = false;
   private _rate: number = 0.95;
-  private keepAliveTimer: any = null;
+  private _pitch: number = 1.0;
+  private chunks: string[] = [];
+  private currentChunkIndex: number = 0;
+  private playSessionId: number = 0;
+  private chunkWatchdogTimer: any = null;
+  private pendingStartTimer: any = null;
 
   constructor() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -111,12 +170,27 @@ class AudioSpeechManager {
           this.stop();
         }
       });
+
+      // When tab/window is hidden (e.g. tablet locked or switching apps), cleanly stop
+      // to avoid background audio hanging or zombie speaking states on mobile/tablet.
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && this._isSpeaking) {
+          this.stop();
+        }
+      });
     }
   }
 
   private initVoices() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      this.voices = window.speechSynthesis.getVoices();
+      try {
+        const v = window.speechSynthesis.getVoices();
+        if (v && v.length > 0) {
+          this.voices = v;
+        }
+      } catch (e) {
+        // Safe fallback
+      }
     }
   }
 
@@ -168,6 +242,19 @@ class AudioSpeechManager {
 
   public setRate(rate: number) {
     this._rate = Math.max(0.5, Math.min(2.0, rate));
+    if (this._isSpeaking && !this._isPaused && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      this.clearWatchdog();
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {
+        // safe fallback
+      }
+      setTimeout(() => {
+        if (this._isSpeaking && !this._isPaused) {
+          this.playCurrentChunk();
+        }
+      }, 50);
+    }
     this.notify();
   }
 
@@ -181,7 +268,7 @@ class AudioSpeechManager {
       return;
     }
 
-    // CRITICAL: If already playing or targeting this exact ID, clicking again STOPS it immediately!
+    // If already playing this exact ID, clicking again immediately STOPS it
     if (this.currentId === id) {
       this.stop();
       return;
@@ -193,109 +280,242 @@ class AudioSpeechManager {
     const spokenText = cleanMathForSpeech(rawText);
     if (!spokenText.trim()) return;
 
-    const rateToUse = options?.rate ?? this._rate;
-    const utterance = new SpeechSynthesisUtterance(spokenText);
-    utterance.rate = rateToUse;
-    utterance.pitch = options?.pitch ?? 1.0;
+    this.chunks = splitTextIntoSpeechChunks(spokenText);
+    if (this.chunks.length === 0) return;
 
-    // Pick preferred clear English voice (e.g. UK / US educational voice)
+    const session = ++this.playSessionId;
+    this.currentId = id;
+    this.currentLabel = options?.label || cleanMathForSpeech(rawText).slice(0, 60);
+    this._rate = options?.rate ?? this._rate;
+    this._pitch = options?.pitch ?? 1.0;
+    this.currentChunkIndex = 0;
+    this._isSpeaking = true;
+    this._isPaused = false;
+
+    this.notify();
+
+    // Android Tablet / Chrome Optimization:
+    // When cancelling previous speech and starting a new one, Android's Google TTS service
+    // needs ~60ms to release the audio output stream. Calling speak() after this delay guarantees
+    // the new audio starts instantly and is never dropped or silenced.
+    this.clearPendingStart();
+    this.pendingStartTimer = setTimeout(() => {
+      if (this.playSessionId === session && this._isSpeaking) {
+        this.playCurrentChunk();
+      }
+    }, 60);
+  }
+
+  private playCurrentChunk() {
+    this.clearWatchdog();
+    const sessionId = this.playSessionId;
+
+    if (
+      !this._isSpeaking ||
+      this._isPaused ||
+      this.currentChunkIndex >= this.chunks.length ||
+      typeof window === 'undefined' ||
+      !('speechSynthesis' in window)
+    ) {
+      this.finish();
+      return;
+    }
+
+    const chunkText = this.chunks[this.currentChunkIndex];
+    if (!chunkText || !chunkText.trim()) {
+      this.currentChunkIndex++;
+      this.playCurrentChunk();
+      return;
+    }
+
+    // Refresh voices if not yet cached (Android loads voices asynchronously)
+    if (this.voices.length === 0) {
+      this.initVoices();
+    }
+
+    const utterance = new SpeechSynthesisUtterance(chunkText);
+    utterance.rate = this._rate;
+    utterance.pitch = this._pitch;
+
+    // Pick preferred clear English voice (prioritizing UK / English educational voices)
     if (this.voices.length > 0) {
       const preferredVoice =
         this.voices.find(
-          (v) => (v.lang.startsWith('en-GB') || v.lang.startsWith('en-US')) && !v.name.includes('Google')
-        ) || this.voices.find((v) => v.lang.startsWith('en'));
+          (v) =>
+            (v.lang.startsWith('en-GB') || v.lang.startsWith('en-US')) &&
+            (v.name.includes('Natural') ||
+              v.name.includes('Google') ||
+              v.name.includes('Female') ||
+              v.name.includes('Hazel') ||
+              v.name.includes('Serena'))
+        ) ||
+        this.voices.find((v) => v.lang.startsWith('en-GB')) ||
+        this.voices.find((v) => v.lang.startsWith('en-US')) ||
+        this.voices.find((v) => v.lang.startsWith('en'));
       if (preferredVoice) {
         utterance.voice = preferredVoice;
       }
     }
 
-    this.currentId = id;
-    this.currentLabel = options?.label || cleanMathForSpeech(rawText).slice(0, 60);
     this.currentUtterance = utterance;
-    this._isSpeaking = true;
-    this._isPaused = false;
+
+    // Retain global reference in a persistent Set on window to prevent V8 Garbage Collection
+    // on Android tablets and mobile browsers mid-speech.
+    if (typeof window !== 'undefined') {
+      if (!(window as any).__ttsUtteranceAnchor) {
+        (window as any).__ttsUtteranceAnchor = new Set();
+      }
+      (window as any).__ttsUtteranceAnchor.add(utterance);
+    }
+
+    let chunkResolved = false;
+    const advanceToNext = () => {
+      if (chunkResolved) return;
+      chunkResolved = true;
+      this.clearWatchdog();
+
+      if (typeof window !== 'undefined' && (window as any).__ttsUtteranceAnchor) {
+        (window as any).__ttsUtteranceAnchor.delete(utterance);
+      }
+
+      if (this.playSessionId !== sessionId || !this._isSpeaking) return;
+
+      this.currentChunkIndex++;
+      if (this.currentChunkIndex < this.chunks.length) {
+        this.playCurrentChunk();
+      } else {
+        this.finish();
+      }
+    };
 
     utterance.onstart = () => {
+      if (this.playSessionId !== sessionId) return;
       this._isSpeaking = true;
-      this._isPaused = false;
-      this.startKeepAlive();
-      this.notify();
-    };
-
-    utterance.onpause = () => {
-      this._isPaused = true;
-      this.notify();
-    };
-
-    utterance.onresume = () => {
       this._isPaused = false;
       this.notify();
     };
 
     utterance.onend = () => {
-      this.clearKeepAlive();
-      if (this.currentId === id) {
-        this.currentId = null;
-        this.currentLabel = null;
-        this.currentUtterance = null;
-        this._isSpeaking = false;
-        this._isPaused = false;
-        this.notify();
-      }
+      advanceToNext();
     };
 
     utterance.onerror = (e) => {
-      this.clearKeepAlive();
-      if (e.error !== 'interrupted' && e.error !== 'canceled') {
-        console.error('Speech synthesis error:', e);
+      if (this.playSessionId !== sessionId) return;
+      // 'interrupted' or 'canceled' happens when the user intentionally stops or switches topics
+      if (e.error === 'interrupted' || e.error === 'canceled') {
+        return;
       }
-      this.currentId = null;
-      this.currentLabel = null;
-      this.currentUtterance = null;
-      this._isSpeaking = false;
-      this._isPaused = false;
-      this.notify();
+      console.warn('Speech chunk event notice:', e.error);
+      advanceToNext();
     };
 
+    // Watchdog Timer for Android Tablets / Chrome:
+    // On Android, Google TTS occasionally drops the 'onend' event after finishing an utterance.
+    // This watchdog calculates the maximum expected time for this chunk based on word count.
+    // If 'onend' doesn't fire within that time, the watchdog safely auto-advances so the player
+    // never hangs or stays open indefinitely.
+    const words = chunkText.trim().split(/\s+/).length;
+    const expectedDurationMs = Math.max(3000, ((words * 500) / this._rate) + 3000);
+
+    this.chunkWatchdogTimer = setTimeout(() => {
+      if (this.playSessionId === sessionId && this._isSpeaking && !this._isPaused) {
+        advanceToNext();
+      }
+    }, expectedDurationMs);
+
     try {
-      // In some browsers, cancel before speak helps flush old queues
-      window.speechSynthesis.cancel();
       window.speechSynthesis.speak(utterance);
     } catch (err) {
       console.error('Failed to invoke window.speechSynthesis.speak:', err);
-      this.stop();
-      return;
+      advanceToNext();
     }
+  }
 
+  private clearWatchdog() {
+    if (this.chunkWatchdogTimer) {
+      clearTimeout(this.chunkWatchdogTimer);
+      this.chunkWatchdogTimer = null;
+    }
+  }
+
+  private clearPendingStart() {
+    if (this.pendingStartTimer) {
+      clearTimeout(this.pendingStartTimer);
+      this.pendingStartTimer = null;
+    }
+  }
+
+  private finish() {
+    this.clearWatchdog();
+    this.clearPendingStart();
+    this._isSpeaking = false;
+    this._isPaused = false;
+    this.currentId = null;
+    this.currentLabel = null;
+    this.currentUtterance = null;
+    this.chunks = [];
+    this.currentChunkIndex = 0;
+    if (typeof window !== 'undefined' && (window as any).__ttsUtteranceAnchor) {
+      (window as any).__ttsUtteranceAnchor.clear();
+    }
     this.notify();
   }
 
   public pause() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window && this._isSpeaking) {
-      window.speechSynthesis.pause();
       this._isPaused = true;
+      this.clearWatchdog();
+      this.clearPendingStart();
+
+      // On Android Chrome, pause() behaves as cancel() and breaks the queue.
+      // Therefore, we cleanly cancel speech while keeping currentChunkIndex intact.
+      // When resume() is clicked, it will seamlessly restart from the current sentence.
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {
+        // safe fallback
+      }
       this.notify();
     }
   }
 
   public resume() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window && this._isPaused) {
-      window.speechSynthesis.resume();
       this._isPaused = false;
       this.notify();
+
+      // Give 50ms for the Android audio driver to settle, then play the current chunk
+      setTimeout(() => {
+        if (this._isSpeaking && !this._isPaused) {
+          this.playCurrentChunk();
+        }
+      }, 50);
     }
   }
 
   public stop() {
-    this.clearKeepAlive();
+    this.playSessionId++; // Immediately invalidates any pending timers or callbacks
+    this.clearWatchdog();
+    this.clearPendingStart();
+
+    // Immediately reset active state synchronously so the UI and floating controller close instantly
+    this._isSpeaking = false;
+    this._isPaused = false;
+    this.chunks = [];
+    this.currentChunkIndex = 0;
+    this.currentId = null;
+    this.currentLabel = null;
+
+    if (this.currentUtterance) {
+      this.currentUtterance.onstart = null;
+      this.currentUtterance.onend = null;
+      this.currentUtterance.onerror = null;
+      this.currentUtterance.onpause = null;
+      this.currentUtterance.onresume = null;
+      this.currentUtterance = null;
+    }
+
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      if (this.currentUtterance) {
-        this.currentUtterance.onstart = null;
-        this.currentUtterance.onend = null;
-        this.currentUtterance.onerror = null;
-        this.currentUtterance.onpause = null;
-        this.currentUtterance.onresume = null;
-      }
       try {
         window.speechSynthesis.cancel();
         if (window.speechSynthesis.paused) {
@@ -304,36 +524,12 @@ class AudioSpeechManager {
       } catch (e) {
         // Safe fallback
       }
-    }
-    this.currentId = null;
-    this.currentLabel = null;
-    this.currentUtterance = null;
-    this._isSpeaking = false;
-    this._isPaused = false;
-    this.notify();
-  }
-
-  /**
-   * Chromium browsers have a bug where long utterances pause after 15 seconds.
-   * This keep-alive interval safely pulses pause/resume to prevent stalling.
-   */
-  private startKeepAlive() {
-    this.clearKeepAlive();
-    this.keepAliveTimer = setInterval(() => {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        if (this._isSpeaking && !this._isPaused && window.speechSynthesis.speaking) {
-          window.speechSynthesis.pause();
-          window.speechSynthesis.resume();
-        }
+      if ((window as any).__ttsUtteranceAnchor) {
+        (window as any).__ttsUtteranceAnchor.clear();
       }
-    }, 10000);
-  }
-
-  private clearKeepAlive() {
-    if (this.keepAliveTimer) {
-      clearInterval(this.keepAliveTimer);
-      this.keepAliveTimer = null;
     }
+
+    this.notify();
   }
 }
 

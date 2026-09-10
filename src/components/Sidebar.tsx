@@ -9,6 +9,7 @@ import {
   BarChart2,
   ChevronRight,
   X,
+  PanelLeftClose,
 } from 'lucide-react';
 import { MathTopic, CategoryId } from '../types/math';
 
@@ -20,6 +21,8 @@ interface SidebarProps {
   onSelectCategory: (cat: CategoryId | 'all') => void;
   isOpenOnMobile: boolean;
   onCloseMobile: () => void;
+  isDesktopOpen?: boolean;
+  onToggleDesktop?: () => void;
 }
 
 const categoryMeta: Record<
@@ -43,6 +46,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectCategory,
   isOpenOnMobile,
   onCloseMobile,
+  isDesktopOpen = true,
+  onToggleDesktop,
 }) => {
   const categories: (CategoryId | 'all')[] = [
     'all',
@@ -69,38 +74,65 @@ export const Sidebar: React.FC<SidebarProps> = ({
         />
       )}
 
-      {/* Navigation Drawer (mobile) / Sticky Column (desktop) */}
+      {/* Navigation Drawer (mobile) / Sticky Column (desktop & tablet landscape) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 transition-transform duration-300 ease-in-out lg:translate-x-0 overflow-hidden flex flex-col lg:static lg:z-10 lg:w-72 xl:w-80 lg:h-[calc(100vh-6.5rem)] lg:rounded-2xl lg:border lg:sticky lg:top-20 shrink-0 ${
-          isOpenOnMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
+        id="topic-navigator-sidebar"
+        className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 transition-all duration-300 ease-in-out overflow-hidden flex flex-col ${
+          isOpenOnMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+        } ${
+          isDesktopOpen
+            ? 'lg:translate-x-0 lg:static lg:z-10 lg:w-72 xl:w-80 lg:h-[calc(100vh-6.5rem)] lg:rounded-2xl lg:border lg:sticky lg:top-20 shrink-0'
+            : 'lg:hidden'
         }`}
         style={{
           backgroundColor: 'var(--bg-card)',
           borderColor: 'var(--border-card-strong)',
         }}
       >
-        {/* Mobile-only header bar */}
+        {/* Header bar with Collapse/Close Button (Mobile, Tablet Landscape & Desktop) */}
         <div
-          className="lg:hidden flex items-center justify-between p-3.5 border-b"
+          className="flex items-center justify-between p-3.5 border-b shrink-0"
           style={{
             borderColor: 'var(--border-card)',
             backgroundColor: 'var(--bg-card-subtle)',
           }}
         >
-          <span className="font-extrabold text-sm" style={{ color: 'var(--text-primary)' }}>
-            Topic Navigator
-          </span>
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="font-extrabold text-sm truncate" style={{ color: 'var(--text-primary)' }}>
+              Topic Navigator
+            </span>
+            <span
+              className="text-[10px] font-bold px-1.5 py-0.5 rounded border shrink-0"
+              style={{
+                backgroundColor: 'var(--badge-bg)',
+                color: 'var(--badge-text)',
+                borderColor: 'var(--border-card-strong)',
+              }}
+            >
+              {topics.length}
+            </span>
+          </div>
           <button
+            id="sidebar-collapse-btn"
             type="button"
-            onClick={onCloseMobile}
-            className="p-1 rounded-lg border cursor-pointer"
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+                if (onToggleDesktop) onToggleDesktop();
+              } else {
+                onCloseMobile();
+              }
+            }}
+            className="p-1 rounded-lg border cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center"
             style={{
               borderColor: 'var(--border-card)',
               color: 'var(--text-secondary)',
+              backgroundColor: 'var(--bg-card)',
             }}
-            aria-label="Close Navigator"
+            aria-label="Collapse Menu"
+            title="Collapse Menu"
           >
-            <X size={18} />
+            <X size={17} className="lg:hidden" />
+            <PanelLeftClose size={17} className="hidden lg:block" />
           </button>
         </div>
 
