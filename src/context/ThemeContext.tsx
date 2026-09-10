@@ -31,7 +31,7 @@ export const PASTEL_THEMES: PastelTheme[] = [
     shortDesc: 'Deep Oxford midnight navy with crisp chalk white text & royal cobalt',
     canvasHex: '#0b1329',
     cardHex: '#132042',
-    accentHex: '#3b82f6',
+    accentHex: '#2563eb',
     isDark: true,
   },
   {

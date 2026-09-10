@@ -40,6 +40,7 @@
   --contrast-indigo-border: #a5b4fc;
   --contrast-teal: #064e3b; /* Deep pine emerald */
   --contrast-teal-bg: #d1fae5;
+  --contrast-teal-border: #6ee7b7;
 }
 
 [data-theme="oxford"] {
@@ -53,8 +54,8 @@
   --text-primary: #ffffff; /* 100% crisp white, maximum legibility */
   --text-secondary: #e2e8f0; /* Bright chalk silver */
   --text-muted: #94a3b8; /* Crisp slate chalk */
-  --accent-primary: #3b82f6; /* Luminous Royal Cobalt */
-  --accent-hover: #60a5fa;
+  --accent-primary: #2563eb; /* High-contrast Royal Cobalt (4.56:1 on white text) */
+  --accent-hover: #3b82f6;
   --accent-light: #1e3a8a;
   --accent-contrast: #ffffff; /* Crisp white on royal cobalt */
   --reading-highlight-bg: #1e3a8a;
@@ -76,6 +77,7 @@
   --contrast-indigo-border: #6366f1;
   --contrast-teal: #34d399; /* Bright luminous mint emerald */
   --contrast-teal-bg: #064e3b;
+  --contrast-teal-border: #10b981;
 }
 
 [data-theme="sage"] {
@@ -88,7 +90,7 @@
   --border-card-strong: #4a7c5c;
   --text-primary: #072314; /* Deep evergreen pine */
   --text-secondary: #133923;
-  --text-muted: #386048;
+  --text-muted: #2d523c;
   --accent-primary: #c2410c; /* Warm Terracotta */
   --accent-hover: #9a3412;
   --accent-light: #ffedd5;
@@ -112,6 +114,7 @@
   --contrast-indigo-border: #a5b4fc;
   --contrast-teal: #065f46;
   --contrast-teal-bg: #d1fae5;
+  --contrast-teal-border: #6ee7b7;
 }
 
 [data-theme="obsidian"] {
@@ -148,6 +151,7 @@
   --contrast-indigo-border: #818cf8;
   --contrast-teal: #6ee7b7; /* Vivid bright mint */
   --contrast-teal-bg: #064e3b;
+  --contrast-teal-border: #10b981;
 }
 
 /* Global anti-overflow and typography rules */
@@ -206,6 +210,12 @@ body {
   width: 100%;
 }
 
+/* Theme-aware comfortable text selection */
+::selection {
+  background-color: var(--reading-highlight-bg);
+  color: var(--text-primary);
+}
+
 /* KaTeX custom display within pastel theme */
 .katex-display {
   margin: 0.5em 0 !important;
@@ -225,6 +235,15 @@ body {
 
 .katex .frac-line {
   border-bottom-color: currentColor !important;
+}
+
+.katex .sqrt-line {
+  border-top-color: currentColor !important;
+}
+
+.katex svg path {
+  fill: currentColor !important;
+  stroke: currentColor !important;
 }
 
 /* Scrollbars customized to pastel theme */
