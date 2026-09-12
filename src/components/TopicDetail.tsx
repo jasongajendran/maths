@@ -20,6 +20,8 @@ import {
   ArrowRight,
   ArrowLeft,
   Cpu,
+  Video,
+  Play,
 } from 'lucide-react';
 import { MathTopic } from '../types/math';
 import { MathView } from './MathView';
@@ -32,6 +34,7 @@ import { AreaPerimeterSandbox } from './tools/AreaPerimeterSandbox';
 import { RomanNumeralsConverter } from './tools/RomanNumeralsConverter';
 import { AssessmentView } from './AssessmentView';
 import { getAssessmentForTopic } from '../data/assessments';
+import { VideoTutoringClip } from './video/VideoTutoringClip';
 
 interface TopicDetailProps {
   topic: MathTopic;
@@ -41,7 +44,7 @@ interface TopicDetailProps {
   initialTab?: TabType;
 }
 
-type TabType = 'theory' | 'tips' | 'formulas' | 'practice' | 'tools' | 'assessment';
+type TabType = 'theory' | 'video' | 'tips' | 'formulas' | 'practice' | 'tools' | 'assessment';
 
 export const TopicDetail: React.FC<TopicDetailProps> = ({
   topic,
@@ -214,6 +217,58 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
           >
             {topic.summary}
           </p>
+
+          {/* Masterclass Video Tutoring Promotional Banner */}
+          {topic.id === 'fractions-mastery' && (
+            <div
+              className="p-3.5 sm:p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-3.5 shadow-2xs mt-3 tactile-card"
+              style={{
+                backgroundColor: 'var(--reading-highlight-bg)',
+                borderColor: 'var(--accent-primary)',
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border shadow-2xs"
+                  style={{
+                    backgroundColor: 'var(--accent-primary)',
+                    color: 'var(--accent-contrast)',
+                    borderColor: 'var(--accent-primary)',
+                  }}
+                >
+                  <Video size={22} className="animate-pulse" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="font-extrabold text-sm sm:text-base tracking-tight" style={{ color: 'var(--text-primary)' }}>
+                      Interactive Video Tutoring Masterclass
+                    </h4>
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full uppercase bg-amber-500 text-stone-900 border border-amber-600">
+                      Mrs. Davies (Year 5/6 Lead)
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-medium mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                    Watch the Pizza Paradox, LCM Ladder, Butterfly Method & KFC Division explained to the fullest!
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                id="watch-video-banner-btn"
+                onClick={() => setActiveTab('video')}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold border transition-all cursor-pointer shadow-xs active:scale-95 flex items-center justify-center gap-2 shrink-0 tactile-btn"
+                style={{
+                  backgroundColor: 'var(--accent-primary)',
+                  borderColor: 'var(--accent-primary)',
+                  color: 'var(--accent-contrast)',
+                }}
+              >
+                <Play size={14} className="fill-current" />
+                <span>Watch Teacher Lesson</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Navigation Tabs - Cleanly outside any speech container */}
@@ -234,6 +289,34 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
             <BookOpen size={16} />
             <span>Concepts & Worked Examples</span>
           </button>
+
+          {topic.id === 'fractions-mastery' && (
+            <button
+              type="button"
+              id="tab-topic-video-btn"
+              onClick={() => setActiveTab('video')}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs relative tactile-btn"
+              style={{
+                backgroundColor: activeTab === 'video' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
+                borderColor: activeTab === 'video' ? 'var(--accent-primary)' : 'var(--border-card)',
+                color: activeTab === 'video' ? 'var(--accent-contrast)' : 'var(--text-primary)',
+              }}
+              title="Watch interactive teacher video tutoring lesson"
+            >
+              <Video size={16} />
+              <span>Video Tutoring Clip</span>
+              <span
+                className="text-[10px] font-black px-1.5 py-0.5 rounded-full uppercase ml-0.5 border"
+                style={{
+                  backgroundColor: activeTab === 'video' ? 'var(--bg-card)' : 'var(--badge-bg)',
+                  color: activeTab === 'video' ? 'var(--text-primary)' : 'var(--badge-text)',
+                  borderColor: 'var(--border-card)',
+                }}
+              >
+                Teacher Clip
+              </span>
+            </button>
+          )}
 
           <button
             type="button"
@@ -322,6 +405,16 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
           )}
         </div>
       </div>
+
+      {/* Tab: Video Tutoring Lesson Masterclass */}
+      {activeTab === 'video' && topic.id === 'fractions-mastery' && (
+        <div id="video-lesson-anchor" className="space-y-6">
+          <VideoTutoringClip
+            onGoToAssessment={() => setActiveTab('assessment')}
+            onGoToTheory={() => setActiveTab('theory')}
+          />
+        </div>
+      )}
 
       {/* Tab 1: Concepts & Worked Examples */}
       {activeTab === 'theory' && (

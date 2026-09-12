@@ -17,11 +17,12 @@ export function cleanMathForSpeech(text: string): string {
   speech = speech.replace(/\*(.*?)\*/g, '$1');
   speech = speech.replace(/`([^`]+)`/g, '$1');
 
-  // Strip LaTeX text commands: \text{something} -> something
+  // Strip LaTeX text and formatting commands
   speech = speech.replace(/\\text\{([^}]+)\}/g, '$1');
   speech = speech.replace(/\\mathrm\{([^}]+)\}/g, '$1');
   speech = speech.replace(/\\mathbf\{([^}]+)\}/g, '$1');
-  speech = speech.replace(/\\underline\{([^}]+)\}/g, 'underlined $1');
+  speech = speech.replace(/\\mathit\{([^}]+)\}/g, '$1');
+  speech = speech.replace(/\\underline\{([^}]+)\}/g, '$1');
 
   // LaTeX Vectors & Matrices
   speech = speech.replace(
@@ -30,9 +31,15 @@ export function cleanMathForSpeech(text: string): string {
   );
   speech = speech.replace(/\\vec\{([^}]+)\}/g, 'vector $1');
 
-  // Fractions: \frac{a}{b} -> a over b
-  speech = speech.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1 over $2');
-  // Simple fractions like 3/4 or 1/2 (avoid matching dates like 2024/09)
+  // Mixed numbers first: 1\frac{3}{20} or 1 3/20 -> 1 and 3 over 20
+  speech = speech.replace(/(\d+)\s*\\?frac\{([^}]+)\}\{([^}]+)\}/gi, '$1 and $2 over $3');
+  speech = speech.replace(/(\d+)\s*\\?frac\s*(\d)\s*(\d)/gi, '$1 and $2 over $3');
+  speech = speech.replace(/\b(\d+)\s+(\d+)\/(\d+)\b/g, '$1 and $2 over $3');
+
+  // Fractions: \frac{a}{b}, \frac25, frac25, or 2/5 -> a over b
+  speech = speech.replace(/\\?frac\{([^}]+)\}\{([^}]+)\}/gi, '$1 over $2');
+  speech = speech.replace(/\\?frac\s*([0-9a-zA-Z])\s*([0-9a-zA-Z])/gi, '$1 over $2');
+  // Simple fractions like 3/4 or 1/2
   speech = speech.replace(/\b(\d+)\/(\d+)\b/g, '$1 over $2');
 
   // Square roots: \sqrt{x} or \sqrt[n]{x}
@@ -51,10 +58,13 @@ export function cleanMathForSpeech(text: string): string {
   speech = speech.replace(/([a-zA-Z0-9)]+)\^3\b/g, '$1 cubed');
   speech = speech.replace(/([a-zA-Z0-9)]+)\^\{?(-?\d+|[a-zA-Z]+)\}?/g, '$1 to the power of $2');
 
+  // LaTeX spacing commands: \; \, \: \! \quad \qquad
+  speech = speech.replace(/\\[,;:! ]/g, ' ');
+  speech = speech.replace(/\\quad|\\qquad/g, ' ');
+
   // Special math operators & symbols
   speech = speech.replace(/\\implies/g, ' which gives ');
-  speech = speech.replace(/\\to|\\rightarrow/g, ' maps to ');
-  speech = speech.replace(/\\quad|\\qquad/g, ' ');
+  speech = speech.replace(/\\to|\\rightarrow/g, ' becomes ');
   speech = speech.replace(/\\cdot/g, ' times ');
   speech = speech.replace(/\\pm|±/g, ' plus or minus ');
   speech = speech.replace(/\\times|×/g, ' times ');
@@ -62,17 +72,23 @@ export function cleanMathForSpeech(text: string): string {
   speech = speech.replace(/\\neq|≠/g, ' is not equal to ');
   speech = speech.replace(/\\leq|\\le|≤/g, ' is less than or equal to ');
   speech = speech.replace(/\\geq|\\ge|≥/g, ' is greater than or equal to ');
-  speech = speech.replace(/\\approx|≈/g, ' is approximately equal to ');
+  speech = speech.replace(/\\approx|≈/g, ' is approximately ');
   speech = speech.replace(/\\pi|π/g, ' pi ');
   speech = speech.replace(/\\theta|θ/g, ' theta ');
   speech = speech.replace(/\\degree|°/g, ' degrees ');
   speech = speech.replace(/\\%/g, ' percent');
   speech = speech.replace(/%/g, ' percent');
 
-  // Clean remaining LaTeX commands, brackets, and dollar signs
-  speech = speech.replace(/\\([a-zA-Z]+)/g, '$1');
+  // Typographic quotation marks & dashes
+  speech = speech.replace(/[“”]/g, '"');
+  speech = speech.replace(/[‘’]/g, "'");
+  speech = speech.replace(/[—–]/g, ', ');
+
+  // Clean any remaining LaTeX commands (\foo -> empty or word)
+  speech = speech.replace(/\\[a-zA-Z]+/g, ' ');
   speech = speech.replace(/[{}]/g, '');
   speech = speech.replace(/\\\\/g, ' ');
+  speech = speech.replace(/\\/g, '');
   speech = speech.replace(/\$/g, '');
 
   // Clarify numbered pedagogical steps (e.g. "1. Underline... 2. Circle..." -> "Step 1: Underline... Step 2: Circle...")
@@ -137,6 +153,9 @@ export interface AudioSpeechState {
   isPaused: boolean;
   label: string | null;
   rate: number;
+  currentChunkText?: string;
+  currentChunkIndex?: number;
+  totalChunks?: number;
 }
 
 export type AudioListener = (state: AudioSpeechState) => void;
@@ -156,6 +175,8 @@ class AudioSpeechManager {
   private playSessionId: number = 0;
   private chunkWatchdogTimer: any = null;
   private pendingStartTimer: any = null;
+  private activeChunkCallback: ((index: number, total: number, chunkText: string) => void) | null = null;
+  private activeEndCallback: (() => void) | null = null;
 
   constructor() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -210,6 +231,9 @@ class AudioSpeechManager {
       isPaused: this._isPaused,
       label: this.currentLabel,
       rate: this._rate,
+      currentChunkText: this.chunks[this.currentChunkIndex] || undefined,
+      currentChunkIndex: this.currentChunkIndex,
+      totalChunks: this.chunks.length,
     };
   }
 
@@ -261,15 +285,22 @@ class AudioSpeechManager {
   public speak(
     id: string,
     rawText: string,
-    options?: { label?: string; rate?: number; pitch?: number }
+    options?: {
+      label?: string;
+      rate?: number;
+      pitch?: number;
+      forcePlay?: boolean;
+      onChunkChange?: (index: number, total: number, chunkText: string) => void;
+      onEnd?: () => void;
+    }
   ) {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       console.warn('Speech synthesis is not supported on this browser.');
       return;
     }
 
-    // If already playing this exact ID, clicking again immediately STOPS it
-    if (this.currentId === id) {
+    // If already playing this exact ID and not forcing play, clicking again immediately STOPS it
+    if (this.currentId === id && !options?.forcePlay) {
       this.stop();
       return;
     }
@@ -291,6 +322,8 @@ class AudioSpeechManager {
     this.currentChunkIndex = 0;
     this._isSpeaking = true;
     this._isPaused = false;
+    this.activeChunkCallback = options?.onChunkChange || null;
+    this.activeEndCallback = options?.onEnd || null;
 
     this.notify();
 
@@ -317,7 +350,9 @@ class AudioSpeechManager {
       typeof window === 'undefined' ||
       !('speechSynthesis' in window)
     ) {
+      const endCb = this.activeEndCallback;
       this.finish();
+      endCb?.();
       return;
     }
 
@@ -326,6 +361,16 @@ class AudioSpeechManager {
       this.currentChunkIndex++;
       this.playCurrentChunk();
       return;
+    }
+
+    // Notify listeners and active chunk callback
+    this.notify();
+    if (this.activeChunkCallback) {
+      try {
+        this.activeChunkCallback(this.currentChunkIndex, this.chunks.length, chunkText);
+      } catch (err) {
+        console.error('ActiveChunkCallback error:', err);
+      }
     }
 
     // Refresh voices if not yet cached (Android loads voices asynchronously)
@@ -384,7 +429,9 @@ class AudioSpeechManager {
       if (this.currentChunkIndex < this.chunks.length) {
         this.playCurrentChunk();
       } else {
+        const endCb = this.activeEndCallback;
         this.finish();
+        endCb?.();
       }
     };
 
@@ -505,6 +552,8 @@ class AudioSpeechManager {
     this.currentChunkIndex = 0;
     this.currentId = null;
     this.currentLabel = null;
+    this.activeChunkCallback = null;
+    this.activeEndCallback = null;
 
     if (this.currentUtterance) {
       this.currentUtterance.onstart = null;

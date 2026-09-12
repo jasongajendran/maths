@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   Sparkles,
+  Video,
 } from 'lucide-react';
 import { MathTopic, CategoryId } from '../types/math';
 import { allAssessments, getAssessmentForTopic } from '../data/assessments';
@@ -293,6 +294,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             >
                               {t.yearLevel.replace(' (Age 9-10)', '').replace(' (Age 10-11)', '').replace(' (Age 11-12)', '').replace(' (Age 12+)', '')}
                             </span>
+                            {t.id === 'fractions-mastery' && (
+                              <span
+                                className="text-[10px] font-bold px-1.5 py-0.5 rounded-md border flex items-center gap-1"
+                                style={{
+                                  backgroundColor: 'var(--contrast-amber-bg)',
+                                  color: 'var(--contrast-amber-text)',
+                                  borderColor: 'var(--contrast-amber-border)',
+                                }}
+                              >
+                                <Video size={10} className="shrink-0" />
+                                <span>Video Lesson</span>
+                              </span>
+                            )}
                             {t.toolType && (
                               <span
                                 className="text-[10px] font-bold px-1.5 py-0.5 rounded-md border"
