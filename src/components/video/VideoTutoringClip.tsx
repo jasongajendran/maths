@@ -25,6 +25,7 @@ import {
 import { fractionsMasterclassLesson, VideoChapter } from '../../data/videoLessons/fractionsLessonData';
 import { WhiteboardVisuals } from './WhiteboardVisuals';
 import { audioSpeech } from '../../utils/audioSpeech';
+import { soundEffects } from '../../utils/soundEffects';
 import { wakeLockController } from '../../utils/wakeLock';
 
 interface VideoTutoringClipProps {
@@ -255,6 +256,11 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
 
   const handleCheckpointAnswer = (isCorrect: boolean, feedback: string) => {
     setQuizResult({ isCorrect, feedback });
+    if (isCorrect) {
+      soundEffects.playCorrectSound();
+    } else {
+      soundEffects.playWrongSound();
+    }
     if (hasVoiceAudio) {
       audioSpeech.speak(
         `video-quiz-feedback-${Date.now()}`,

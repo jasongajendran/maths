@@ -23,10 +23,13 @@ import {
   Edit3,
   BookmarkCheck,
   Zap,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { TopicAssessment, AssessmentQuestion, QuestionUserAttempt, AssessmentRecord } from '../types/assessment';
 import { MathView } from './MathView';
 import { AudioButton } from './AudioButton';
+import { soundEffects } from '../utils/soundEffects';
 import {
   getAssessmentRecord,
   saveAssessmentRecord,
@@ -58,8 +61,57 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
   const [numberInput, setNumberInput] = useState<string>('');
   const [matchedPairs, setMatchedPairs] = useState<Record<string, string>>({});
   const [selectedLeftKey, setSelectedLeftKey] = useState<string | null>(null);
+  const [shuffledRightItems, setShuffledRightItems] = useState<string[]>([]);
   const [orderedStepIndices, setOrderedStepIndices] = useState<number[]>([]);
   const [fillBlankChoice, setFillBlankChoice] = useState<string>('');
+  const [soundFxEnabled, setSoundFxEnabled] = useState<boolean>(() => soundEffects.getIsEnabled());
+
+  const handleToggleSoundFx = () => {
+    const nextState = soundEffects.toggle();
+    setSoundFxEnabled(nextState);
+  };
+
+  // Helper to ensure right-hand matching column is reliably scrambled and never pre-matched row-by-row
+  const getScrambledRightItems = (pairs: { left: string; right: string }[]): string[] => {
+    const originals = pairs.map((p) => p.right);
+    if (originals.length <= 1) return originals;
+
+    // Use a deterministic seed/shift plus derangement check to guarantee no matching row pairs on initial load
+    let scrambled = [...originals];
+    for (let attempt = 0; attempt < 30; attempt++) {
+      for (let i = scrambled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [scrambled[i], scrambled[j]] = [scrambled[j], scrambled[i]];
+      }
+      // Derangement check: verify that no item is in its exact original row position
+      const samePosCount = scrambled.filter((item, idx) => item === originals[idx]).length;
+      if (samePosCount === 0 || (originals.length > 2 && samePosCount <= 1)) {
+        return scrambled;
+      }
+    }
+    // Fallback: guaranteed cyclic shift
+    const shift = Math.max(1, Math.floor(originals.length / 2));
+    return [...originals.slice(shift), ...originals.slice(0, shift)];
+  };
+
+  // Helper to ensure step sequence items start scrambled (not pre-solved)
+  const getScrambledStepIndices = (count: number, correctOrder?: number[]): number[] => {
+    const indices = Array.from({ length: count }, (_, i) => i);
+    if (count <= 1) return indices;
+
+    const target = correctOrder && correctOrder.length === count ? correctOrder : indices;
+    let scrambled = [...indices];
+    for (let attempt = 0; attempt < 30; attempt++) {
+      for (let i = scrambled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [scrambled[i], scrambled[j]] = [scrambled[j], scrambled[i]];
+      }
+      if (JSON.stringify(scrambled) !== JSON.stringify(target)) {
+        return scrambled;
+      }
+    }
+    return [...indices].reverse();
+  };
 
   // Per-question UI expansion toggles
   const [showExplanation, setShowExplanation] = useState<boolean>(false);
@@ -127,9 +179,21 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
       setSelectedLeftKey(null);
     }
 
-    // If order-steps, initialize with default or scrambled order
+    // Scramble right-side matching items so they are never in the same row order as the left side
+    if (currentQuestion.type === 'match' && currentQuestion.matchPairs) {
+      setShuffledRightItems(getScrambledRightItems(currentQuestion.matchPairs));
+      setMatchedPairs({});
+      setSelectedLeftKey(null);
+    }
+
+    // If order-steps, initialize with scrambled order so items are not pre-solved
     if (currentQuestion.type === 'order-steps' && currentQuestion.sequenceItems) {
-      setOrderedStepIndices(currentQuestion.sequenceItems.map((_, i) => i));
+      setOrderedStepIndices(
+        getScrambledStepIndices(
+          currentQuestion.sequenceItems.length,
+          currentQuestion.correctOrder
+        )
+      );
     }
   }, [currentQuestion?.id, record.attempts]);
 
@@ -219,6 +283,7 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
     setRecord(updated);
 
     if (isCorrect) {
+      soundEffects.playCorrectSound();
       try {
         confetti({
           particleCount: 50,
@@ -228,6 +293,18 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
       } catch {
         // Safe fallback
       }
+
+      // If user has now answered all questions in assessment correctly, celebrate with a victory fanfare!
+      const allCorrect =
+        assessment.questions.length > 0 &&
+        assessment.questions.every((q) => updated.attempts[q.id]?.isCorrect);
+      if (allCorrect) {
+        setTimeout(() => {
+          soundEffects.playVictoryFanfare();
+        }, 600);
+      }
+    } else {
+      soundEffects.playWrongSound();
     }
   };
 
@@ -241,6 +318,18 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
     setSelectedLeftKey(null);
     setShowExplanation(false);
     setShowHint(false);
+
+    if (currentQuestion.type === 'match' && currentQuestion.matchPairs) {
+      setShuffledRightItems(getScrambledRightItems(currentQuestion.matchPairs));
+    }
+    if (currentQuestion.type === 'order-steps' && currentQuestion.sequenceItems) {
+      setOrderedStepIndices(
+        getScrambledStepIndices(
+          currentQuestion.sequenceItems.length,
+          currentQuestion.correctOrder
+        )
+      );
+    }
 
     // Update attempt record to allow fresh attempt
     const updated = { ...record };
@@ -263,13 +352,48 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
 
   // Matching pair handler
   const handleMatchClick = (side: 'left' | 'right', value: string) => {
+    if (currentAttempt && currentAttempt.isCorrect) return;
+
     if (side === 'left') {
-      setSelectedLeftKey(value);
-    } else if (side === 'right' && selectedLeftKey) {
-      setMatchedPairs((prev) => ({
-        ...prev,
-        [selectedLeftKey]: value,
-      }));
+      // Toggle selection if already selected, otherwise select
+      setSelectedLeftKey((prev) => (prev === value ? null : value));
+    } else if (side === 'right') {
+      if (selectedLeftKey) {
+        soundEffects.playPairConnectedSound();
+        // Link the selected left item to this right item
+        setMatchedPairs((prev) => {
+          const next = { ...prev };
+          // If any other left key was previously pointing to this right item, clear it
+          for (const k of Object.keys(next)) {
+            if (next[k] === value) delete next[k];
+          }
+          next[selectedLeftKey] = value;
+          return next;
+        });
+        setSelectedLeftKey(null);
+      } else {
+        // If clicked on a linked right item without an active left selection, unlink it
+        const linkedLeft = Object.keys(matchedPairs).find((k) => matchedPairs[k] === value);
+        if (linkedLeft) {
+          setMatchedPairs((prev) => {
+            const next = { ...prev };
+            delete next[linkedLeft];
+            return next;
+          });
+        }
+      }
+    }
+  };
+
+  // Unlink specific left item
+  const handleUnlinkLeft = (leftKey: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setMatchedPairs((prev) => {
+      const next = { ...prev };
+      delete next[leftKey];
+      return next;
+    });
+    if (selectedLeftKey === leftKey) {
       setSelectedLeftKey(null);
     }
   };
@@ -342,6 +466,32 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
+              {/* Kid-friendly Sound FX toggle button */}
+              <button
+                type="button"
+                onClick={handleToggleSoundFx}
+                className="px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                style={{
+                  backgroundColor: soundFxEnabled ? 'var(--bg-card)' : 'var(--bg-card-subtle)',
+                  borderColor: soundFxEnabled ? 'var(--accent-primary)' : 'var(--border-card)',
+                  color: soundFxEnabled ? 'var(--text-primary)' : 'var(--text-muted)',
+                }}
+                title={
+                  soundFxEnabled
+                    ? 'Sound FX active for correct/wrong answers (Click to mute)'
+                    : 'Sound FX muted (Click to enable sounds)'
+                }
+              >
+                {soundFxEnabled ? (
+                  <Volume2 size={14} className="text-amber-500 animate-pulse" />
+                ) : (
+                  <VolumeX size={14} />
+                )}
+                <span className="hidden sm:inline font-bold">
+                  {soundFxEnabled ? 'Sound FX ON' : 'Sound FX Muted'}
+                </span>
+              </button>
+
               {onBackToTheory && (
                 <button
                   type="button"
@@ -872,100 +1022,241 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
           {/* FORMAT 4: Match Pairs */}
           {currentQuestion.type === 'match' && currentQuestion.matchPairs && (
             <div className="space-y-4 pt-2">
-              <p className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
-                Click an item on the Left, then click its corresponding match on the Right:
-              </p>
+              <div
+                className="p-3 rounded-xl border flex flex-wrap items-center justify-between gap-2 text-xs font-semibold"
+                style={{
+                  backgroundColor: 'var(--bg-card-subtle)',
+                  borderColor: 'var(--border-card)',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                <span>
+                  {selectedLeftKey ? (
+                    <span className="text-amber-600 font-bold flex items-center gap-1.5 animate-pulse">
+                      <Sparkles size={14} /> Selected: "{selectedLeftKey}" — Now click its match on the Right!
+                    </span>
+                  ) : (
+                    <span>Click an item on the Left, then click its corresponding match on the Right:</span>
+                  )}
+                </span>
+                <span
+                  className="px-2 py-0.5 rounded text-[11px] font-bold border"
+                  style={{
+                    backgroundColor:
+                      Object.keys(matchedPairs).length === currentQuestion.matchPairs.length
+                        ? '#dcfce7'
+                        : 'var(--bg-card)',
+                    color:
+                      Object.keys(matchedPairs).length === currentQuestion.matchPairs.length
+                        ? '#166534'
+                        : 'var(--text-primary)',
+                    borderColor: 'var(--border-card-strong)',
+                  }}
+                >
+                  {Object.keys(matchedPairs).length} / {currentQuestion.matchPairs.length} Pairs Connected
+                </span>
+              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Left side items */}
+                {/* Left side items (Premise / Problem) */}
                 <div className="space-y-2">
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--text-muted)' }}>
+                  <span
+                    className="text-[11px] font-extrabold uppercase tracking-wider block"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
                     Premise / Problem:
                   </span>
-                  {currentQuestion.matchPairs.map((pair) => {
+                  {currentQuestion.matchPairs.map((pair, idx) => {
                     const isSelected = selectedLeftKey === pair.left;
                     const matchedRight = matchedPairs[pair.left];
+                    const isSubmitted = currentAttempt !== undefined;
+                    const isPairCorrect = isSubmitted && matchedRight === pair.right;
+                    const isPairWrong = isSubmitted && matchedRight && matchedRight !== pair.right;
+
+                    let cardBg = 'var(--bg-card-subtle)';
+                    let cardBorder = 'var(--border-card)';
+
+                    if (isSelected) {
+                      cardBg = 'var(--reading-highlight-bg)';
+                      cardBorder = 'var(--accent-primary)';
+                    } else if (matchedRight) {
+                      cardBg = 'var(--bg-card)';
+                      cardBorder = 'var(--accent-primary)';
+                    }
+
+                    if (isSubmitted) {
+                      if (isPairCorrect) {
+                        cardBg = '#dcfce7';
+                        cardBorder = '#22c55e';
+                      } else if (isPairWrong) {
+                        cardBg = '#fee2e2';
+                        cardBorder = '#ef4444';
+                      }
+                    }
 
                     return (
-                      <button
+                      <div
                         key={pair.left}
-                        type="button"
                         onClick={() => handleMatchClick('left', pair.left)}
-                        className="w-full text-left p-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer shadow-2xs flex items-center justify-between gap-2"
+                        className="w-full text-left p-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer shadow-2xs flex flex-col gap-1.5"
                         style={{
-                          backgroundColor: isSelected
-                            ? 'var(--reading-highlight-bg)'
-                            : matchedRight
-                            ? 'var(--bg-card)'
-                            : 'var(--bg-card-subtle)',
-                          borderColor: isSelected
-                            ? 'var(--accent-primary)'
-                            : matchedRight
-                            ? 'var(--accent-primary)'
-                            : 'var(--border-card)',
+                          backgroundColor: cardBg,
+                          borderColor: cardBorder,
                           color: 'var(--text-primary)',
                         }}
                       >
-                        <span>{pair.left}</span>
-                        {matchedRight && (
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold">{pair.left}</span>
                           <span
-                            className="text-[10px] font-bold px-1.5 py-0.5 rounded border"
+                            className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-extrabold shrink-0 border"
                             style={{
                               backgroundColor: 'var(--badge-bg)',
                               color: 'var(--badge-text)',
                               borderColor: 'var(--border-card)',
                             }}
                           >
-                            Linked ✓
+                            {idx + 1}
+                          </span>
+                        </div>
+
+                        {/* Matched connection pill */}
+                        {matchedRight && (
+                          <div className="flex items-center justify-between gap-2 pt-1 border-t text-[11px]" style={{ borderColor: 'var(--border-card)' }}>
+                            <span className="truncate flex items-center gap-1 font-bold" style={{ color: 'var(--accent-primary)' }}>
+                              <span>➜ Linked to:</span>
+                              <span className="underline">{matchedRight}</span>
+                            </span>
+                            {!isSubmitted && (
+                              <button
+                                type="button"
+                                onClick={(e) => handleUnlinkLeft(pair.left, e)}
+                                className="px-1.5 py-0.5 rounded text-[10px] font-bold border hover:bg-red-100 hover:text-red-700 transition-colors cursor-pointer"
+                                style={{ borderColor: 'var(--border-card)', color: 'var(--text-muted)' }}
+                                title="Unlink this pair"
+                              >
+                                ✕
+                              </button>
+                            )}
+                            {isSubmitted && isPairCorrect && (
+                              <span className="text-emerald-700 font-bold flex items-center gap-1 text-[11px]">
+                                <Check size={12} /> Correct
+                              </span>
+                            )}
+                            {isSubmitted && isPairWrong && (
+                              <span className="text-red-700 font-bold flex items-center gap-1 text-[10px]">
+                                <XCircle size={12} /> Target: {pair.right}
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        {isSelected && !matchedRight && (
+                          <span className="text-[10px] font-bold text-amber-600">
+                            Select match on right...
                           </span>
                         )}
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
 
-                {/* Right side items */}
+                {/* Right side items (Shuffled Solutions) */}
                 <div className="space-y-2">
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--text-muted)' }}>
-                    Matching Solution:
+                  <span
+                    className="text-[11px] font-extrabold uppercase tracking-wider block"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    Matching Solution (Shuffled):
                   </span>
-                  {currentQuestion.matchPairs.map((pair) => {
-                    const isLinkedToCurrentLeft =
-                      selectedLeftKey && matchedPairs[selectedLeftKey] === pair.right;
-                    const isAlreadyLinked = Object.values(matchedPairs).includes(pair.right);
+                  {(shuffledRightItems.length === currentQuestion.matchPairs.length
+                    ? shuffledRightItems
+                    : getScrambledRightItems(currentQuestion.matchPairs)
+                  ).map((rightVal) => {
+                    const linkedLeftKey = Object.keys(matchedPairs).find(
+                      (k) => matchedPairs[k] === rightVal
+                    );
+                    const isLinkedToCurrentSelection =
+                      selectedLeftKey && matchedPairs[selectedLeftKey] === rightVal;
+                    const isSubmitted = currentAttempt !== undefined;
+                    const correctLeft = currentQuestion.matchPairs!.find((p) => p.right === rightVal)?.left;
+                    const isRightCorrect = isSubmitted && linkedLeftKey === correctLeft;
+                    const isRightWrong = isSubmitted && linkedLeftKey && linkedLeftKey !== correctLeft;
+
+                    let rightBg = 'var(--bg-card-subtle)';
+                    let rightBorder = 'var(--border-card)';
+
+                    if (isLinkedToCurrentSelection) {
+                      rightBg = 'var(--reading-highlight-bg)';
+                      rightBorder = 'var(--accent-primary)';
+                    } else if (linkedLeftKey) {
+                      rightBg = 'var(--bg-card)';
+                      rightBorder = 'var(--accent-primary)';
+                    }
+
+                    if (isSubmitted) {
+                      if (isRightCorrect) {
+                        rightBg = '#dcfce7';
+                        rightBorder = '#22c55e';
+                      } else if (isRightWrong) {
+                        rightBg = '#fee2e2';
+                        rightBorder = '#ef4444';
+                      }
+                    }
 
                     return (
-                      <button
-                        key={pair.right}
-                        type="button"
-                        onClick={() => handleMatchClick('right', pair.right)}
-                        className="w-full text-left p-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer shadow-2xs flex items-center justify-between gap-2"
+                      <div
+                        key={rightVal}
+                        onClick={() => handleMatchClick('right', rightVal)}
+                        className="w-full text-left p-3 rounded-xl border text-xs font-semibold transition-all cursor-pointer shadow-2xs flex flex-col gap-1.5"
                         style={{
-                          backgroundColor: isLinkedToCurrentLeft
-                            ? 'var(--reading-highlight-bg)'
-                            : isAlreadyLinked
-                            ? 'var(--bg-card)'
-                            : 'var(--bg-card-subtle)',
-                          borderColor: isAlreadyLinked
-                            ? 'var(--accent-primary)'
-                            : 'var(--border-card)',
+                          backgroundColor: rightBg,
+                          borderColor: rightBorder,
                           color: 'var(--text-primary)',
                         }}
                       >
-                        <span>{pair.right}</span>
-                        {isAlreadyLinked && <Check size={14} className="text-emerald-600" />}
-                      </button>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold">{rightVal}</span>
+                          {linkedLeftKey && (
+                            <span
+                              className="text-[10px] font-bold px-1.5 py-0.5 rounded border"
+                              style={{
+                                backgroundColor: 'var(--badge-bg)',
+                                color: 'var(--badge-text)',
+                                borderColor: 'var(--border-card)',
+                              }}
+                            >
+                              Linked ✓
+                            </span>
+                          )}
+                        </div>
+
+                        {linkedLeftKey && (
+                          <div className="pt-1 border-t text-[11px] font-bold truncate" style={{ borderColor: 'var(--border-card)', color: 'var(--text-secondary)' }}>
+                            <span>Matched from: </span>
+                            <span className="underline" style={{ color: 'var(--text-primary)' }}>{linkedLeftKey}</span>
+                          </div>
+                        )}
+
+                        {selectedLeftKey && !linkedLeftKey && (
+                          <span className="text-[10px] font-bold text-amber-600">
+                            Click to link to "{selectedLeftKey}"
+                          </span>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => handleSubmitAnswer('All pairs matched')}
-                  disabled={Object.keys(matchedPairs).length !== currentQuestion.matchPairs.length}
-                  className="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm cursor-pointer disabled:opacity-50 border shadow-2xs"
+                  disabled={
+                    (currentAttempt && currentAttempt.isCorrect) ||
+                    Object.keys(matchedPairs).length !== currentQuestion.matchPairs.length
+                  }
+                  className="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm cursor-pointer disabled:opacity-50 border shadow-2xs transition-all"
                   style={{
                     backgroundColor: 'var(--accent-primary)',
                     borderColor: 'var(--accent-primary)',
@@ -974,17 +1265,22 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
                 >
                   Verify All Pairings
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setMatchedPairs({})}
-                  className="px-3 py-2 rounded-xl text-xs font-medium border cursor-pointer hover:opacity-80"
-                  style={{
-                    borderColor: 'var(--border-card)',
-                    color: 'var(--text-secondary)',
-                  }}
-                >
-                  Clear Pairings
-                </button>
+                {Object.keys(matchedPairs).length > 0 && !currentAttempt?.isCorrect && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMatchedPairs({});
+                      setSelectedLeftKey(null);
+                    }}
+                    className="px-3 py-2 rounded-xl text-xs font-medium border cursor-pointer hover:opacity-80"
+                    style={{
+                      borderColor: 'var(--border-card)',
+                      color: 'var(--text-secondary)',
+                    }}
+                  >
+                    Clear All Pairings
+                  </button>
+                )}
               </div>
             </div>
           )}
