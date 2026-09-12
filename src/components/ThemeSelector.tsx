@@ -68,7 +68,7 @@ export const ThemeSelector: React.FC = () => {
               Choose Distinct Theme
             </span>
             <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
-              4 distinct, eye-safe high-contrast palettes
+              5 distinct, eye-safe high-contrast palettes
             </span>
           </div>
 

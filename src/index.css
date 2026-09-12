@@ -7,28 +7,28 @@
 
 :root,
 [data-theme="butter"] {
-  /* Buttercup & Honey (Default Theme) - Radiant, warm golden tones with deep contrast */
-  --bg-canvas: #fffdf5; /* Radiant buttercup cream canvas - soft, non-glaring */
-  --bg-card: #fef5dc;   /* Warm golden custard card base */
-  --bg-card-hover: #fdeec2; /* Sunny honey golden card hover */
-  --bg-card-subtle: #fae8b0; /* Soft biscuit amber layer */
-  --border-card: #e8cd8a; /* Refined honey gold border */
-  --border-card-strong: #c89e47; /* Crisp warm amber border */
-  --text-primary: #09090b; /* Crisp carbon black - supreme legibility */
-  --text-secondary: #1c1917; /* Deep stone black */
-  --text-muted: #574630; /* Warm bronze sepia */
+  /* Buttercup & Honey (Default Theme) - Soft radiant custard cream canvas, rich caramel amber, crisp carbon ink */
+  --bg-canvas: #fffef7; /* Gentle warm eggshell cream - zero eye glare */
+  --bg-card: #fbf5e6;   /* Luxurious honey-custard card base with subtle warmth */
+  --bg-card-hover: #f7eed4; /* Soft sunny cream hover state */
+  --bg-card-subtle: #f2e4c4; /* Balanced biscuit layer for tags, inputs & secondary boxes */
+  --border-card: #dfcc9a; /* Crisp tactile border with clear separation */
+  --border-card-strong: #b88628; /* High-contrast golden amber border */
+  --text-primary: #120e06; /* Deep obsidian carbon with warm amber undertone (19.5:1 contrast) */
+  --text-secondary: #2c2210; /* Solid dark roast ink */
+  --text-muted: #64502b; /* Warm bronze sepia for secondary notes */
   --accent-primary: #b45309; /* Rich golden honey amber */
-  --accent-hover: #8f3e03; /* Deep caramelized amber */
-  --accent-light: #fef08a; /* Luminous sunny glow */
+  --accent-hover: #92400e; /* Deep caramelized amber */
+  --accent-light: #fef3c7; /* Luminous sunny glow */
   --accent-contrast: #ffffff;
-  --reading-highlight-bg: #fef08a; /* Bright buttercup active reading highlight */
-  --reading-highlight-border: #09090b; /* High-contrast pitch black border when playing/focused */
-  --reading-highlight-ring: rgba(9, 9, 11, 0.28);
+  --reading-highlight-bg: #fee380; /* Bright buttercup active reading highlight */
+  --reading-highlight-border: #120e06; /* High-contrast carbon border when playing/focused */
+  --reading-highlight-ring: rgba(18, 14, 6, 0.28);
   --badge-bg: #fde047; /* Bright buttercup gold */
-  --badge-text: #09090b; /* Crisp pitch black text */
+  --badge-text: #120e06; /* Crisp pitch black text */
   /* High contrast accent tokens */
-  --contrast-black: #09090b;
-  --contrast-black-bg: #18181b;
+  --contrast-black: #120e06;
+  --contrast-black-bg: #1c1810;
   --contrast-warm: #b91c1c; /* Crimson alert */
   --contrast-warm-bg: #fee2e2;
   --contrast-warm-border: #f87171;
@@ -44,20 +44,20 @@
 }
 
 [data-theme="oxford"] {
-  /* Royal Oxford Navy & Cobalt - Prestigious scholastic dark midnight navy with crisp white chalk */
-  --bg-canvas: #0b1329;
-  --bg-card: #132042;
-  --bg-card-hover: #1b2c5b;
-  --bg-card-subtle: #0f1936;
-  --border-card: #25396b;
+  /* Royal Oxford Navy & Cobalt - Prestigious scholastic midnight navy with crisp white chalk */
+  --bg-canvas: #090e21;
+  --bg-card: #101936;
+  --bg-card-hover: #17244c;
+  --bg-card-subtle: #0d142b;
+  --border-card: #223565;
   --border-card-strong: #3b5598;
   --text-primary: #ffffff; /* 100% crisp white, maximum legibility */
-  --text-secondary: #e2e8f0; /* Bright chalk silver */
+  --text-secondary: #e0e7ff; /* Bright chalk silver */
   --text-muted: #94a3b8; /* Crisp slate chalk */
-  --accent-primary: #2563eb; /* High-contrast Royal Cobalt (4.56:1 on white text) */
-  --accent-hover: #3b82f6;
+  --accent-primary: #3b82f6; /* Luminous Oxford Blue */
+  --accent-hover: #60a5fa;
   --accent-light: #1e3a8a;
-  --accent-contrast: #ffffff; /* Crisp white on royal cobalt */
+  --accent-contrast: #ffffff;
   --reading-highlight-bg: #1e3a8a;
   --reading-highlight-border: #60a5fa;
   --reading-highlight-ring: rgba(96, 165, 250, 0.45);
@@ -65,8 +65,8 @@
   --badge-text: #ffffff;
   /* High-contrast accessible accents for dark background */
   --contrast-black: #ffffff;
-  --contrast-black-bg: #0b1329;
-  --contrast-warm: #f87171; /* Vivid luminous coral red */
+  --contrast-black-bg: #090e21;
+  --contrast-warm: #f87171; /* Vivid coral red */
   --contrast-warm-bg: #450a0a;
   --contrast-warm-border: #ef4444;
   --contrast-amber: #fbbf24; /* Radiant warm gold */
@@ -75,20 +75,20 @@
   --contrast-indigo: #a5b4fc; /* Radiant lavender indigo */
   --contrast-indigo-bg: #1e1b4b;
   --contrast-indigo-border: #6366f1;
-  --contrast-teal: #34d399; /* Bright luminous mint emerald */
+  --contrast-teal: #34d399; /* Bright mint emerald */
   --contrast-teal-bg: #064e3b;
   --contrast-teal-border: #10b981;
 }
 
 [data-theme="sage"] {
   /* Sage & Terracotta - Calming botanical eucalyptus, deep pine ink & warm terracotta */
-  --bg-canvas: #f2f7f4;
-  --bg-card: #e5efe8;
-  --bg-card-hover: #d7e7dc;
-  --bg-card-subtle: #c8ded0;
-  --border-card: #98bfa5;
+  --bg-canvas: #f4f8f5;
+  --bg-card: #e8f1eb;
+  --bg-card-hover: #dbe9df;
+  --bg-card-subtle: #cde0d2;
+  --border-card: #a3c4ae;
   --border-card-strong: #4a7c5c;
-  --text-primary: #072314; /* Deep evergreen pine */
+  --text-primary: #062313; /* Deep evergreen pine */
   --text-secondary: #133923;
   --text-muted: #2d523c;
   --accent-primary: #c2410c; /* Warm Terracotta */
@@ -96,13 +96,13 @@
   --accent-light: #ffedd5;
   --accent-contrast: #ffffff;
   --reading-highlight-bg: #d1fae5;
-  --reading-highlight-border: #072314;
-  --reading-highlight-ring: rgba(7, 35, 20, 0.28);
+  --reading-highlight-border: #062313;
+  --reading-highlight-ring: rgba(6, 35, 19, 0.28);
   --badge-bg: #22543d;
   --badge-text: #ffffff;
   /* Contrasting accents */
-  --contrast-black: #09090b;
-  --contrast-black-bg: #18181b;
+  --contrast-black: #062313;
+  --contrast-black-bg: #112d1d;
   --contrast-warm: #c2410c;
   --contrast-warm-bg: #ffedd5;
   --contrast-warm-border: #fdba74;
@@ -117,39 +117,76 @@
   --contrast-teal-border: #6ee7b7;
 }
 
+[data-theme="lavender"] {
+  /* Lavender & Amethyst - Dyslexia-friendly pastel lilac with deep royal amethyst ink */
+  --bg-canvas: #faf8fd;
+  --bg-card: #f2ecf8;
+  --bg-card-hover: #e9deef;
+  --bg-card-subtle: #ded1e6;
+  --border-card: #cbb9db;
+  --border-card-strong: #8b3dc7;
+  --text-primary: #1b0d30; /* Deep rich midnight amethyst */
+  --text-secondary: #2d184d;
+  --text-muted: #5b3a82;
+  --accent-primary: #8b3dc7; /* Royal Amethyst */
+  --accent-hover: #7529b0;
+  --accent-light: #f3e8ff;
+  --accent-contrast: #ffffff;
+  --reading-highlight-bg: #e9d5ff;
+  --reading-highlight-border: #1b0d30;
+  --reading-highlight-ring: rgba(27, 13, 48, 0.28);
+  --badge-bg: #8b3dc7;
+  --badge-text: #ffffff;
+  /* Contrasting accents */
+  --contrast-black: #1b0d30;
+  --contrast-black-bg: #25123f;
+  --contrast-warm: #b91c1c;
+  --contrast-warm-bg: #fee2e2;
+  --contrast-warm-border: #f87171;
+  --contrast-amber: #b45309;
+  --contrast-amber-bg: #fef3c7;
+  --contrast-amber-border: #f59e0b;
+  --contrast-indigo: #4338ca;
+  --contrast-indigo-bg: #ede9fe;
+  --contrast-indigo-border: #a5b4fc;
+  --contrast-teal: #047857;
+  --contrast-teal-bg: #d1fae5;
+  --contrast-teal-border: #6ee7b7;
+}
+
 [data-theme="obsidian"] {
   /* Obsidian & Amber - High-contrast dark study mode, velvet slate with honey amber glow */
-  --bg-canvas: #0c0f17;
-  --bg-card: #161c28;
-  --bg-card-hover: #222b3d;
-  --bg-card-subtle: #111520;
-  --border-card: #2c364c;
-  --border-card-strong: #47556e;
-  --text-primary: #ffffff; /* 100% pure brilliant white, maximum contrast */
+  --bg-canvas: #0a0e16;
+  --bg-card: #131924;
+  --bg-card-hover: #1c2433;
+  --bg-card-subtle: #0f141f;
+  --border-card: #253145;
+  --border-card-strong: #40526e;
+  --text-primary: #ffffff; /* 100% pure brilliant white */
   --text-secondary: #e2e8f0; /* Crisp light platinum */
-  --text-muted: #a0aec0; /* Clear soft silver */
-  --accent-primary: #fbbf24; /* Luminous Honey Amber */
-  --accent-hover: #fde047;
+  --text-muted: #94a3b8; /* Clear soft silver */
+  --accent-primary: #f59e0b; /* Luminous Honey Amber */
+  --accent-hover: #fbbf24;
   --accent-light: #451a03;
-  --accent-contrast: #09090b; /* Pure pitch-black on bright amber for WCAG AAA contrast */
-  --reading-highlight-bg: #242e42;
-  --reading-highlight-border: #fbbf24;
-  --reading-highlight-ring: rgba(251, 191, 36, 0.45);
-  --badge-bg: #fbbf24;
-  --badge-text: #09090b;
+  --accent-contrast: #0a0e16; /* Pure pitch-black on bright amber for WCAG AAA contrast */
+  --reading-highlight-bg: #202b3d;
+  --reading-highlight-border: #f59e0b;
+  --reading-highlight-ring: rgba(245, 158, 11, 0.45);
+  --badge-bg: #f59e0b;
+  --badge-text: #0a0e16;
   /* High-contrast accessible accents for dark background */
   --contrast-black: #ffffff;
-  --contrast-black-bg: #0c0f17;
-  --contrast-warm: #fca5a5; /* Vivid bright rose */
+  --contrast-black-bg: #0a0e16;
+  --contrast-warm: #fca5a5; /* Vivid rose */
   --contrast-warm-bg: #450a0a;
   --contrast-warm-border: #ef4444;
-  --contrast-amber: #fde047; /* Vivid bright golden amber */
+  --contrast-amber: #fbbf24; /* Vivid golden amber */
   --contrast-amber-bg: #451a03;
   --contrast-amber-border: #f59e0b;
-  --contrast-indigo: #c7d2fe; /* Vivid bright periwinkle */
+  --contrast-indigo: #c7d2fe; /* Vivid periwinkle */
   --contrast-indigo-bg: #1e1b4b;
   --contrast-indigo-border: #818cf8;
-  --contrast-teal: #6ee7b7; /* Vivid bright mint */
+  --contrast-teal: #6ee7b7; /* Vivid mint */
   --contrast-teal-bg: #064e3b;
   --contrast-teal-border: #10b981;
 }
@@ -261,3 +298,29 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-primary);
 }
+
+/* Tactile component sizing & elevated card styling */
+.tactile-card {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.tactile-card:hover {
+  box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.07), 0 2px 5px -1px rgba(0, 0, 0, 0.04);
+}
+
+.tactile-btn {
+  transition: transform 0.1s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.tactile-btn:active {
+  transform: scale(0.97);
+}
+
+/* Tablet Landscape Support for Menu & Layout */
+@media (orientation: landscape) and (min-width: 768px) {
+  .app-main-layout {
+    flex-direction: row !important;
+  }
+}
+

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type PastelThemeId = 'butter' | 'oxford' | 'sage' | 'obsidian';
+export type PastelThemeId = 'butter' | 'oxford' | 'sage' | 'obsidian' | 'lavender';
 
 export interface PastelTheme {
   id: PastelThemeId;
@@ -18,9 +18,9 @@ export const PASTEL_THEMES: PastelTheme[] = [
     id: 'butter',
     name: 'Buttercup & Honey',
     emoji: '🍯',
-    shortDesc: 'Warm golden custard with rich amber & crisp ink contrast (Default)',
-    canvasHex: '#fffdf5',
-    cardHex: '#fef5dc',
+    shortDesc: 'Warm custard cream with rich amber & crisp carbon ink (Default)',
+    canvasHex: '#fffef7',
+    cardHex: '#fbf5e6',
     accentHex: '#b45309',
     isDark: false,
   },
@@ -28,10 +28,10 @@ export const PASTEL_THEMES: PastelTheme[] = [
     id: 'oxford',
     name: 'Royal Oxford & Cobalt',
     emoji: '🏛️',
-    shortDesc: 'Deep Oxford midnight navy with crisp chalk white text & royal cobalt',
-    canvasHex: '#0b1329',
-    cardHex: '#132042',
-    accentHex: '#2563eb',
+    shortDesc: 'Midnight scholastic navy with crisp white text & royal cobalt',
+    canvasHex: '#090e21',
+    cardHex: '#101936',
+    accentHex: '#3b82f6',
     isDark: true,
   },
   {
@@ -39,9 +39,19 @@ export const PASTEL_THEMES: PastelTheme[] = [
     name: 'Sage & Terracotta',
     emoji: '🌿',
     shortDesc: 'Calming botanical eucalyptus with warm terracotta & deep pine',
-    canvasHex: '#f2f7f4',
-    cardHex: '#e5efe8',
+    canvasHex: '#f4f8f5',
+    cardHex: '#e8f1eb',
     accentHex: '#c2410c',
+    isDark: false,
+  },
+  {
+    id: 'lavender',
+    name: 'Lavender & Amethyst',
+    emoji: '🪻',
+    shortDesc: 'Soft soothing lilac with royal amethyst (Dyslexia-friendly visual comfort)',
+    canvasHex: '#faf8fd',
+    cardHex: '#f2ecf8',
+    accentHex: '#8b3dc7',
     isDark: false,
   },
   {
@@ -49,9 +59,9 @@ export const PASTEL_THEMES: PastelTheme[] = [
     name: 'Obsidian & Amber (Night)',
     emoji: '🌙',
     shortDesc: 'Velvet dark study with glowing honey amber & pure white text',
-    canvasHex: '#0c0f17',
-    cardHex: '#161c28',
-    accentHex: '#fbbf24',
+    canvasHex: '#0a0e16',
+    cardHex: '#131924',
+    accentHex: '#f59e0b',
     isDark: true,
   },
 ];

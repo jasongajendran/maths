@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, BookmarkCheck, FileText, Menu, X, Sparkles } from 'lucide-react';
+import { BookOpen, BookmarkCheck, FileText, Menu, X, Sparkles, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { YearLevel, CategoryId } from '../types/math';
 import { mathTopics } from '../data/mathTopics';
 import { AudioButton } from './AudioButton';
@@ -26,20 +26,35 @@ export const Header: React.FC<HeaderProps> = ({
   isDesktopSidebarOpen = true,
   onToggleDesktopSidebar,
 }) => {
-  const [isDesktop, setIsDesktop] = React.useState<boolean>(() =>
-    typeof window !== 'undefined' ? window.innerWidth >= 1024 : false
-  );
+  const checkIsTabletLandscapeOrDesktop = () => {
+    if (typeof window === 'undefined') return false;
+    const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+    return window.innerWidth >= 1024 || (window.innerWidth >= 768 && isLandscape);
+  };
+
+  const [isDesktop, setIsDesktop] = React.useState<boolean>(checkIsTabletLandscapeOrDesktop);
 
   React.useEffect(() => {
     const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 1024);
+      setIsDesktop(checkIsTabletLandscapeOrDesktop());
     };
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    const mq = window.matchMedia('(orientation: landscape)');
+    if (mq.addEventListener) {
+      mq.addEventListener('change', handleResize);
+    }
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+      if (mq.removeEventListener) {
+        mq.removeEventListener('change', handleResize);
+      }
+    };
   }, []);
 
   const handleMenuClick = () => {
-    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+    if (isDesktop) {
       if (onToggleDesktopSidebar) {
         onToggleDesktopSidebar();
       }
@@ -59,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header
-      className="sticky top-0 z-30 backdrop-blur-md border-b shadow-2xs transition-colors"
+      className="sticky top-0 z-30 backdrop-blur-md border-b shadow-xs transition-colors"
       style={{
         backgroundColor: 'var(--bg-card)',
         borderColor: 'var(--border-card-strong)',
@@ -67,38 +82,33 @@ export const Header: React.FC<HeaderProps> = ({
     >
       <div className="max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-2 sm:gap-4 w-full">
-          {/* Logo & Navigation Menu Toggle (Visible across Mobile, Tablet Landscape, and Desktop) */}
+          {/* Logo & Navigation Menu Toggle */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               id="header-menu-toggle-btn"
               type="button"
               onClick={handleMenuClick}
-              className="p-1.5 sm:p-2 rounded-lg cursor-pointer transition-all shrink-0 flex items-center justify-center border"
+              className="h-9 px-2.5 sm:px-3 rounded-xl cursor-pointer transition-all shrink-0 flex items-center gap-1.5 border shadow-2xs tactile-btn"
               style={{
                 color: isCurrentMenuOpen ? 'var(--accent-primary)' : 'var(--text-secondary)',
                 backgroundColor: isCurrentMenuOpen ? 'var(--reading-highlight-bg)' : 'var(--bg-card-subtle)',
                 borderColor: isCurrentMenuOpen ? 'var(--accent-primary)' : 'var(--border-card)',
               }}
-              aria-label={
-                isDesktop
-                  ? isDesktopSidebarOpen
-                    ? 'Collapse Navigation Menu'
-                    : 'Expand Navigation Menu'
-                  : isMobileNavOpen
-                  ? 'Close Navigation Menu'
-                  : 'Open Navigation Menu'
-              }
+              aria-label={isCurrentMenuOpen ? 'Collapse Navigation Menu' : 'Open Navigation Menu'}
               title={
-                isDesktop
-                  ? isDesktopSidebarOpen
-                    ? 'Collapse Topic Menu'
-                    : 'Expand Topic Menu'
-                  : isMobileNavOpen
-                  ? 'Close Navigation Menu'
-                  : 'Open Navigation Menu'
+                isCurrentMenuOpen
+                  ? 'Collapse topic navigator menu to view full width content'
+                  : 'Open topic navigator menu'
               }
             >
-              {!isDesktop && isMobileNavOpen ? <X size={19} /> : <Menu size={19} />}
+              {isCurrentMenuOpen ? (
+                isDesktop ? <PanelLeftClose size={18} /> : <X size={18} />
+              ) : (
+                <Menu size={18} />
+              )}
+              <span className="hidden md:inline text-xs font-bold tracking-tight">
+                {isCurrentMenuOpen ? 'Collapse Menu' : 'Menu'}
+              </span>
             </button>
 
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -109,7 +119,7 @@ export const Header: React.FC<HeaderProps> = ({
                   color: 'var(--accent-contrast)',
                 }}
               >
-                <span className="font-serif font-black text-lg sm:text-xl tracking-tighter">∑</span>
+                <span className="font-serif font-black text-lg sm:text-xl tracking-tighter leading-none">∑</span>
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5 flex-nowrap">
@@ -117,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
                     Maths Master
                   </span>
                   <span
-                    className="hidden sm:inline-block text-[10px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0"
+                    className="hidden sm:inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full border shrink-0"
                     style={{
                       backgroundColor: 'var(--badge-bg)',
                       color: 'var(--badge-text)',
@@ -148,7 +158,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={onOpenFormulaDrawer}
-              className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold border transition-colors cursor-pointer shadow-2xs shrink-0"
+              className="h-9 flex items-center gap-1.5 px-2.5 sm:px-3 rounded-xl text-xs sm:text-sm font-semibold border transition-all cursor-pointer shadow-2xs shrink-0 tactile-btn"
               style={{
                 backgroundColor: 'var(--bg-card-subtle)',
                 borderColor: 'var(--border-card-strong)',
@@ -166,17 +176,17 @@ export const Header: React.FC<HeaderProps> = ({
               title="Welcome Audio Guide (click to toggle)"
               label="Maths Master Welcome Guide"
               isGlobal={true}
-              size="sm"
+              size="md"
             />
           </div>
         </div>
 
         {/* Year Level Filter Pill Bar */}
         <div
-          className="w-full max-w-full overflow-x-auto no-scrollbar flex items-center gap-1.5 py-2 border-t text-xs"
+          className="w-full max-w-full overflow-x-auto no-scrollbar flex items-center gap-1.5 py-2.5 border-t text-xs"
           style={{ borderColor: 'var(--border-card)' }}
         >
-          <span className="font-extrabold text-[11px] uppercase tracking-wider mr-1 shrink-0" style={{ color: 'var(--text-muted)' }}>
+          <span className="font-extrabold text-[11px] uppercase tracking-wider mr-1.5 shrink-0" style={{ color: 'var(--text-muted)' }}>
             Level:
           </span>
           {yearOptions.map((lvl) => {
@@ -193,18 +203,19 @@ export const Header: React.FC<HeaderProps> = ({
                 key={lvl}
                 type="button"
                 onClick={() => onSelectYear(lvl)}
-                className="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer border flex items-center gap-1.5 shrink-0"
+                className="h-7.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer border flex items-center gap-1.5 shrink-0 tactile-btn"
                 style={{
                   backgroundColor: isSelected ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
                   borderColor: isSelected ? 'var(--accent-primary)' : 'var(--border-card)',
                   color: isSelected ? 'var(--accent-contrast)' : 'var(--text-primary)',
+                  boxShadow: isSelected ? '0 1px 3px rgba(0, 0, 0, 0.12)' : 'none',
                 }}
               >
                 <span>{cleanName}</span>
                 <span
-                  className="px-1.5 py-0.2 rounded-full text-[10px] font-bold"
+                  className="px-1.5 py-0.5 rounded-full text-[10px] font-bold leading-none"
                   style={{
-                    backgroundColor: isSelected ? 'rgba(0, 0, 0, 0.15)' : 'var(--border-card)',
+                    backgroundColor: isSelected ? 'rgba(0, 0, 0, 0.2)' : 'var(--border-card)',
                     color: isSelected ? 'var(--accent-contrast)' : 'var(--text-muted)',
                   }}
                 >

@@ -5,9 +5,11 @@ import { CategoryId, YearLevel } from './types/math';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { TopicDetail } from './components/TopicDetail';
+import { AssessmentView } from './components/AssessmentView';
 import { QuickFormulaDrawer } from './components/QuickFormulaDrawer';
 import { GoToTop } from './components/GoToTop';
 import { FloatingAudioController } from './components/FloatingAudioController';
+import { allAssessments, getAssessmentForTopic } from './data/assessments';
 
 export default function App() {
   const [selectedTopicId, setSelectedTopicId] = useState<string>('fractions-mastery');
@@ -15,6 +17,13 @@ export default function App() {
   const [selectedYear, setSelectedYear] = useState<YearLevel | 'All'>('All');
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
   const [isFormulaDrawerOpen, setIsFormulaDrawerOpen] = useState<boolean>(false);
+
+  // Mode: 'learn' (Concepts & Practice) vs 'assessment' (Dedicated 25-Question Assessment Section)
+  const [sidebarMode, setSidebarMode] = useState<'learn' | 'assessment'>('learn');
+  const [activeDetailTab, setActiveDetailTab] = useState<
+    'theory' | 'tips' | 'formulas' | 'practice' | 'tools' | 'assessment'
+  >('theory');
+
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('maths_master_sidebar_open');
@@ -60,19 +69,19 @@ export default function App() {
     const inFiltered = filteredTopics.find((t) => t.id === selectedTopicId);
     if (inFiltered) return inFiltered;
 
-    // 2. If current topic is not in the filtered list, pick the first topic in the filtered list
-    if (filteredTopics.length > 0) return filteredTopics[0];
+    // 2. Try matching anywhere in all core mathTopics
+    const inAll = mathTopics.find((t) => t.id === selectedTopicId);
+    if (inAll) return inAll;
 
-    // 3. Fallback: match anywhere in all topics
-    return mathTopics.find((t) => t.id === selectedTopicId) || mathTopics[0];
+    // 3. If current topic is not found (e.g. extension assessment), pick first filtered or first topic
+    if (filteredTopics.length > 0) return filteredTopics[0];
+    return mathTopics[0];
   }, [selectedTopicId, filteredTopics]);
 
-  // Keep selectedTopicId in sync with activeTopic
-  React.useEffect(() => {
-    if (activeTopic && activeTopic.id !== selectedTopicId) {
-      setSelectedTopicId(activeTopic.id);
-    }
-  }, [activeTopic, selectedTopicId]);
+  // Check if current selection is an assessment
+  const currentAssessment = useMemo(() => {
+    return getAssessmentForTopic(selectedTopicId) || allAssessments[0];
+  }, [selectedTopicId]);
 
   // Handler for selecting year level from the top band
   const handleSelectYear = (year: YearLevel | 'All') => {
@@ -109,12 +118,24 @@ export default function App() {
       }
     }
     setSelectedTopicId(id);
+    setActiveDetailTab('theory');
     if (sectionId) {
       setTargetSectionId(sectionId);
     } else {
       setTargetSectionId(null);
     }
   };
+
+  // Handler for selecting an assessment directly
+  const handleOpenAssessment = (topicId: string) => {
+    setSelectedTopicId(topicId);
+    setSidebarMode('assessment');
+    setActiveDetailTab('assessment');
+    setTargetSectionId(null);
+  };
+
+  // Does the current selected topic have a full mathTopic lesson?
+  const hasMatchingLesson = mathTopics.some((t) => t.id === selectedTopicId);
 
   return (
     <div
@@ -135,13 +156,14 @@ export default function App() {
         onToggleDesktopSidebar={handleToggleDesktopSidebar}
       />
 
-      <div className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 pb-28 sm:pb-32 flex flex-col lg:flex-row gap-6 min-w-0">
-        {/* Left Sidebar for Tablets / Desktop */}
+      <div className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 pb-28 sm:pb-32 flex flex-col lg:flex-row gap-6 min-w-0 app-main-layout">
+        {/* Left Sidebar for Mobile, Tablet Landscape, & Desktop */}
         <Sidebar
           topics={filteredTopics}
-          selectedTopicId={activeTopic.id}
+          selectedTopicId={selectedTopicId}
           onSelectTopic={(id) => {
             setSelectedTopicId(id);
+            setActiveDetailTab('theory');
             setTargetSectionId(null);
           }}
           selectedCategory={selectedCategory}
@@ -150,13 +172,16 @@ export default function App() {
           onCloseMobile={() => setIsMobileNavOpen(false)}
           isDesktopOpen={isDesktopSidebarOpen}
           onToggleDesktop={handleToggleDesktopSidebar}
+          activeMode={sidebarMode}
+          onSelectMode={setSidebarMode}
+          onOpenAssessment={handleOpenAssessment}
         />
 
         {/* Main Content Area */}
         <main className="flex-1 min-w-0 w-full">
           {/* Quick expand pill when menu is collapsed on tablet landscape / desktop */}
           {!isDesktopSidebarOpen && (
-            <div className="hidden lg:flex items-center mb-3">
+            <div className="flex items-center mb-3">
               <button
                 id="expand-sidebar-pill-btn"
                 type="button"
@@ -171,17 +196,31 @@ export default function App() {
                 aria-label="Open topic navigator menu"
               >
                 <PanelLeftOpen size={15} style={{ color: 'var(--accent-primary)' }} />
-                <span>Show Topic Navigator ({filteredTopics.length})</span>
+                <span>
+                  Show Topic Navigator ({sidebarMode === 'assessment' ? allAssessments.length : filteredTopics.length})
+                </span>
               </button>
             </div>
           )}
 
-          <TopicDetail
-            topic={activeTopic}
-            onSelectTopic={handleSelectTopicDirectly}
-            targetSectionId={targetSectionId}
-            onClearTargetSection={() => setTargetSectionId(null)}
-          />
+          {/* If an extension assessment without full lesson is selected in assessment mode */}
+          {!hasMatchingLesson && currentAssessment ? (
+            <AssessmentView
+              assessment={currentAssessment}
+              onBackToTheory={() => {
+                setSidebarMode('learn');
+                setActiveDetailTab('theory');
+              }}
+            />
+          ) : (
+            <TopicDetail
+              topic={activeTopic}
+              onSelectTopic={handleSelectTopicDirectly}
+              targetSectionId={targetSectionId}
+              onClearTargetSection={() => setTargetSectionId(null)}
+              initialTab={activeDetailTab}
+            />
+          )}
         </main>
       </div>
 

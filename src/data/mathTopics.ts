@@ -1,4 +1,8 @@
 import { MathTopic } from '../types/math';
+import { ratioTopic } from './topics/ratioTopic';
+import { algebraTopic } from './topics/algebraTopic';
+import { measurementUnitsTopic } from './topics/measurementUnitsTopic';
+import { wordProblemsTopic } from './topics/wordProblemsTopic';
 
 const rawMathTopics: MathTopic[] = [
   {
@@ -2469,6 +2473,13 @@ const rawMathTopics: MathTopic[] = [
         formula: '\\text{Range} = \\text{Highest value} - \\text{Lowest value}',
         description: 'Measures how spread out the numbers are. (Note: Range is a measure of spread, not an average!)',
       },
+      {
+        id: 'stat-pie-angle',
+        name: 'Pie Chart Sector Angle Formula',
+        formula: '\\text{Sector Angle} = \\frac{\\text{Category Frequency}}{\\text{Total Data}} \\times 360^\\circ',
+        description: 'A full circle has 360°. Divide 360° by the total items to find degrees per item, then multiply by each category count. Alternatively, multiply percentage by 3.6° (e.g. 25% = 90°, 50% = 180°).',
+        keyNote: '10% = 36°, 25% = 90° (right angle), 50% = 180° (straight line).',
+      },
     ],
     sections: [
       {
@@ -2706,6 +2717,63 @@ const rawMathTopics: MathTopic[] = [
             ],
             finalAnswer: 'A) Combined Mean = 86%, B) Class 6B has more students, so its 90% carries greater weight.',
             proTip: 'Never average two averages unless both group sizes are exactly identical! Always convert back to total points first.',
+          },
+        ],
+      },
+      {
+        id: 'stat-sec-piecharts',
+        title: '4. Interpreting Pie Charts, Line Graphs & Sector Angles',
+        readTimeMinutes: 2,
+        visualMetaphor: 'The 360° Pizza Crust: A whole circular pie represents 100% of the data or 360° of angular turn. If 4 friends share the pizza equally, each gets a 90° slice (360° ÷ 4 = 90°, a right angle). If 120 people are surveyed, every single degree on the pie chart represents 120 ÷ 360 = 1/3 of a person, or 360° ÷ 120 = 3° per person!',
+        content: 'Pie charts display proportions of a whole categorical set. Because angles around a point sum to 360°, each category sector angle is proportional to its count: Angle = (Frequency ÷ Total) × 360°. Line graphs connect data points across time (e.g. hourly temperature, weekly rainfall) to show trends.',
+        prerequisites: [
+          {
+            term: 'Angles Around a Point (360°)',
+            quickDefinition: 'A full circular turn always equals 360 degrees.',
+            targetTopicId: 'geometry-angles-and-shapes',
+            targetTopicTitle: 'Geometry: Angles, Polygons & Triangles',
+          },
+          {
+            term: 'Finding Percentages of 360°',
+            quickDefinition: '10% of 360° = 36°, 25% = 90°, 50% = 180°.',
+            targetTopicId: 'decimals-and-percentages',
+            targetTopicTitle: 'Decimals, Percentages & Mental Benchmarks',
+          },
+        ],
+        mathExpressions: [
+          '\\text{Degrees per person} = \\frac{360^\\circ}{\\text{Total people}}',
+          '\\text{If 15 out of 60 walk: } \\text{Angle} = \\frac{15}{60} \\times 360^\\circ = \\frac{1}{4} \\times 360^\\circ = 90^\\circ',
+          '\\text{If 90° represents 18 marbles: Total marbles} = 18 \\times \\left(\\frac{360^\\circ}{90^\\circ}\\right) = 18 \\times 4 = 72\\text{ marbles}',
+        ],
+        keyTakeaways: [
+          'All sector angles in a pie chart MUST sum to 360°.',
+          'Sector Angle = (Category Count ÷ Total Count) × 360°.',
+          'To work backwards from an angle: Fraction of total = Angle ÷ 360°.',
+          'Line graphs are best for continuous time trends; bar charts are best for distinct categories.',
+        ],
+        workedExamples: [
+          {
+            id: 'we-stat-6',
+            title: 'Working Backwards from a Pie Chart Sector Angle',
+            level: 'Level 2: Medium',
+            problem: 'A pie chart shows the favourite colours of a group of children. The sector for "Green" has an angle of 72°. If 8 children chose Green, how many children were surveyed in total?',
+            mathProblem: '72^\\circ = 8\\text{ children} \\implies 360^\\circ = ?',
+            steps: [
+              {
+                stepNumber: 1,
+                title: 'Find what fraction of the full 360° circle is 72°',
+                explanation: 'Divide 360° by 72°: 360 ÷ 72 = 5. So 72° is exactly 1/5 of the whole circle.',
+                math: '\\frac{72^\\circ}{360^\\circ} = \\frac{1}{5}',
+              },
+              {
+                stepNumber: 2,
+                title: 'Multiply by 5 to find the total surveyed children',
+                explanation: 'Since 1/5 of the children is 8, the total number of children is 8 × 5 = 40.',
+                math: '\\text{Total} = 8 \\times 5 = 40\\text{ children}',
+              },
+            ],
+            finalAnswer: '40 children were surveyed in total.',
+            proTip: 'Key benchmark angles to memorize: 36° = 10%, 72° = 20%, 90° = 25%, 180° = 50%!',
           },
         ],
       },
@@ -3047,30 +3115,42 @@ const rawMathTopics: MathTopic[] = [
       },
     ],
   },
+  ratioTopic,
+  algebraTopic,
+  measurementUnitsTopic,
+  wordProblemsTopic,
 ];
 
-// Curated pedagogical learning order:
+// Curated pedagogical learning order for all 14 syllabus topics:
 // 1. Place Value & Rounding (Number system foundations)
 // 2. Multiplication, Division, Factors & Primes (LCM & HCF)
-// 3. Fractions Mastery (Uses LCM for addition/subtraction, HCF for simplifying)
-// 4. Decimals & Percentages (Conversions and mental benchmark Lego blocks)
-// 5. BIDMAS / Order of Operations (Calculating expressions with priority rules)
-// 6. Perimeter, Area & Volume (1D, 2D, 3D measurement)
-// 7. Geometry: Angles, Polygons & Triangles (Angle sums, missing angles)
-// 8. Coordinates & Reflection (4-Quadrant grid system)
-// 9. Roman Numerals & Time (Historical numbering & elapsed time bridges)
-// 10. Averages & Data Handling (Mean, Median, Mode, Range)
+// 3. Fractions Mastery (Equivalent fractions, + - × ÷ fractions)
+// 4. Decimals & Percentages (FDP conversions and mental benchmarks)
+// 5. Ratio, Proportion & Scaling (Sharing in ratio, scale factors)
+// 6. BIDMAS / Order of Operations (Hierarchy and parentheses)
+// 7. Introduction to Algebra (Expressions, equations, sequences)
+// 8. Units of Measurement (Metric conversions & imperial approximations)
+// 9. Perimeter, Area & Volume (1D, 2D, 3D spatial measurements)
+// 10. Geometry: Angles, Polygons & Triangles (Angle sums & symmetry)
+// 11. Coordinates & Reflection (4-Quadrant grid and translation)
+// 12. Roman Numerals & Time (Historical numbering & elapsed time)
+// 13. Averages & Data Handling (Mean, median, mode, range, pie charts)
+// 14. Multi-Step Word Problems (Singapore bar model & SATs reasoning)
 const TOPIC_ORDER: string[] = [
   'place-value-and-rounding',
   'multiplication-division-factors',
   'fractions-mastery',
   'decimals-and-percentages',
+  'ratio-and-proportion',
   'bidmas-order-of-operations',
+  'introduction-to-algebra',
+  'units-of-measurement',
   'perimeter-area-and-volume',
   'geometry-angles-and-shapes',
   'coordinates-and-reflection',
   'roman-numerals-and-time',
   'averages-and-data-handling',
+  'multi-step-word-problems',
 ];
 
 export const mathTopics: MathTopic[] = [...rawMathTopics].sort((a, b) => {

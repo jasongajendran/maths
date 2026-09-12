@@ -30,23 +30,27 @@ import { BidmasEvaluator } from './tools/BidmasEvaluator';
 import { AnglesExplorer } from './tools/AnglesExplorer';
 import { AreaPerimeterSandbox } from './tools/AreaPerimeterSandbox';
 import { RomanNumeralsConverter } from './tools/RomanNumeralsConverter';
+import { AssessmentView } from './AssessmentView';
+import { getAssessmentForTopic } from '../data/assessments';
 
 interface TopicDetailProps {
   topic: MathTopic;
   onSelectTopic?: (topicId: string, sectionId?: string) => void;
   targetSectionId?: string | null;
   onClearTargetSection?: () => void;
+  initialTab?: TabType;
 }
 
-type TabType = 'theory' | 'tips' | 'formulas' | 'practice' | 'tools';
+type TabType = 'theory' | 'tips' | 'formulas' | 'practice' | 'tools' | 'assessment';
 
 export const TopicDetail: React.FC<TopicDetailProps> = ({
   topic,
   onSelectTopic,
   targetSectionId,
   onClearTargetSection,
+  initialTab,
 }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('theory');
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'theory');
   const [activeSectionIndex, setActiveSectionIndex] = useState<number>(0);
   const [viewMode, setViewMode] = useState<'paginated' | 'all'>('paginated');
   const [highlightedSectionId, setHighlightedSectionId] = useState<string | null>(null);
@@ -55,6 +59,14 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
   const [expandedExamples, setExpandedExamples] = useState<Record<string, boolean>>({
     [topic.sections[0]?.workedExamples?.[0]?.id || '']: true,
   });
+
+  const topicAssessment = getAssessmentForTopic(topic.id);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab, topic.id]);
 
   // Practice state
   const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
@@ -141,7 +153,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
       {/* Topic Header Card - Standalone container with isolated audio button */}
       <div
         id={`topic-header-${topic.id}`}
-        className="rounded-2xl border p-5 sm:p-7 relative overflow-hidden shadow-xs space-y-4"
+        className="rounded-2xl border p-5 sm:p-7 relative overflow-hidden shadow-xs space-y-4 tactile-card"
         style={{
           backgroundColor: 'var(--bg-card)',
           borderColor: 'var(--border-card)',
@@ -206,13 +218,13 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
 
         {/* Navigation Tabs - Cleanly outside any speech container */}
         <div
-          className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-6 pt-5 border-t"
+          className="flex flex-wrap items-center gap-2 mt-6 pt-5 border-t"
           style={{ borderColor: 'var(--border-card)' }}
         >
           <button
             type="button"
             onClick={() => setActiveTab('theory')}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs tactile-btn"
             style={{
               backgroundColor: activeTab === 'theory' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: activeTab === 'theory' ? 'var(--accent-primary)' : 'var(--border-card)',
@@ -226,7 +238,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('tips')}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs tactile-btn"
             style={{
               backgroundColor: activeTab === 'tips' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: activeTab === 'tips' ? 'var(--accent-primary)' : 'var(--border-card)',
@@ -240,7 +252,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('formulas')}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs tactile-btn"
             style={{
               backgroundColor: activeTab === 'formulas' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: activeTab === 'formulas' ? 'var(--accent-primary)' : 'var(--border-card)',
@@ -254,7 +266,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('practice')}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs tactile-btn"
             style={{
               backgroundColor: activeTab === 'practice' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: activeTab === 'practice' ? 'var(--accent-primary)' : 'var(--border-card)',
@@ -269,7 +281,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab('tools')}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs tactile-btn"
               style={{
                 backgroundColor: activeTab === 'tools' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
                 borderColor: activeTab === 'tools' ? 'var(--accent-primary)' : 'var(--border-card)',
@@ -278,6 +290,34 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
             >
               <Cpu size={16} />
               <span>Interactive Visual Tool</span>
+            </button>
+          )}
+
+          {topicAssessment && (
+            <button
+              type="button"
+              id="tab-topic-assessment-btn"
+              onClick={() => setActiveTab('assessment')}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs relative tactile-btn"
+              style={{
+                backgroundColor: activeTab === 'assessment' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
+                borderColor: activeTab === 'assessment' ? 'var(--accent-primary)' : 'var(--border-card)',
+                color: activeTab === 'assessment' ? 'var(--accent-contrast)' : 'var(--text-primary)',
+              }}
+              title="Take the dedicated 25-question syllabus assessment for this topic"
+            >
+              <Award size={16} />
+              <span>Topic Assessment</span>
+              <span
+                className="text-[10px] font-black px-1.5 py-0.5 rounded-full uppercase ml-0.5 border"
+                style={{
+                  backgroundColor: activeTab === 'assessment' ? 'var(--bg-card)' : 'var(--badge-bg)',
+                  color: activeTab === 'assessment' ? 'var(--text-primary)' : 'var(--badge-text)',
+                  borderColor: 'var(--border-card)',
+                }}
+              >
+                25 Qs
+              </span>
             </button>
           )}
         </div>
@@ -1324,6 +1364,22 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
                   Test your understanding with instant feedback, hints, and step-by-step walkthroughs.
                 </p>
               </div>
+
+              {topicAssessment && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('assessment')}
+                  className="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer shadow-2xs flex items-center gap-1.5"
+                  style={{
+                    backgroundColor: 'var(--badge-bg)',
+                    borderColor: 'var(--border-card-strong)',
+                    color: 'var(--badge-text)',
+                  }}
+                >
+                  <Award size={13} />
+                  <span>Take 25-Question Assessment →</span>
+                </button>
+              )}
             </div>
 
             <div className="space-y-6">
@@ -1531,6 +1587,14 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
           {topic.toolType === 'area-perimeter' && <AreaPerimeterSandbox />}
           {topic.toolType === 'roman-numerals' && <RomanNumeralsConverter />}
         </div>
+      )}
+
+      {/* Tab 6: Dedicated Topic Assessment (25 Questions Easy to Difficult) */}
+      {activeTab === 'assessment' && topicAssessment && (
+        <AssessmentView
+          assessment={topicAssessment}
+          onBackToTheory={() => setActiveTab('theory')}
+        />
       )}
     </div>
   );
