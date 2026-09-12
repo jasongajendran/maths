@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MathView } from '../MathView';
-import { Check, X, ArrowRight, Sparkles, RefreshCw, AlertTriangle, Layers, Award } from 'lucide-react';
+import { Check, X, ArrowRight, Sparkles, RefreshCw, AlertTriangle, Layers, Award, GitCompare, HelpCircle } from 'lucide-react';
 import { VideoChapter } from '../../data/videoLessons/fractionsLessonData';
 
 interface WhiteboardVisualsProps {
@@ -27,6 +27,8 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
   const [manualStepAddition, setManualStepAddition] = useState<number | null>(null);
   const [isButterflyHovered, setIsButterflyHovered] = useState<string | null>(null);
   const [manualFlippedReciprocal, setManualFlippedReciprocal] = useState<boolean | null>(null);
+  const [highwayActiveTab, setHighwayActiveTab] = useState<'lanes' | 'comparison' | 'area'>('lanes');
+  const [comparisonPair, setComparisonPair] = useState<'addition' | 'multiplication'>('addition');
 
   // Derive smart state synced with playback time unless manually overridden
   const isSlicedIntoSixths = manualSliceToggle !== null
@@ -400,15 +402,22 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
     case 'butterfly_method':
       return (
         <div className="space-y-4 animate-fadeIn">
-          <div className="p-3 rounded-xl border bg-black/5 dark:bg-white/5 flex items-center justify-between text-xs">
-            <span className="font-extrabold uppercase tracking-wide text-amber-600 dark:text-amber-400">
-              Exam Speed-Hack
-            </span>
-            <span className="font-medium">Hover wings to see cross-multiplication</span>
+          {/* Operation Indicator Banner */}
+          <div className="p-3 rounded-xl border flex items-center justify-between text-xs font-bold"
+            style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded-md bg-amber-500 text-stone-950 font-black text-[11px] uppercase">
+                ➕ Addition &amp; Subtraction
+              </span>
+              <span className="text-amber-600 dark:text-amber-400 font-extrabold">
+                10-Second Speed Hack
+              </span>
+            </div>
+            <span style={{ color: 'var(--text-muted)' }}>Hover wings to see cross-multiplication</span>
           </div>
 
           {/* Interactive SVG Butterfly Canvas */}
-          <div className="relative p-6 rounded-2xl border flex flex-col items-center justify-center shadow-2xs"
+          <div className="relative p-5 rounded-2xl border flex flex-col items-center justify-center shadow-2xs"
             style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}>
             <svg viewBox="0 0 340 220" className="w-full max-w-sm h-52">
               {/* Left Wing (3 and 5) */}
@@ -494,10 +503,19 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
               <div className="font-extrabold text-lg">
                 <MathView math={'\\text{Top: } 15 + 8 = 23, \\quad \\text{Bottom: } 20 \\implies \\frac{23}{20} = 1\\frac{3}{20}'} />
               </div>
-              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                Left Antenna (15) + Right Antenna (8) = 23. Body (4 × 5) = 20!
+              <p className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
+                Left Antenna (15) + Right Antenna (8) = 23 on Top. Body (4 × 5) = 20 on Bottom!
               </p>
             </div>
+          </div>
+
+          {/* Rule Reminder Pill */}
+          <div className="p-3 rounded-xl border flex items-center gap-2 text-xs"
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}>
+            <span className="font-extrabold text-amber-600 dark:text-amber-400 shrink-0">💡 Important:</span>
+            <span style={{ color: 'var(--text-secondary)' }}>
+              Butterfly wings are used for <strong>Addition (+) &amp; Subtraction (-)</strong> because slices have different sizes. For <strong>Multiplication (×)</strong>, use the straight <strong>Highway Method</strong>!
+            </span>
           </div>
         </div>
       );
@@ -508,63 +526,270 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
     case 'multiplication_grid':
       return (
         <div className="space-y-4 animate-fadeIn">
-          {/* Equation Banner */}
-          <div className="p-3 rounded-xl border text-center font-extrabold text-base sm:text-lg flex items-center justify-center gap-3"
+          {/* Navigation View Switcher */}
+          <div className="flex flex-wrap items-center justify-between gap-2 p-1.5 rounded-xl border"
             style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}>
-            <span>Highway Rule:</span>
-            <MathView math={'\\frac{2}{3} \\times \\frac{4}{5} = \\frac{2 \\times 4}{3 \\times 5} = \\frac{8}{15}'} />
+            <button
+              onClick={() => setHighwayActiveTab('lanes')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all ${
+                highwayActiveTab === 'lanes'
+                  ? 'bg-amber-500 text-stone-950 shadow-xs'
+                  : 'hover:bg-black/5 dark:hover:bg-white/5'
+              }`}
+              style={{ color: highwayActiveTab === 'lanes' ? undefined : 'var(--text-primary)' }}
+            >
+              🚗 Highway Lanes (Straight Across)
+            </button>
+            <button
+              onClick={() => setHighwayActiveTab('comparison')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
+                highwayActiveTab === 'comparison'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'hover:bg-black/5 dark:hover:bg-white/5'
+              }`}
+              style={{ color: highwayActiveTab === 'comparison' ? undefined : 'var(--text-primary)' }}
+            >
+              <GitCompare className="w-3.5 h-3.5" />
+              Butterfly (+) vs Highway (×) Showdown
+            </button>
+            <button
+              onClick={() => setHighwayActiveTab('area')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all ${
+                highwayActiveTab === 'area'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'hover:bg-black/5 dark:hover:bg-white/5'
+              }`}
+              style={{ color: highwayActiveTab === 'area' ? undefined : 'var(--text-primary)' }}
+            >
+              🔲 2D Area Proof
+            </button>
           </div>
 
-          {/* Visual 2D Area Model (3 rows x 5 columns) */}
-          <div className="p-4 rounded-2xl border space-y-3"
-            style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}>
-            <div className="flex items-center justify-between text-xs font-bold">
-              <span className="text-emerald-600 dark:text-emerald-400">
-                Visual Area Proof: 2/3 of 4/5
-              </span>
-              <span style={{ color: 'var(--text-muted)' }}>15 equal blocks total</span>
-            </div>
-
-            {/* 3x5 Grid */}
-            <div className="grid grid-rows-3 gap-1.5 p-2 rounded-xl border bg-black/5 dark:bg-white/5">
-              {[0, 1, 2].map((row) => (
-                <div key={row} className="grid grid-cols-5 gap-1.5">
-                  {[0, 1, 2, 3, 4].map((col) => {
-                    const isRowInTwoThirds = row < 2; // top 2 rows
-                    const isColInFourFifths = col < 4; // left 4 columns
-                    const isOverlap = isRowInTwoThirds && isColInFourFifths; // 2x4 = 8
-
-                    return (
-                      <div
-                        key={col}
-                        className={`h-9 rounded-lg border text-xs font-extrabold flex items-center justify-center transition-all ${
-                          isOverlap
-                            ? 'bg-amber-400 dark:bg-amber-500 text-stone-900 border-amber-600 shadow-2xs font-black'
-                            : isRowInTwoThirds
-                            ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-300 opacity-60'
-                            : isColInFourFifths
-                            ? 'bg-blue-100 dark:bg-blue-950/40 border-blue-300 opacity-60'
-                            : 'bg-stone-100 dark:bg-stone-800 border-stone-300 opacity-30'
-                        }`}
-                        title={isOverlap ? 'Overlap square (8 total)' : 'Non-overlap square'}
-                      >
-                        {isOverlap ? '★' : ''}
-                      </div>
-                    );
-                  })}
+          {/* TAB 1: HIGHWAY LANES */}
+          {highwayActiveTab === 'lanes' && (
+            <div className="space-y-3">
+              {/* Dual-Lane Highway Canvas */}
+              <div className="p-4 sm:p-5 rounded-2xl border space-y-4 shadow-2xs"
+                style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}>
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-amber-600 dark:text-amber-400 font-extrabold flex items-center gap-1.5">
+                    🚗 Multiplication Highway Rule
+                  </span>
+                  <span style={{ color: 'var(--text-muted)' }}>Top × Top, Bottom × Bottom</span>
                 </div>
-              ))}
-            </div>
 
-            <div className="flex items-center justify-between text-xs pt-2 border-t" style={{ borderColor: 'var(--border-card)' }}>
-              <span className="font-bold flex items-center gap-1 text-amber-600 dark:text-amber-400">
-                ★ 8 Overlapping Gold Blocks
-              </span>
-              <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>
-                Out of 15 Total Blocks = 8/15
-              </span>
+                {/* Roadway graphic */}
+                <div className="relative rounded-2xl overflow-hidden border p-4 sm:p-5 bg-stone-900 text-white space-y-4">
+                  {/* Top Lane (Numerators) */}
+                  <div className="flex items-center justify-between gap-2 sm:gap-4">
+                    <span className="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-black uppercase tracking-wider shrink-0">
+                      Top Lane
+                    </span>
+                    <div className="flex-1 flex items-center justify-center gap-3 text-lg sm:text-2xl font-black">
+                      <span className="w-10 h-10 rounded-xl bg-amber-400 text-stone-950 flex items-center justify-center shadow-md">
+                        2
+                      </span>
+                      <span className="text-amber-400 font-extrabold">×</span>
+                      <span className="w-10 h-10 rounded-xl bg-amber-400 text-stone-950 flex items-center justify-center shadow-md">
+                        4
+                      </span>
+                      <ArrowRight className="w-5 h-5 text-amber-300 animate-pulse" />
+                      <span className="w-11 h-11 rounded-xl bg-amber-500 text-stone-950 font-black flex items-center justify-center border-2 border-white shadow-lg">
+                        8
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Dashed Road Divider Line */}
+                  <div className="border-t-2 border-dashed border-amber-400/60 my-2 relative">
+                    <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 px-2 bg-stone-900 text-[10px] uppercase font-bold text-stone-400 tracking-widest">
+                      Drive Straight Across • Never Cross Lanes
+                    </span>
+                  </div>
+
+                  {/* Bottom Lane (Denominators) */}
+                  <div className="flex items-center justify-between gap-2 sm:gap-4">
+                    <span className="px-2.5 py-1 rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/40 text-[11px] font-black uppercase tracking-wider shrink-0">
+                      Bottom Lane
+                    </span>
+                    <div className="flex-1 flex items-center justify-center gap-3 text-lg sm:text-2xl font-black">
+                      <span className="w-10 h-10 rounded-xl bg-blue-400 text-stone-950 flex items-center justify-center shadow-md">
+                        3
+                      </span>
+                      <span className="text-blue-400 font-extrabold">×</span>
+                      <span className="w-10 h-10 rounded-xl bg-blue-400 text-stone-950 flex items-center justify-center shadow-md">
+                        5
+                      </span>
+                      <ArrowRight className="w-5 h-5 text-blue-300 animate-pulse" />
+                      <span className="w-11 h-11 rounded-xl bg-blue-500 text-white font-black flex items-center justify-center border-2 border-white shadow-lg">
+                        15
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Final Equation Banner */}
+                <div className="p-3 rounded-xl border text-center font-extrabold text-lg flex items-center justify-center gap-3"
+                  style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}>
+                  <span className="text-xs uppercase tracking-wider font-extrabold" style={{ color: 'var(--accent-primary)' }}>
+                    Result:
+                  </span>
+                  <MathView math={'\\frac{2}{3} \\times \\frac{4}{5} = \\frac{2 \\times 4}{3 \\times 5} = \\mathbf{\\frac{8}{15}}'} />
+                </div>
+              </div>
+
+              {/* Clarification Callout */}
+              <div className="p-3.5 rounded-xl border flex items-start gap-2.5 text-xs"
+                style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}>
+                <span className="font-extrabold text-blue-600 dark:text-blue-400 shrink-0 text-sm">💡</span>
+                <div className="space-y-0.5">
+                  <p className="font-extrabold">Why is Highway Multiplication so fast?</p>
+                  <p style={{ color: 'var(--text-secondary)' }}>
+                    Multiplication does <strong>NOT</strong> need common denominators. You simply multiply the top numbers straight across, and the bottom numbers straight across!
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* TAB 2: BUTTERFLY VS HIGHWAY SHOWDOWN */}
+          {highwayActiveTab === 'comparison' && (
+            <div className="space-y-3">
+              <div className="p-4 rounded-2xl border space-y-4"
+                style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}>
+                <div className="text-center space-y-1">
+                  <h4 className="font-black text-sm uppercase tracking-wide">
+                    Compare the exact same two fractions: <span className="font-mono text-amber-600 dark:text-amber-400">3/4</span> and <span className="font-mono text-blue-600 dark:text-blue-400">2/5</span>
+                  </h4>
+                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                    See why Addition uses Butterfly wings while Multiplication drives the straight Highway!
+                  </p>
+                </div>
+
+                {/* Operation Buttons */}
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setComparisonPair('addition')}
+                    className={`p-3 rounded-xl border text-center transition-all ${
+                      comparisonPair === 'addition'
+                        ? 'border-amber-500 bg-amber-500/15 font-black ring-2 ring-amber-500'
+                        : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-70'
+                    }`}
+                  >
+                    <div className="text-base font-extrabold">➕ 1. ADDING (3/4 + 2/5)</div>
+                    <div className="text-xs mt-0.5 text-amber-600 dark:text-amber-400 font-bold">Use Butterfly Method</div>
+                  </button>
+                  <button
+                    onClick={() => setComparisonPair('multiplication')}
+                    className={`p-3 rounded-xl border text-center transition-all ${
+                      comparisonPair === 'multiplication'
+                        ? 'border-blue-500 bg-blue-500/15 font-black ring-2 ring-blue-500'
+                        : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-70'
+                    }`}
+                  >
+                    <div className="text-base font-extrabold">✖️ 2. MULTIPLYING (3/4 × 2/5)</div>
+                    <div className="text-xs mt-0.5 text-blue-600 dark:text-blue-400 font-bold">Use Highway Method</div>
+                  </button>
+                </div>
+
+                {/* Comparison Details Display */}
+                {comparisonPair === 'addition' ? (
+                  <div className="p-4 rounded-xl border bg-amber-500/10 border-amber-500/30 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-black text-xs uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                        ➕ Addition Requires Equal Slice Sizes
+                      </span>
+                      <span className="text-xs font-bold text-amber-600 dark:text-amber-400">Butterfly Wings</span>
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-stone-900 text-white text-center font-bold text-base space-y-1">
+                      <div><MathView math={'\\frac{3}{4} + \\frac{2}{5} = \\frac{(3 \\times 5) + (2 \\times 4)}{4 \\times 5}'} /></div>
+                      <div className="text-amber-400 text-lg font-extrabold">
+                        <MathView math={'= \\frac{15 + 8}{20} = \\mathbf{\\frac{23}{20} = 1\\frac{3}{20}}'} />
+                      </div>
+                    </div>
+
+                    <p className="text-xs font-medium leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                      <strong>Why Butterfly?</strong> Because fourths and fifths are different slice sizes! Cross-multiplying scales both fractions to twentieths so they can be combined.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-xl border bg-blue-500/10 border-blue-500/30 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-black text-xs uppercase tracking-wider text-blue-700 dark:text-blue-300">
+                        ✖️ Multiplication Takes A Fraction &quot;OF&quot; A Fraction
+                      </span>
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400">Highway Straight Across</span>
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-stone-900 text-white text-center font-bold text-base space-y-1">
+                      <div><MathView math={'\\frac{3}{4} \\times \\frac{2}{5} = \\frac{3 \\times 2}{4 \\times 5}'} /></div>
+                      <div className="text-blue-400 text-lg font-extrabold">
+                        <MathView math={'= \\frac{6}{20} = \\mathbf{\\frac{3}{10}}'} />
+                      </div>
+                    </div>
+
+                    <p className="text-xs font-medium leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                      <strong>Why Highway?</strong> Because &quot;3/4 of 2/5&quot; directly multiplies tops and bottoms straight forward. No common denominator is needed!
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: 2D AREA PROOF */}
+          {highwayActiveTab === 'area' && (
+            <div className="p-4 rounded-2xl border space-y-3"
+              style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}>
+              <div className="flex items-center justify-between text-xs font-bold">
+                <span className="text-emerald-600 dark:text-emerald-400 font-extrabold">
+                  Visual Area Proof: 2/3 of 4/5
+                </span>
+                <span style={{ color: 'var(--text-muted)' }}>15 equal blocks total</span>
+              </div>
+
+              {/* 3x5 Grid */}
+              <div className="grid grid-rows-3 gap-1.5 p-2 rounded-xl border bg-black/5 dark:bg-white/5">
+                {[0, 1, 2].map((row) => (
+                  <div key={row} className="grid grid-cols-5 gap-1.5">
+                    {[0, 1, 2, 3, 4].map((col) => {
+                      const isRowInTwoThirds = row < 2; // top 2 rows
+                      const isColInFourFifths = col < 4; // left 4 columns
+                      const isOverlap = isRowInTwoThirds && isColInFourFifths; // 2x4 = 8
+
+                      return (
+                        <div
+                          key={col}
+                          className={`h-9 rounded-lg border text-xs font-extrabold flex items-center justify-center transition-all ${
+                            isOverlap
+                              ? 'bg-amber-400 dark:bg-amber-500 text-stone-900 border-amber-600 shadow-2xs font-black'
+                              : isRowInTwoThirds
+                              ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-300 opacity-60'
+                              : isColInFourFifths
+                              ? 'bg-blue-100 dark:bg-blue-950/40 border-blue-300 opacity-60'
+                              : 'bg-stone-100 dark:bg-stone-800 border-stone-300 opacity-30'
+                          }`}
+                          title={isOverlap ? 'Overlap square (8 total)' : 'Non-overlap square'}
+                        >
+                          {isOverlap ? '★' : ''}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between text-xs pt-2 border-t" style={{ borderColor: 'var(--border-card)' }}>
+                <span className="font-bold flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                  ★ 8 Overlapping Gold Blocks
+                </span>
+                <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>
+                  Out of 15 Total Blocks = 8/15
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       );
 
