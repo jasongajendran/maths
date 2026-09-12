@@ -566,10 +566,10 @@ class AudioSpeechManager {
 
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       try {
-        window.speechSynthesis.cancel();
         if (window.speechSynthesis.paused) {
           window.speechSynthesis.resume();
         }
+        window.speechSynthesis.cancel();
       } catch (e) {
         // Safe fallback
       }
