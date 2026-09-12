@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { PanelLeftOpen } from 'lucide-react';
 import { mathTopics } from './data/mathTopics';
 import { CategoryId, YearLevel } from './types/math';
@@ -10,6 +10,7 @@ import { QuickFormulaDrawer } from './components/QuickFormulaDrawer';
 import { GoToTop } from './components/GoToTop';
 import { FloatingAudioController } from './components/FloatingAudioController';
 import { allAssessments, getAssessmentForTopic } from './data/assessments';
+import { wakeLockController } from './utils/wakeLock';
 
 export default function App() {
   const [selectedTopicId, setSelectedTopicId] = useState<string>('fractions-mastery');
@@ -47,6 +48,14 @@ export default function App() {
   };
 
   const [targetSectionId, setTargetSectionId] = useState<string | null>(null);
+
+  // Keep screen awake while user is studying or taking assessments
+  useEffect(() => {
+    wakeLockController.request();
+    return () => {
+      wakeLockController.release();
+    };
+  }, []);
 
   // Filter topics based on category and year level
   const filteredTopics = useMemo(() => {

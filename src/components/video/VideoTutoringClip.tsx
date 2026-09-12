@@ -23,9 +23,9 @@ import {
   Sliders,
 } from 'lucide-react';
 import { fractionsMasterclassLesson, VideoChapter } from '../../data/videoLessons/fractionsLessonData';
-import { TeacherAvatar } from './TeacherAvatar';
 import { WhiteboardVisuals } from './WhiteboardVisuals';
 import { audioSpeech } from '../../utils/audioSpeech';
+import { wakeLockController } from '../../utils/wakeLock';
 
 interface VideoTutoringClipProps {
   onGoToAssessment?: () => void;
@@ -167,11 +167,21 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
     };
   }, [isPlaying, playbackRate, lesson.totalDuration]);
 
-  // Clean up audio speech and timers on unmount
+  // Keep screen awake while video is playing
+  useEffect(() => {
+    if (isPlaying) {
+      wakeLockController.request();
+    } else {
+      wakeLockController.release();
+    }
+  }, [isPlaying]);
+
+  // Clean up audio speech, timers and wake lock on unmount
   useEffect(() => {
     return () => {
       if (seekDebounceRef.current) clearTimeout(seekDebounceRef.current);
       audioSpeech.stop();
+      wakeLockController.release();
     };
   }, []);
 
@@ -463,8 +473,8 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                     </p>
                   </div>
                   {isActive && (
-                    <div className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+                    <div className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
                       Now Playing
                     </div>
                   )}
@@ -537,8 +547,8 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                   </div>
 
                   {isCurrent && isPlaying && (
-                    <span className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-widest shrink-0 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+                    <span className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-widest shrink-0 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
                       Speaking
                     </span>
                   )}
@@ -549,28 +559,12 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
         </div>
       )}
 
-      {/* Main Video Body (Teacher & Smartboard Stage) */}
-      <div className="p-4 sm:p-6 space-y-4 relative flex-1 flex flex-col justify-between min-h-[360px]">
-        {/* Animated Teacher Avatar Banner */}
-        <TeacherAvatar
-          name={lesson.teacherName}
-          role={lesson.teacherRole}
-          mood={activeChapter.teacherMood}
-          pose={activeChapter.teacherPose}
-          isSpeaking={isPlaying}
-          teacherQuote={activeChapter.teacherSpokenScript}
-          activeCaptionText={currentCaption}
-          hasAudioVoice={hasVoiceAudio}
-          onToggleVoice={() => {
-            setHasVoiceAudio(!hasVoiceAudio);
-            if (hasVoiceAudio) audioSpeech.stop();
-          }}
-        />
-
+      {/* Main Video Body (Smartboard Stage) */}
+      <div className="p-4 sm:p-6 space-y-4 relative flex-1 flex flex-col justify-between min-h-[420px]">
         {/* Dynamic Classroom Whiteboard Screen */}
         <div
           id="classroom-whiteboard-stage"
-          className="rounded-2xl border p-4 sm:p-6 shadow-inner relative overflow-hidden transition-all flex-1 min-h-[300px] flex flex-col justify-between"
+          className="rounded-2xl border p-4 sm:p-6 shadow-inner relative overflow-hidden transition-all flex-1 min-h-[380px] flex flex-col justify-between"
           style={{
             backgroundColor: 'var(--bg-canvas)',
             borderColor: 'var(--border-card)',
@@ -609,7 +603,7 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
               }}
             >
               <div className="flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold tracking-wide">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
                 <span className="text-amber-400 font-extrabold uppercase text-[10px] tracking-wider shrink-0">
                   Captions:
                 </span>

@@ -459,25 +459,25 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
 
               {/* Fractions: 3/4 + 2/5 */}
               {/* Fraction 1 (3/4) */}
-              <text x="130" y="95" textAnchor="middle" fontSize="20" fontWeight="bold" fill="var(--text-primary)">
+              <text x="130" y="96" textAnchor="middle" fontSize="22" fontWeight="900" fill="#18181b">
                 3
               </text>
-              <line x1="110" y1="105" x2="150" y2="105" stroke="var(--text-primary)" strokeWidth="2" />
-              <text x="130" y="130" textAnchor="middle" fontSize="20" fontWeight="bold" fill="var(--text-primary)">
+              <line x1="110" y1="105" x2="150" y2="105" stroke="#18181b" strokeWidth="2.5" strokeLinecap="round" />
+              <text x="130" y="132" textAnchor="middle" fontSize="22" fontWeight="900" fill="#18181b">
                 4
               </text>
 
               {/* Plus sign */}
-              <text x="170" y="115" textAnchor="middle" fontSize="24" fontWeight="bold" fill="var(--accent-primary)">
+              <text x="170" y="115" textAnchor="middle" fontSize="26" fontWeight="900" fill="var(--accent-primary)">
                 +
               </text>
 
               {/* Fraction 2 (2/5) */}
-              <text x="210" y="95" textAnchor="middle" fontSize="20" fontWeight="bold" fill="var(--text-primary)">
+              <text x="210" y="96" textAnchor="middle" fontSize="22" fontWeight="900" fill="#18181b">
                 2
               </text>
-              <line x1="190" y1="105" x2="230" y2="105" stroke="var(--text-primary)" strokeWidth="2" />
-              <text x="210" y="130" textAnchor="middle" fontSize="20" fontWeight="bold" fill="var(--text-primary)">
+              <line x1="190" y1="105" x2="230" y2="105" stroke="#18181b" strokeWidth="2.5" strokeLinecap="round" />
+              <text x="210" y="132" textAnchor="middle" fontSize="22" fontWeight="900" fill="#18181b">
                 5
               </text>
 
