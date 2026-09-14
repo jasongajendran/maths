@@ -24,39 +24,112 @@ export function cleanMathForSpeech(text: string): string {
   speech = speech.replace(/\\mathit\{([^}]+)\}/g, '$1');
   speech = speech.replace(/\\underline\{([^}]+)\}/g, '$1');
 
-  // LaTeX Vectors & Matrices
+  // 1. Common English & Latin Abbreviations (Fix "e.g." reading as "eg", "i.e." as "eye", etc.)
+  // e.g. / E.g. / eg. / (e.g. 4.95) -> "for example"
+  speech = speech.replace(/\b(?:e\.g\.|e\.g|eg\.|eg)\b:?/gi, 'for example, ');
+  // i.e. / I.e. / ie. -> "that is"
+  speech = speech.replace(/\b(?:i\.e\.|i\.e|ie\.)\b:?/gi, 'that is, ');
+  // etc. / etc -> "and so on"
+  speech = speech.replace(/\b(?:etc\.|etc)\b/gi, 'and so on');
+  // ex. / Ex. 1 -> "example 1"
+  speech = speech.replace(/\b(?:ex\.|Ex\.)\s*(\d+)\b/g, 'example $1');
+  speech = speech.replace(/\b(?:ex\.|Ex\.)\b:?/g, 'example: ');
+  // vs. / vs / v. -> "versus"
+  speech = speech.replace(/\b(?:vs\.|vs)\b/gi, 'versus');
+  // approx. / approx -> "approximately"
+  speech = speech.replace(/\b(?:approx\.|approx)\b/gi, 'approximately');
+  // w.r.t. -> "with respect to"
+  speech = speech.replace(/\b(?:w\.r\.t\.|wrt)\b/gi, 'with respect to');
+  // No. / Nos. -> "number" / "numbers"
+  speech = speech.replace(/\b(?:no\.|No\.)\s*(\d+)\b/g, 'number $1');
+  speech = speech.replace(/\b(?:nos\.|Nos\.)\s*(\d+)\b/g, 'numbers $1');
+  // Q1, Q2 -> "Question 1, Question 2"
+  speech = speech.replace(/\bQ(\d+)\b/gi, 'Question $1');
+
+  // 2. Curriculum & Assessment Acronyms
+  speech = speech.replace(/\b(?:LCM|lcm)\b/g, 'L C M, lowest common multiple');
+  speech = speech.replace(/\b(?:HCF|hcf)\b/g, 'H C F, highest common factor');
+  speech = speech.replace(/\bBIDMAS\b/g, 'Bid-mass');
+  speech = speech.replace(/\bBODMAS\b/g, 'Bod-mass');
+  speech = speech.replace(/\b(?:SATs|SATS)\b/g, 'Sats');
+  speech = speech.replace(/\b(?:KS2|ks2)\b/g, 'Key Stage 2');
+  speech = speech.replace(/\b(?:KS1|ks1)\b/g, 'Key Stage 1');
+
+  // 3. Currency Formatting (UK Pounds & Pence)
+  // £4.95 -> 4 pounds and 95 pence
+  speech = speech.replace(/£(\d+)\.(\d{2})\b/g, '$1 pounds and $2 pence');
+  speech = speech.replace(/£(\d+)\.(\d)\b/g, '$1 pounds and $20 pence');
+  speech = speech.replace(/£1\b/g, '1 pound');
+  speech = speech.replace(/£(\d+)\b/g, '$1 pounds');
+  // 85p / 50p -> 85 pence / 50 pence
+  speech = speech.replace(/\b(\d+)p\b/g, '$1 pence');
+
+  // 4. LaTeX Vectors & Matrices
   speech = speech.replace(
     /\\begin\{pmatrix\}\s*([^\\]+)\s*\\\\\s*([^\\]+)\s*\\end\{pmatrix\}/g,
     'vector: $1 horizontal, $2 vertical'
   );
   speech = speech.replace(/\\vec\{([^}]+)\}/g, 'vector $1');
 
-  // Mixed numbers first: 1\frac{3}{20} or 1 3/20 -> 1 and 3 over 20
+  // 5. Mixed numbers: 1\frac{3}{20} or 1 3/20 -> 1 and 3 over 20
   speech = speech.replace(/(\d+)\s*\\?frac\{([^}]+)\}\{([^}]+)\}/gi, '$1 and $2 over $3');
   speech = speech.replace(/(\d+)\s*\\?frac\s*(\d)\s*(\d)/gi, '$1 and $2 over $3');
   speech = speech.replace(/\b(\d+)\s+(\d+)\/(\d+)\b/g, '$1 and $2 over $3');
 
-  // Fractions: \frac{a}{b}, \frac25, frac25, or 2/5 -> a over b
+  // 6. Fractions: \frac{a}{b}, \frac25, frac25, or 2/5 -> a over b
   speech = speech.replace(/\\?frac\{([^}]+)\}\{([^}]+)\}/gi, '$1 over $2');
   speech = speech.replace(/\\?frac\s*([0-9a-zA-Z])\s*([0-9a-zA-Z])/gi, '$1 over $2');
   // Simple fractions like 3/4 or 1/2
   speech = speech.replace(/\b(\d+)\/(\d+)\b/g, '$1 over $2');
 
-  // Square roots: \sqrt{x} or \sqrt[n]{x}
+  // 7. Ratios: 2:3 or 1:4:5 -> 2 to 3 / 1 to 4 to 5
+  speech = speech.replace(/\b(\d+)\s*:\s*(\d+)\s*:\s*(\d+)\b/g, '$1 to $2 to $3');
+  speech = speech.replace(/\b(\d+)\s*:\s*(\d+)\b/g, '$1 to $2');
+
+  // 8. Square roots: \sqrt{x} or \sqrt[n]{x}
   speech = speech.replace(/\\sqrt\[(\d+)\]\{([^}]+)\}/g, '$1-th root of $2');
   speech = speech.replace(/\\sqrt\{([^}]+)\}/g, 'square root of $1');
   speech = speech.replace(/√(\w+|\([^)]+\))/g, 'square root of $1');
 
-  // Units
-  speech = speech.replace(/cm\^3/g, 'cubic centimetres');
-  speech = speech.replace(/m\^3/g, 'cubic metres');
-  speech = speech.replace(/cm\^2/g, 'square centimetres');
-  speech = speech.replace(/m\^2/g, 'square metres');
+  // 9. Units & Measurement conversions
+  speech = speech.replace(/cm\^3|cu\s*cm|cubic\s*cm/gi, 'cubic centimetres');
+  speech = speech.replace(/m\^3|cu\s*m|cubic\s*m/gi, 'cubic metres');
+  speech = speech.replace(/cm\^2|sq\s*cm|square\s*cm/gi, 'square centimetres');
+  speech = speech.replace(/m\^2|sq\s*m|square\s*m/gi, 'square metres');
+  speech = speech.replace(/km\^2|sq\s*km|square\s*km/gi, 'square kilometres');
 
-  // Powers and exponents
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*km\/h\b|(\d+)\s*kmph\b/gi, '$1 kilometres per hour');
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*mph\b/gi, '$1 miles per hour');
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*m\/s\b/gi, '$1 metres per second');
+
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*mm\b/gi, '$1 millimetres');
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*cm\b/gi, '$1 centimetres');
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*km\b/gi, '$1 kilometres');
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*kg\b/gi, '$1 kilograms');
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*mg\b/gi, '$1 milligrams');
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*ml\b/gi, '$1 millilitres');
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*cl\b/gi, '$1 centilitres');
+
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*hrs?\b/gi, '$1 hours');
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*mins?\b/gi, '$1 minutes');
+  speech = speech.replace(/(\d+(?:\.\d+)?)\s*secs?\b/gi, '$1 seconds');
+
+  speech = speech.replace(/(\d+)\s*(?:d\.p\.|dp)\b/gi, '$1 decimal places');
+  speech = speech.replace(/(\d+)\s*(?:s\.f\.|sf)\b/gi, '$1 significant figures');
+
+  // Temperatures
+  speech = speech.replace(/(-?\d+(?:\.\d+)?)\s*°C\b/g, '$1 degrees Celsius');
+  speech = speech.replace(/(-?\d+(?:\.\d+)?)\s*°F\b/g, '$1 degrees Fahrenheit');
+  speech = speech.replace(/°/g, ' degrees ');
+
+  // 10. Powers and exponents
   speech = speech.replace(/([a-zA-Z0-9)]+)\^2\b/g, '$1 squared');
   speech = speech.replace(/([a-zA-Z0-9)]+)\^3\b/g, '$1 cubed');
   speech = speech.replace(/([a-zA-Z0-9)]+)\^\{?(-?\d+|[a-zA-Z]+)\}?/g, '$1 to the power of $2');
+
+  // 11. Arithmetic operations
+  // 6 × 6 or 38 x 46 -> 6 times 6
+  speech = speech.replace(/(\d+)\s*[×xX]\s*(\d+)/g, '$1 times $2');
 
   // LaTeX spacing commands: \; \, \: \! \quad \qquad
   speech = speech.replace(/\\[,;:! ]/g, ' ');
@@ -75,7 +148,7 @@ export function cleanMathForSpeech(text: string): string {
   speech = speech.replace(/\\approx|≈/g, ' is approximately ');
   speech = speech.replace(/\\pi|π/g, ' pi ');
   speech = speech.replace(/\\theta|θ/g, ' theta ');
-  speech = speech.replace(/\\degree|°/g, ' degrees ');
+  speech = speech.replace(/\\degree/g, ' degrees ');
   speech = speech.replace(/\\%/g, ' percent');
   speech = speech.replace(/%/g, ' percent');
 
@@ -94,7 +167,8 @@ export function cleanMathForSpeech(text: string): string {
   // Clarify numbered pedagogical steps (e.g. "1. Underline... 2. Circle..." -> "Step 1: Underline... Step 2: Circle...")
   speech = speech.replace(/(?<=(?:^|[.:!?\n]|\bto\b|\bnumber\b|\binstead:))\s*(\d+)\.\s+([A-Z])/gi, ' Step $1: $2');
 
-  // Clean extra spaces and punctuation
+  // Clean duplicate punctuation and extra spaces
+  speech = speech.replace(/,\s*,+/g, ',');
   speech = speech.replace(/\s+/g, ' ').trim();
 
   return speech;
