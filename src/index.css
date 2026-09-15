@@ -7,28 +7,28 @@
 
 :root,
 [data-theme="butter"] {
-  /* Buttercup & Honey (Default Theme) - Soft radiant custard cream canvas, rich caramel amber, crisp carbon ink */
-  --bg-canvas: #fffef7; /* Gentle warm eggshell cream - zero eye glare */
-  --bg-card: #fbf5e6;   /* Luxurious honey-custard card base with subtle warmth */
-  --bg-card-hover: #f7eed4; /* Soft sunny cream hover state */
-  --bg-card-subtle: #f2e4c4; /* Balanced biscuit layer for tags, inputs & secondary boxes */
-  --border-card: #dfcc9a; /* Crisp tactile border with clear separation */
+  /* Buttercup & Honey (Default Daytime) - Warm radiant custard cream canvas, rich caramel amber, crisp carbon ink */
+  --bg-canvas: #fffdf5; /* Gentle warm eggshell cream - zero eye glare, optimal reading comfort */
+  --bg-card: #fbf5e6;   /* Rich honey-custard card base with subtle warmth */
+  --bg-card-hover: #f6ecce; /* Tactile sunny cream hover state */
+  --bg-card-subtle: #f1e2bc; /* Biscuit layer for tags, formula callouts & inputs */
+  --border-card: #dfcc9a; /* Crisp tactile border with clear spatial separation */
   --border-card-strong: #b88628; /* High-contrast golden amber border */
-  --text-primary: #120e06; /* Deep obsidian carbon with warm amber undertone (19.5:1 contrast) */
-  --text-secondary: #2c2210; /* Solid dark roast ink */
-  --text-muted: #64502b; /* Warm bronze sepia for secondary notes */
+  --text-primary: #140f06; /* Obsidian carbon with warm amber undertone (>19:1 WCAG AAA contrast) */
+  --text-secondary: #2f2310; /* Solid dark roast ink for descriptions and guidance */
+  --text-muted: #69522d; /* Warm bronze sepia for secondary notes */
   --accent-primary: #b45309; /* Rich golden honey amber */
   --accent-hover: #92400e; /* Deep caramelized amber */
   --accent-light: #fef3c7; /* Luminous sunny glow */
   --accent-contrast: #ffffff;
   --reading-highlight-bg: #fee380; /* Bright buttercup active reading highlight */
-  --reading-highlight-border: #120e06; /* High-contrast carbon border when playing/focused */
-  --reading-highlight-ring: rgba(18, 14, 6, 0.28);
+  --reading-highlight-border: #140f06; /* High-contrast carbon border when playing/focused */
+  --reading-highlight-ring: rgba(20, 15, 6, 0.28);
   --badge-bg: #fde047; /* Bright buttercup gold */
-  --badge-text: #120e06; /* Crisp pitch black text */
+  --badge-text: #140f06; /* Crisp pitch black text */
   /* High contrast accent tokens */
-  --contrast-black: #120e06;
-  --contrast-black-bg: #1c1810;
+  --contrast-black: #140f06;
+  --contrast-black-bg: #1f180d;
   --contrast-warm: #b91c1c; /* Crimson alert */
   --contrast-warm-bg: #fee2e2;
   --contrast-warm-border: #f87171;
@@ -43,150 +43,76 @@
   --contrast-teal-border: #6ee7b7;
 }
 
-[data-theme="oxford"] {
-  /* Royal Oxford Navy & Cobalt - Prestigious scholastic midnight navy with crisp white chalk */
-  --bg-canvas: #090e21;
-  --bg-card: #101936;
-  --bg-card-hover: #17244c;
-  --bg-card-subtle: #0d142b;
-  --border-card: #223565;
-  --border-card-strong: #3b5598;
-  --text-primary: #ffffff; /* 100% crisp white, maximum legibility */
-  --text-secondary: #e0e7ff; /* Bright chalk silver */
-  --text-muted: #94a3b8; /* Crisp slate chalk */
-  --accent-primary: #3b82f6; /* Luminous Oxford Blue */
-  --accent-hover: #60a5fa;
-  --accent-light: #1e3a8a;
-  --accent-contrast: #ffffff;
-  --reading-highlight-bg: #1e3a8a;
-  --reading-highlight-border: #60a5fa;
-  --reading-highlight-ring: rgba(96, 165, 250, 0.45);
-  --badge-bg: #2563eb;
-  --badge-text: #ffffff;
-  /* High-contrast accessible accents for dark background */
-  --contrast-black: #ffffff;
-  --contrast-black-bg: #090e21;
-  --contrast-warm: #f87171; /* Vivid coral red */
-  --contrast-warm-bg: #450a0a;
-  --contrast-warm-border: #ef4444;
-  --contrast-amber: #fbbf24; /* Radiant warm gold */
-  --contrast-amber-bg: #451a03;
-  --contrast-amber-border: #f59e0b;
-  --contrast-indigo: #a5b4fc; /* Radiant lavender indigo */
-  --contrast-indigo-bg: #1e1b4b;
-  --contrast-indigo-border: #6366f1;
-  --contrast-teal: #34d399; /* Bright mint emerald */
-  --contrast-teal-bg: #064e3b;
-  --contrast-teal-border: #10b981;
-}
-
 [data-theme="sage"] {
-  /* Sage & Terracotta - Calming botanical eucalyptus, deep pine ink & warm terracotta */
-  --bg-canvas: #f4f8f5;
-  --bg-card: #e8f1eb;
-  --bg-card-hover: #dbe9df;
-  --bg-card-subtle: #cde0d2;
-  --border-card: #a3c4ae;
-  --border-card-strong: #4a7c5c;
-  --text-primary: #062313; /* Deep evergreen pine */
-  --text-secondary: #133923;
-  --text-muted: #2d523c;
-  --accent-primary: #c2410c; /* Warm Terracotta */
+  /* Sage & Terracotta - Calming botanical eucalyptus, deep pine ink & warm terracotta accents */
+  --bg-canvas: #f2f7f4; /* Soothing soft eucalyptus mist - reduces visual fatigue */
+  --bg-card: #e4eee7;   /* Harmonious botanical card surface */
+  --bg-card-hover: #d5e5da;
+  --bg-card-subtle: #c6dcce; /* Fresh herbal tint for formula boxes and badges */
+  --border-card: #9bc0a8; /* Defined herbal boundary */
+  --border-card-strong: #3b7450; /* Deep botanical pine boundary */
+  --text-primary: #041f11; /* Deep evergreen pine (>18:1 contrast) */
+  --text-secondary: #0f351e; /* Crisp secondary pine ink */
+  --text-muted: #285538; /* Legible botanical green */
+  --accent-primary: #c2410c; /* Warm, energetic Terracotta */
   --accent-hover: #9a3412;
   --accent-light: #ffedd5;
   --accent-contrast: #ffffff;
-  --reading-highlight-bg: #d1fae5;
-  --reading-highlight-border: #062313;
-  --reading-highlight-ring: rgba(6, 35, 19, 0.28);
-  --badge-bg: #22543d;
+  --reading-highlight-bg: #c7f0d8; /* Calming mint reading spotlight */
+  --reading-highlight-border: #041f11;
+  --reading-highlight-ring: rgba(4, 31, 17, 0.28);
+  --badge-bg: #15803d;
   --badge-text: #ffffff;
   /* Contrasting accents */
-  --contrast-black: #062313;
-  --contrast-black-bg: #112d1d;
+  --contrast-black: #041f11;
+  --contrast-black-bg: #0c2b18;
   --contrast-warm: #c2410c;
   --contrast-warm-bg: #ffedd5;
   --contrast-warm-border: #fdba74;
   --contrast-amber: #b45309;
   --contrast-amber-bg: #fef3c7;
   --contrast-amber-border: #fcd34d;
-  --contrast-indigo: #312e81;
+  --contrast-indigo: #1e1b4b;
   --contrast-indigo-bg: #e0e7ff;
-  --contrast-indigo-border: #a5b4fc;
-  --contrast-teal: #065f46;
-  --contrast-teal-bg: #d1fae5;
-  --contrast-teal-border: #6ee7b7;
-}
-
-[data-theme="lavender"] {
-  /* Lavender & Amethyst - Dyslexia-friendly pastel lilac with deep royal amethyst ink */
-  --bg-canvas: #faf8fd;
-  --bg-card: #f2ecf8;
-  --bg-card-hover: #e9deef;
-  --bg-card-subtle: #ded1e6;
-  --border-card: #cbb9db;
-  --border-card-strong: #8b3dc7;
-  --text-primary: #1b0d30; /* Deep rich midnight amethyst */
-  --text-secondary: #2d184d;
-  --text-muted: #5b3a82;
-  --accent-primary: #8b3dc7; /* Royal Amethyst */
-  --accent-hover: #7529b0;
-  --accent-light: #f3e8ff;
-  --accent-contrast: #ffffff;
-  --reading-highlight-bg: #e9d5ff;
-  --reading-highlight-border: #1b0d30;
-  --reading-highlight-ring: rgba(27, 13, 48, 0.28);
-  --badge-bg: #8b3dc7;
-  --badge-text: #ffffff;
-  /* Contrasting accents */
-  --contrast-black: #1b0d30;
-  --contrast-black-bg: #25123f;
-  --contrast-warm: #b91c1c;
-  --contrast-warm-bg: #fee2e2;
-  --contrast-warm-border: #f87171;
-  --contrast-amber: #b45309;
-  --contrast-amber-bg: #fef3c7;
-  --contrast-amber-border: #f59e0b;
-  --contrast-indigo: #4338ca;
-  --contrast-indigo-bg: #ede9fe;
-  --contrast-indigo-border: #a5b4fc;
-  --contrast-teal: #047857;
+  --contrast-indigo-border: #818cf8;
+  --contrast-teal: #064e3b;
   --contrast-teal-bg: #d1fae5;
   --contrast-teal-border: #6ee7b7;
 }
 
 [data-theme="obsidian"] {
-  /* Obsidian & Amber - High-contrast dark study mode, velvet slate with honey amber glow */
-  --bg-canvas: #0a0e16;
-  --bg-card: #131924;
-  --bg-card-hover: #1c2433;
-  --bg-card-subtle: #0f141f;
-  --border-card: #253145;
-  --border-card-strong: #40526e;
-  --text-primary: #ffffff; /* 100% pure brilliant white */
-  --text-secondary: #e2e8f0; /* Crisp light platinum */
-  --text-muted: #94a3b8; /* Clear soft silver */
-  --accent-primary: #f59e0b; /* Luminous Honey Amber */
+  /* Obsidian & Amber - High-contrast dark study mode, velvet slate with glowing honey amber */
+  --bg-canvas: #090d16; /* Deepest velvet slate - eliminates screen glare at night */
+  --bg-card: #131b28;   /* Refined dark card base (within optical 10% brightness step) */
+  --bg-card-hover: #1b2639; /* Sleek card hover */
+  --bg-card-subtle: #0e1520; /* Deep inset layer for math inputs and chips */
+  --border-card: #27374d; /* Tactile slate border with crisp edge definition */
+  --border-card-strong: #415a7d; /* Luminous border for focused/active states */
+  --text-primary: #f8fafc; /* Crisp, brilliant off-white for zero eye strain */
+  --text-secondary: #cbd5e1; /* Radiant silver slate */
+  --text-muted: #94a3b8; /* Clear legible slate chalk */
+  --accent-primary: #f59e0b; /* Luminous Honey Amber glow */
   --accent-hover: #fbbf24;
-  --accent-light: #451a03;
-  --accent-contrast: #0a0e16; /* Pure pitch-black on bright amber for WCAG AAA contrast */
-  --reading-highlight-bg: #202b3d;
+  --accent-light: #2d1804;
+  --accent-contrast: #090d16; /* Pure pitch-black on bright amber for WCAG AAA contrast */
+  --reading-highlight-bg: #1e2e46; /* Navy slate active spotlight */
   --reading-highlight-border: #f59e0b;
   --reading-highlight-ring: rgba(245, 158, 11, 0.45);
   --badge-bg: #f59e0b;
-  --badge-text: #0a0e16;
+  --badge-text: #090d16;
   /* High-contrast accessible accents for dark background */
   --contrast-black: #ffffff;
-  --contrast-black-bg: #0a0e16;
-  --contrast-warm: #fca5a5; /* Vivid rose */
+  --contrast-black-bg: #090d16;
+  --contrast-warm: #f87171; /* Vivid coral red */
   --contrast-warm-bg: #450a0a;
   --contrast-warm-border: #ef4444;
-  --contrast-amber: #fbbf24; /* Vivid golden amber */
+  --contrast-amber: #fbbf24; /* Radiant warm gold */
   --contrast-amber-bg: #451a03;
   --contrast-amber-border: #f59e0b;
-  --contrast-indigo: #c7d2fe; /* Vivid periwinkle */
+  --contrast-indigo: #c7d2fe; /* Radiant periwinkle */
   --contrast-indigo-bg: #1e1b4b;
   --contrast-indigo-border: #818cf8;
-  --contrast-teal: #6ee7b7; /* Vivid mint */
+  --contrast-teal: #6ee7b7; /* Radiant mint */
   --contrast-teal-bg: #064e3b;
   --contrast-teal-border: #10b981;
 }

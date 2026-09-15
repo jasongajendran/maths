@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { MathView } from '../MathView';
 import { Check, X, ArrowRight, Sparkles, RefreshCw, AlertTriangle, Layers, Award, GitCompare, HelpCircle } from 'lucide-react';
-import { VideoChapter } from '../../data/videoLessons/fractionsLessonData';
+import { VideoChapter, WhiteboardType } from '../../data/videoLessons/types';
+import { ExpandedWhiteboardScenes } from './ExpandedWhiteboardScenes';
 
 interface WhiteboardVisualsProps {
   chapter: VideoChapter;
@@ -52,6 +53,31 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
   const isFlippedReciprocal = manualFlippedReciprocal !== null
     ? manualFlippedReciprocal
     : (chapter.whiteboardType === 'kfc_division' && currentTime >= 302);
+
+  // Check if whiteboard type is handled by expanded scenes
+  const expandedTypes: WhiteboardType[] = [
+    'prime_tile_test',
+    'square_number_grid',
+    'cube_3d_blocks',
+    'factor_rainbow_board',
+    'place_value_houses',
+    'rounding_mountain',
+    'fdp_grid_board',
+    'ratio_bar_board',
+    'bidmas_priority_board',
+    'algebra_balance_board',
+    'metric_staircase_board',
+    'perimeter_area_volume_board',
+    'angles_clock_board',
+    'coordinates_grid_board',
+    'roman_numerals_board',
+    'averages_rhyme_board',
+    'word_problems_bar_board',
+  ];
+
+  if (expandedTypes.includes(chapter.whiteboardType)) {
+    return <ExpandedWhiteboardScenes type={chapter.whiteboardType} currentTime={currentTime} />;
+  }
 
   switch (chapter.whiteboardType) {
     /* ----------------------------------------------------

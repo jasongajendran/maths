@@ -35,6 +35,8 @@ import { RomanNumeralsConverter } from './tools/RomanNumeralsConverter';
 import { AssessmentView } from './AssessmentView';
 import { getAssessmentForTopic } from '../data/assessments';
 import { VideoTutoringClip } from './video/VideoTutoringClip';
+import { hasVideoLesson, getVideoLessonForTopic } from '../data/videoLessons';
+import { ConceptExplainerCard } from './ConceptExplainerCard';
 
 interface TopicDetailProps {
   topic: MathTopic;
@@ -151,6 +153,8 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
       ? [topic.sections[activeSectionIndex] || topic.sections[0]]
       : topic.sections;
 
+  const topicVideoLesson = hasVideoLesson(topic.id) ? getVideoLessonForTopic(topic.id) : null;
+
   return (
     <div className="space-y-6">
       {/* Topic Header Card - Standalone container with isolated audio button */}
@@ -219,7 +223,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
           </p>
 
           {/* Masterclass Video Tutoring Promotional Banner */}
-          {topic.id === 'fractions-mastery' && (
+          {topicVideoLesson && (
             <div
               className="p-3.5 sm:p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-3.5 shadow-2xs mt-3 tactile-card"
               style={{
@@ -241,14 +245,14 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <h4 className="font-extrabold text-sm sm:text-base tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                      Interactive Video Tutoring Masterclass
+                      {topicVideoLesson.title}
                     </h4>
                     <span className="text-[10px] font-black px-2 py-0.5 rounded-full uppercase bg-amber-500 text-stone-900 border border-amber-600">
                       Mrs. Davies (Year 5/6 Lead)
                     </span>
                   </div>
                   <p className="text-xs sm:text-sm font-medium mt-0.5" style={{ color: 'var(--text-secondary)' }}>
-                    Watch the Pizza Paradox, LCM Ladder, Butterfly Method & KFC Division explained to the fullest!
+                    {topicVideoLesson.subtitle || topicVideoLesson.description}
                   </p>
                 </div>
               </div>
@@ -290,7 +294,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
             <span>Concepts & Worked Examples</span>
           </button>
 
-          {topic.id === 'fractions-mastery' && (
+          {topicVideoLesson && (
             <button
               type="button"
               id="tab-topic-video-btn"
@@ -407,9 +411,11 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
       </div>
 
       {/* Tab: Video Tutoring Lesson Masterclass */}
-      {activeTab === 'video' && topic.id === 'fractions-mastery' && (
+      {activeTab === 'video' && topicVideoLesson && (
         <div id="video-lesson-anchor" className="space-y-6">
           <VideoTutoringClip
+            topicId={topic.id}
+            customLesson={topicVideoLesson}
             onGoToAssessment={() => setActiveTab('assessment')}
             onGoToTheory={() => setActiveTab('theory')}
           />
@@ -419,6 +425,10 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
       {/* Tab 1: Concepts & Worked Examples */}
       {activeTab === 'theory' && (
         <div id="sub-sections-anchor" className="space-y-6">
+          {/* Interactive Human Concept Explainer for Primes, Squares, Cubes & Factors */}
+          {topic.id === 'multiplication-division-factors' && (
+            <ConceptExplainerCard initialConcept="prime" />
+          )}
           {/* Sub-section Navigation & Page Controls Banner */}
           {topic.sections.length > 1 && (
             <div

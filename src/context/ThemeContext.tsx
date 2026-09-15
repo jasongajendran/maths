@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type PastelThemeId = 'butter' | 'oxford' | 'sage' | 'obsidian' | 'lavender';
+export type PastelThemeId = 'butter' | 'sage' | 'obsidian';
 
 export interface PastelTheme {
   id: PastelThemeId;
@@ -18,49 +18,29 @@ export const PASTEL_THEMES: PastelTheme[] = [
     id: 'butter',
     name: 'Buttercup & Honey',
     emoji: '🍯',
-    shortDesc: 'Warm custard cream with rich amber & crisp carbon ink (Default)',
-    canvasHex: '#fffef7',
+    shortDesc: 'Warm custard cream with rich amber & crisp carbon ink (Daytime Default)',
+    canvasHex: '#fffdf5',
     cardHex: '#fbf5e6',
     accentHex: '#b45309',
     isDark: false,
   },
   {
-    id: 'oxford',
-    name: 'Royal Oxford & Cobalt',
-    emoji: '🏛️',
-    shortDesc: 'Midnight scholastic navy with crisp white text & royal cobalt',
-    canvasHex: '#090e21',
-    cardHex: '#101936',
-    accentHex: '#3b82f6',
-    isDark: true,
-  },
-  {
     id: 'sage',
     name: 'Sage & Terracotta',
     emoji: '🌿',
-    shortDesc: 'Calming botanical eucalyptus with warm terracotta & deep pine',
-    canvasHex: '#f4f8f5',
-    cardHex: '#e8f1eb',
+    shortDesc: 'Calming botanical eucalyptus with warm terracotta & deep pine (Focus & Comfort)',
+    canvasHex: '#f2f7f4',
+    cardHex: '#e4eee7',
     accentHex: '#c2410c',
     isDark: false,
   },
   {
-    id: 'lavender',
-    name: 'Lavender & Amethyst',
-    emoji: '🪻',
-    shortDesc: 'Soft soothing lilac with royal amethyst (Dyslexia-friendly visual comfort)',
-    canvasHex: '#faf8fd',
-    cardHex: '#f2ecf8',
-    accentHex: '#8b3dc7',
-    isDark: false,
-  },
-  {
     id: 'obsidian',
-    name: 'Obsidian & Amber (Night)',
+    name: 'Obsidian & Amber',
     emoji: '🌙',
-    shortDesc: 'Velvet dark study with glowing honey amber & pure white text',
-    canvasHex: '#0a0e16',
-    cardHex: '#131924',
+    shortDesc: 'Velvet slate dark study with glowing honey amber & pure crisp text (Night Mode)',
+    canvasHex: '#090d16',
+    cardHex: '#131b28',
     accentHex: '#f59e0b',
     isDark: true,
   },
@@ -87,6 +67,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (saved && PASTEL_THEMES.some((t) => t.id === saved)) {
         return saved as PastelThemeId;
       }
+      localStorage.setItem('maths-master-pastel-theme', 'butter');
     }
     return 'butter';
   });

@@ -22,22 +22,26 @@ import {
   ChevronUp,
   Sliders,
 } from 'lucide-react';
-import { fractionsMasterclassLesson, VideoChapter } from '../../data/videoLessons/fractionsLessonData';
+import { getVideoLessonForTopic, VideoLesson, VideoChapter } from '../../data/videoLessons';
 import { WhiteboardVisuals } from './WhiteboardVisuals';
 import { audioSpeech } from '../../utils/audioSpeech';
 import { soundEffects } from '../../utils/soundEffects';
 import { wakeLockController } from '../../utils/wakeLock';
 
 interface VideoTutoringClipProps {
+  topicId?: string;
+  customLesson?: VideoLesson;
   onGoToAssessment?: () => void;
   onGoToTheory?: () => void;
 }
 
 export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
+  topicId = 'fractions-mastery',
+  customLesson,
   onGoToAssessment,
   onGoToTheory,
 }) => {
-  const lesson = fractionsMasterclassLesson;
+  const lesson = customLesson || getVideoLessonForTopic(topicId);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
@@ -53,6 +57,15 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
   const [quizResult, setQuizResult] = useState<{ isCorrect: boolean; feedback: string } | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Reset playback and audio when topic changes
+  useEffect(() => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setSelectedQuizOption(null);
+    setQuizResult(null);
+    audioSpeech.stop();
+  }, [topicId]);
   const transcriptListRef = useRef<HTMLDivElement>(null);
   const seekDebounceRef = useRef<NodeJS.Timeout | null>(null);
 

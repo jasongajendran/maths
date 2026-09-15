@@ -218,3 +218,24 @@ class SoundEffectsEngine {
 }
 
 export const soundEffects = new SoundEffectsEngine();
+
+export function playSound(type: 'click' | 'correct' | 'wrong' | 'match' | 'fanfare' | string): void {
+  switch (type) {
+    case 'correct':
+      soundEffects.playCorrectSound();
+      break;
+    case 'wrong':
+      soundEffects.playWrongSound();
+      break;
+    case 'match':
+    case 'click':
+      soundEffects.playPairConnectedSound();
+      break;
+    case 'fanfare':
+      soundEffects.playVictoryFanfare();
+      break;
+    default:
+      soundEffects.playPairConnectedSound();
+      break;
+  }
+}

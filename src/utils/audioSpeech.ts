@@ -657,3 +657,19 @@ class AudioSpeechManager {
 }
 
 export const audioSpeech = new AudioSpeechManager();
+
+export function speakMathText(text: string, rate?: number, onEnd?: () => void): void {
+  audioSpeech.speak('interactive-math', text, {
+    rate: rate ?? 1.0,
+    forcePlay: true,
+    onEnd,
+  });
+}
+
+export function isAudioSpeechActive(): boolean {
+  return audioSpeech.isPlaying();
+}
+
+export function stopMathSpeech(): void {
+  audioSpeech.stop();
+}
