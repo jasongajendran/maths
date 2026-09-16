@@ -5,6 +5,7 @@ export type PastelThemeId = 'butter' | 'sage' | 'obsidian';
 export interface PastelTheme {
   id: PastelThemeId;
   name: string;
+  shortName: string;
   emoji: string;
   shortDesc: string;
   canvasHex: string;
@@ -17,6 +18,7 @@ export const PASTEL_THEMES: PastelTheme[] = [
   {
     id: 'butter',
     name: 'Buttercup & Honey',
+    shortName: 'Honey',
     emoji: '🍯',
     shortDesc: 'Warm custard cream with rich amber & crisp carbon ink (Daytime Default)',
     canvasHex: '#fffdf5',
@@ -27,6 +29,7 @@ export const PASTEL_THEMES: PastelTheme[] = [
   {
     id: 'sage',
     name: 'Sage & Terracotta',
+    shortName: 'Sage',
     emoji: '🌿',
     shortDesc: 'Calming botanical eucalyptus with warm terracotta & deep pine (Focus & Comfort)',
     canvasHex: '#f2f7f4',
@@ -37,6 +40,7 @@ export const PASTEL_THEMES: PastelTheme[] = [
   {
     id: 'obsidian',
     name: 'Obsidian & Amber',
+    shortName: 'Obsidian',
     emoji: '🌙',
     shortDesc: 'Velvet slate dark study with glowing honey amber & pure crisp text (Night Mode)',
     canvasHex: '#090d16',

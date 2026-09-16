@@ -145,7 +145,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Theme Selector, Font Size Control, Formula Vault & Audio Intro */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0">
             {/* Font Size & Typeface Control */}
             <FontSizeControl />
 
@@ -157,8 +157,9 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               type="button"
+              id="header-formula-vault-btn"
               onClick={onOpenFormulaDrawer}
-              className="h-9 flex items-center gap-1.5 px-2.5 sm:px-3 rounded-xl text-xs sm:text-sm font-semibold border transition-all cursor-pointer shadow-2xs shrink-0 tactile-btn"
+              className="h-8 sm:h-9 flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 md:px-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold border transition-all cursor-pointer shadow-2xs shrink-0 tactile-btn"
               style={{
                 backgroundColor: 'var(--bg-card-subtle)',
                 borderColor: 'var(--border-card-strong)',
@@ -167,7 +168,7 @@ export const Header: React.FC<HeaderProps> = ({
               title="Open Formula & Rules Vault"
             >
               <FileText size={15} style={{ color: 'var(--accent-primary)' }} />
-              <span className="hidden sm:inline">Formula Vault</span>
+              <span className="hidden md:inline">Formulas</span>
             </button>
 
             <AudioButton

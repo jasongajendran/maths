@@ -40,23 +40,19 @@ export const ThemeSelector: React.FC = () => {
           borderColor: 'var(--border-card-strong)',
           color: 'var(--text-primary)',
         }}
-        title="Switch Pastel Theme"
+        title={`Current Theme: ${currentThemeObj.name} (Click to switch)`}
       >
         <Palette size={15} style={{ color: 'var(--accent-primary)' }} />
         <span className="text-sm leading-none">{currentThemeObj.emoji}</span>
-        <span className="hidden md:inline font-bold text-xs">{currentThemeObj.name}</span>
-        {/* Visual pastel swatches - shown on larger screens */}
-        <span className="hidden md:flex items-center gap-0.5 ml-0.5">
+        <span className="hidden lg:inline font-bold text-xs">{currentThemeObj.shortName}</span>
+        {/* Visual pastel swatches - shown on xl screens */}
+        <span className="hidden xl:flex items-center gap-0.5 ml-0.5">
           <span
-            className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-2xs"
+            className="w-2 h-2 rounded-full border border-black/10 shadow-2xs"
             style={{ backgroundColor: currentThemeObj.canvasHex }}
           />
           <span
-            className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-2xs"
-            style={{ backgroundColor: currentThemeObj.cardHex }}
-          />
-          <span
-            className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-2xs"
+            className="w-2 h-2 rounded-full border border-black/10 shadow-2xs"
             style={{ backgroundColor: currentThemeObj.accentHex }}
           />
         </span>
