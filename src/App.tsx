@@ -13,7 +13,7 @@ import { allAssessments, getAssessmentForTopic } from './data/assessments';
 import { wakeLockController } from './utils/wakeLock';
 
 export default function App() {
-  const [selectedTopicId, setSelectedTopicId] = useState<string>('fractions-mastery');
+  const [selectedTopicId, setSelectedTopicId] = useState<string>('place-value-and-rounding');
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>('all');
   const [selectedYear, setSelectedYear] = useState<YearLevel | 'All'>('All');
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);

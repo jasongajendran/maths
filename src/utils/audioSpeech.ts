@@ -46,7 +46,7 @@ export function cleanMathForSpeech(text: string): string {
   // Q1, Q2 -> "Question 1, Question 2"
   speech = speech.replace(/\bQ(\d+)\b/gi, 'Question $1');
 
-  // 2. Curriculum & Assessment Acronyms
+  // 2. Curriculum & Assessment Acronyms & Base Systems
   speech = speech.replace(/\b(?:LCM|lcm)\b/g, 'L C M, lowest common multiple');
   speech = speech.replace(/\b(?:HCF|hcf)\b/g, 'H C F, highest common factor');
   speech = speech.replace(/\bBIDMAS\b/g, 'Bid-mass');
@@ -54,6 +54,13 @@ export function cleanMathForSpeech(text: string): string {
   speech = speech.replace(/\b(?:SATs|SATS)\b/g, 'Sats');
   speech = speech.replace(/\b(?:KS2|ks2)\b/g, 'Key Stage 2');
   speech = speech.replace(/\b(?:KS1|ks1)\b/g, 'Key Stage 1');
+
+  // Base System Normalization (Prevents TTS from spelling B-A-S-E letter-by-letter)
+  speech = speech.replace(/\bBase-10\b/gi, 'base ten');
+  speech = speech.replace(/\bBase-60\b/gi, 'base sixty');
+  speech = speech.replace(/\bBase-2\b/gi, 'base two');
+  speech = speech.replace(/\bBase-(\d+)\b/gi, 'base $1');
+  speech = speech.replace(/\bBase\b/g, 'base');
 
   // 3. Currency Formatting (UK Pounds & Pence)
   // £4.95 -> 4 pounds and 95 pence
