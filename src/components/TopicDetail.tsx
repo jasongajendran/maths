@@ -1348,7 +1348,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
                         <span
                           className="text-xs font-extrabold uppercase tracking-wider"
                           style={{
-                            color: info.priority === 'High' ? 'var(--contrast-warm)' : 'var(--contrast-teal)',
+                            color: (info.priority === 'HIGH' || info.priority === 'CRITICAL') ? 'var(--contrast-warm)' : 'var(--contrast-teal)',
                           }}
                         >
                           {info.priority}: {info.title}

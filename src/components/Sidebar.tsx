@@ -243,7 +243,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         color: isSelected ? 'var(--accent-contrast)' : 'var(--text-primary)',
                       }}
                     >
-                      <Icon size={13} style={{ color: isSelected ? 'var(--accent-contrast)' : 'var(--accent-primary)' }} />
+                      <Icon size={13} className={isSelected ? 'text-[var(--accent-contrast)]' : 'text-[var(--accent-primary)]'} />
                       <span className="truncate">{meta.name.replace(' & ', ' ')}</span>
                     </button>
                   );

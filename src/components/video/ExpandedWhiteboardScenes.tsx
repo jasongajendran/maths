@@ -13,7 +13,7 @@ export const ExpandedWhiteboardScenes: React.FC<ExpandedWhiteboardScenesProps> =
   type,
   currentTime = 0,
 }) => {
-  // Local state for interactive explorations
+  // Local state for interactive explorations (declared at top level to ensure consistent React hook execution order)
   const [selectedPrimeTestNum, setSelectedPrimeTestNum] = useState<number>(7);
   const [attemptedRows, setAttemptedRows] = useState<number>(2);
   const [selectedSquareN, setSelectedSquareN] = useState<number>(4);
@@ -21,6 +21,17 @@ export const ExpandedWhiteboardScenes: React.FC<ExpandedWhiteboardScenesProps> =
   const [balanceStep, setBalanceStep] = useState<number>(1);
   const [metricUnit, setMetricUnit] = useState<'km' | 'm' | 'cm'>('m');
   const [fdpShadedCount, setFdpShadedCount] = useState<number>(50);
+  const [targetVal, setTargetVal] = useState<number>(80);
+  const [activeBlocks, setActiveBlocks] = useState<{ id: string; pct: number; label: string }[]>([
+    { id: '1', pct: 10, label: '10%' },
+    { id: '2', pct: 5, label: '5%' },
+  ]);
+  const [exampleIdx, setExampleIdx] = useState<number>(0);
+  const [isFlipped, setIsFlipped] = useState<boolean>(false);
+  const [shiftFactor, setShiftFactor] = useState<number>(100);
+  const [startTemp, setStartTemp] = useState<number>(2);
+  const [dropAmount, setDropAmount] = useState<number>(5);
+  const [people, setPeople] = useState<number>(10);
 
   switch (type) {
     /* ----------------------------------------------------
@@ -1385,12 +1396,6 @@ export const ExpandedWhiteboardScenes: React.FC<ExpandedWhiteboardScenesProps> =
      * 19. FDP LEGO BLOCKS (Mental Percentage Builder)
      * ---------------------------------------------------- */
     case 'fdp_lego_blocks': {
-      const [targetVal, setTargetVal] = useState<number>(80);
-      const [activeBlocks, setActiveBlocks] = useState<{ id: string; pct: number; label: string }[]>([
-        { id: '1', pct: 10, label: '10%' },
-        { id: '2', pct: 5, label: '5%' },
-      ]);
-
       const blockTen = targetVal * 0.1;
       const blockFive = targetVal * 0.05;
       const blockOne = targetVal * 0.01;
@@ -1558,9 +1563,6 @@ export const ExpandedWhiteboardScenes: React.FC<ExpandedWhiteboardScenesProps> =
      * 20. FDP REVERSE PERCENTAGE TRICK (x% of y = y% of x)
      * ---------------------------------------------------- */
     case 'fdp_reverse_trick': {
-      const [exampleIdx, setExampleIdx] = useState<number>(0);
-      const [isFlipped, setIsFlipped] = useState<boolean>(false);
-
       const examples = [
         {
           x: 16,
@@ -1684,7 +1686,6 @@ export const ExpandedWhiteboardScenes: React.FC<ExpandedWhiteboardScenesProps> =
      * 21. PLACE VALUE SHIFT (Multiplying / Dividing by 10, 100, 1000)
      * ---------------------------------------------------- */
     case 'place_value_shift': {
-      const [shiftFactor, setShiftFactor] = useState<number>(100);
       const baseNum = 3.4;
       const computedResult = Number((baseNum * shiftFactor).toFixed(3));
 
@@ -1764,8 +1765,6 @@ export const ExpandedWhiteboardScenes: React.FC<ExpandedWhiteboardScenesProps> =
      * 22. NEGATIVE THERMOMETER (Sub-Zero Elevator)
      * ---------------------------------------------------- */
     case 'negative_thermometer': {
-      const [startTemp, setStartTemp] = useState<number>(2);
-      const [dropAmount, setDropAmount] = useState<number>(5);
       const endTemp = startTemp - dropAmount;
 
       return (
@@ -1910,7 +1909,6 @@ export const ExpandedWhiteboardScenes: React.FC<ExpandedWhiteboardScenesProps> =
      * 24. RATIO RECIPE SCALING
      * ---------------------------------------------------- */
     case 'ratio_recipe_scaling': {
-      const [people, setPeople] = useState<number>(10);
       const flourPerPerson = 50; // g
       const totalFlour = people * flourPerPerson;
 

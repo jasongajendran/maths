@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { Component, useState, useEffect, useRef } from 'react';
 import {
   Play,
   Pause,
@@ -23,6 +23,58 @@ import { WhiteboardVisuals } from './WhiteboardVisuals';
 import { audioSpeech } from '../../utils/audioSpeech';
 import { soundEffects } from '../../utils/soundEffects';
 import { wakeLockController } from '../../utils/wakeLock';
+
+interface WhiteboardErrorBoundaryProps {
+  children: React.ReactNode;
+  chapterId: string;
+}
+
+interface WhiteboardErrorBoundaryState {
+  hasError: boolean;
+}
+
+class WhiteboardErrorBoundary extends React.Component<
+  WhiteboardErrorBoundaryProps,
+  WhiteboardErrorBoundaryState
+> {
+  constructor(props: WhiteboardErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidUpdate(prevProps: WhiteboardErrorBoundaryProps) {
+    if (prevProps.chapterId !== this.props.chapterId && this.state.hasError) {
+      this.setState({ hasError: false });
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-6 rounded-2xl border text-center space-y-3 bg-amber-500/10 border-amber-500/30 text-amber-800 dark:text-amber-200">
+          <p className="font-extrabold text-sm sm:text-base">
+            ⚡ Scene Display Refreshed
+          </p>
+          <p className="text-xs text-slate-600 dark:text-slate-300">
+            Select another chapter or click below to resume.
+          </p>
+          <button
+            type="button"
+            onClick={() => this.setState({ hasError: false })}
+            className="px-4 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-amber-500 text-white border-amber-600 hover:bg-amber-600"
+          >
+            Reset Scene
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 interface VideoTutoringClipProps {
   topicId?: string;
@@ -583,16 +635,18 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
 
           {/* Whiteboard Content with live sync */}
           <div className="relative z-10 flex-1">
-            <WhiteboardVisuals
-              chapter={activeChapter}
-              lesson={lesson}
-              currentTime={currentTime}
-              activeCaptionIndex={activeCaptionIndex}
-              isPlaying={isPlaying}
-              onCheckpointAnswer={handleCheckpointAnswer}
-              selectedQuizOption={selectedQuizOption}
-              quizResult={quizResult}
-            />
+            <WhiteboardErrorBoundary chapterId={activeChapter.id}>
+              <WhiteboardVisuals
+                chapter={activeChapter}
+                lesson={lesson}
+                currentTime={currentTime}
+                activeCaptionIndex={activeCaptionIndex}
+                isPlaying={isPlaying}
+                onCheckpointAnswer={handleCheckpointAnswer}
+                selectedQuizOption={selectedQuizOption}
+                quizResult={quizResult}
+              />
+            </WhiteboardErrorBoundary>
           </div>
 
           {/* Synchronized Captions Bar */}

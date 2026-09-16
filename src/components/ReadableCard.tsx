@@ -3,10 +3,11 @@ import { audioSpeech } from '../utils/audioSpeech';
 
 interface ReadableCardProps {
   id: string;
-  textToRead: string;
+  textToRead?: string;
   children: React.ReactNode;
   className?: string;
   activeClassName?: string;
+  style?: React.CSSProperties;
   as?: 'div' | 'article' | 'section';
   highlightStyle?: 'full' | 'subtle' | 'inner';
   ariaLabel?: string;
@@ -16,10 +17,11 @@ interface ReadableCardProps {
 
 export const ReadableCard: React.FC<ReadableCardProps> = ({
   id,
-  textToRead,
+  textToRead = '',
   children,
   className = '',
   activeClassName = '',
+  style,
   as: Component = 'div',
   highlightStyle = 'full',
   ariaLabel,
@@ -93,7 +95,7 @@ export const ReadableCard: React.FC<ReadableCardProps> = ({
           ? `z-10 ${activeClassName}`
           : 'hover:border-opacity-100 hover:shadow-xs'
       } ${className}`}
-      style={getCardStyle()}
+      style={{ ...getCardStyle(), ...style }}
     >
       {children}
     </Component>
