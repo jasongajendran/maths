@@ -72,13 +72,15 @@ export function cleanMathForSpeech(text: string): string {
   speech = speech.replace(/\\vec\{([^}]+)\}/g, 'vector $1');
 
   // 5. Mixed numbers: 1\frac{3}{20} or 1 3/20 -> 1 and 3 over 20
-  speech = speech.replace(/(\d+)\s*\\?frac\{([^}]+)\}\{([^}]+)\}/gi, '$1 and $2 over $3');
-  speech = speech.replace(/(\d+)\s*\\?frac\s*(\d)\s*(\d)/gi, '$1 and $2 over $3');
+  speech = speech.replace(/(\d+)\s*\\frac\{([^}]+)\}\{([^}]+)\}/gi, '$1 and $2 over $3');
+  speech = speech.replace(/(\d+)\s*\bfrac\{([^}]+)\}\{([^}]+)\}/gi, '$1 and $2 over $3');
+  speech = speech.replace(/(\d+)\s*\\frac\s*(\d+)\s*(\d+)/gi, '$1 and $2 over $3');
   speech = speech.replace(/\b(\d+)\s+(\d+)\/(\d+)\b/g, '$1 and $2 over $3');
 
-  // 6. Fractions: \frac{a}{b}, \frac25, frac25, or 2/5 -> a over b
-  speech = speech.replace(/\\?frac\{([^}]+)\}\{([^}]+)\}/gi, '$1 over $2');
-  speech = speech.replace(/\\?frac\s*([0-9a-zA-Z])\s*([0-9a-zA-Z])/gi, '$1 over $2');
+  // 6. Fractions: \frac{a}{b}, \frac25, or 2/5 -> a over b
+  speech = speech.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/gi, '$1 over $2');
+  speech = speech.replace(/\bfrac\{([^}]+)\}\{([^}]+)\}/gi, '$1 over $2');
+  speech = speech.replace(/\\frac\s*([0-9a-zA-Z])\s*([0-9a-zA-Z])/gi, '$1 over $2');
   // Simple fractions like 3/4 or 1/2
   speech = speech.replace(/\b(\d+)\/(\d+)\b/g, '$1 over $2');
 
@@ -243,7 +245,7 @@ class AudioSpeechManager {
   private _isSpeaking: boolean = false;
   private _isPaused: boolean = false;
   private _rate: number = 0.95;
-  private _pitch: number = 1.0;
+  private _pitch: number = 1.08;
   private chunks: string[] = [];
   private currentChunkIndex: number = 0;
   private playSessionId: number = 0;
@@ -356,6 +358,86 @@ class AudioSpeechManager {
     this.notify();
   }
 
+  /**
+   * Speaks an array of captions sequentially, firing onCaptionStart for each caption
+   * and onEnd when the last caption completes. Enables 100% video-audio-caption synchronization.
+   */
+  public speakCaptions(
+    id: string,
+    captions: Array<{ id?: string; text: string; spokenText?: string }>,
+    options?: {
+      label?: string;
+      rate?: number;
+      pitch?: number;
+      startIndex?: number;
+      forcePlay?: boolean;
+      onCaptionStart?: (index: number, caption: { id?: string; text: string; spokenText?: string }) => void;
+      onEnd?: () => void;
+    }
+  ) {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      options?.onEnd?.();
+      return;
+    }
+
+    if (this.currentId === id && !options?.forcePlay) {
+      this.stop();
+      return;
+    }
+
+    this.stop();
+
+    if (!captions || captions.length === 0) {
+      options?.onEnd?.();
+      return;
+    }
+
+    // Clean each caption's text for speech
+    this.chunks = captions
+      .map((c) => cleanMathForSpeech(c.spokenText || c.text).trim())
+      .filter(Boolean);
+
+    if (this.chunks.length === 0) {
+      options?.onEnd?.();
+      return;
+    }
+
+    const session = ++this.playSessionId;
+    this.currentId = id;
+    this.currentLabel = options?.label || 'Classroom Clip';
+    this._rate = options?.rate ?? this._rate;
+    this._pitch = options?.pitch ?? 1.08;
+    this.currentChunkIndex = Math.max(0, Math.min(options?.startIndex ?? 0, this.chunks.length - 1));
+    this._isSpeaking = true;
+    this._isPaused = false;
+    this.activeChunkCallback = (idx, total, text) => {
+      if (options?.onCaptionStart && captions[idx]) {
+        try {
+          options.onCaptionStart(idx, captions[idx]);
+        } catch (e) {
+          console.error('onCaptionStart error:', e);
+        }
+      }
+    };
+    this.activeEndCallback = options?.onEnd || null;
+
+    this.notify();
+
+    // Chrome unpause safety check
+    try {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+    } catch {}
+
+    this.clearPendingStart();
+    this.pendingStartTimer = setTimeout(() => {
+      if (this.playSessionId === session && this._isSpeaking) {
+        this.playCurrentChunk();
+      }
+    }, 40);
+  }
+
   public speak(
     id: string,
     rawText: string,
@@ -456,21 +538,48 @@ class AudioSpeechManager {
     utterance.rate = this._rate;
     utterance.pitch = this._pitch;
 
-    // Pick preferred clear English voice (prioritizing UK / English educational voices)
+    // Pick preferred clear English voice (prioritizing British young female educational voices)
     if (this.voices.length > 0) {
       const preferredVoice =
+        // 1. Highest priority: British English female voices
         this.voices.find(
           (v) =>
-            (v.lang.startsWith('en-GB') || v.lang.startsWith('en-US')) &&
-            (v.name.includes('Natural') ||
-              v.name.includes('Google') ||
-              v.name.includes('Female') ||
+            v.lang.startsWith('en-GB') &&
+            (v.name.includes('Female') ||
               v.name.includes('Hazel') ||
-              v.name.includes('Serena'))
+              v.name.includes('Serena') ||
+              v.name.includes('Victoria') ||
+              v.name.includes('Libby') ||
+              v.name.includes('Sonia') ||
+              v.name.includes('Stephanie') ||
+              v.name.includes('Martha') ||
+              v.name.includes('Amy') ||
+              v.name.includes('Emily') ||
+              v.name.includes('Google UK English Female') ||
+              v.name.toLowerCase().includes('en-gb-wavenet-a') ||
+              v.name.toLowerCase().includes('en-gb-neural2-a') ||
+              v.name.toLowerCase().includes('en-gb-standard-a'))
         ) ||
+        // 2. High priority: British English natural/online voices
+        this.voices.find(
+          (v) =>
+            v.lang.startsWith('en-GB') &&
+            (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Online'))
+        ) ||
+        // 3. Any British English voice
         this.voices.find((v) => v.lang.startsWith('en-GB')) ||
-        this.voices.find((v) => v.lang.startsWith('en-US')) ||
+        // 4. Other English female educational voices
+        this.voices.find(
+          (v) =>
+            v.lang.startsWith('en') &&
+            (v.name.includes('Female') ||
+              v.name.includes('Samantha') ||
+              v.name.includes('Jenny') ||
+              v.name.includes('Zira'))
+        ) ||
+        // 5. Any English voice
         this.voices.find((v) => v.lang.startsWith('en'));
+
       if (preferredVoice) {
         utterance.voice = preferredVoice;
       }

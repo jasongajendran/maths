@@ -121,7 +121,8 @@ export const FractionsVisualizer: React.FC = () => {
     title: string,
     accentColor: string,
     contrastText: string,
-    badgeBg: string
+    badgeBg: string,
+    badgeTextColor?: string
   ) => {
     const isImproper = num > den;
     const wholeCount = Math.ceil(num / den);
@@ -161,7 +162,7 @@ export const FractionsVisualizer: React.FC = () => {
               style={{
                 backgroundColor: badgeBg,
                 borderColor: 'var(--border-card-strong)',
-                color: accentColor,
+                color: badgeTextColor || accentColor,
               }}
             >
               {percentage}%
@@ -692,17 +693,19 @@ export const FractionsVisualizer: React.FC = () => {
           num1,
           den1,
           'Visual Model 1',
-          'var(--accent-primary)',
-          'var(--accent-contrast)',
-          'var(--badge-bg)'
+          'var(--tool-model1-bg)',
+          'var(--tool-model1-text)',
+          'var(--tool-model1-badge-bg)',
+          'var(--tool-model1-badge-text)'
         )}
         {renderFractionBarModel(
           num2,
           den2,
           'Visual Model 2',
-          'var(--contrast-indigo)',
-          '#000000',
-          'var(--bg-card-subtle)'
+          'var(--tool-model2-bg)',
+          'var(--tool-model2-text)',
+          'var(--tool-model2-badge-bg)',
+          'var(--tool-model2-badge-text)'
         )}
       </div>
 

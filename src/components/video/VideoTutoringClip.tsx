@@ -3,17 +3,13 @@ import {
   Play,
   Pause,
   RotateCcw,
-  SkipBack,
   SkipForward,
   Volume2,
   VolumeX,
   Subtitles,
   Maximize2,
   Minimize2,
-  Bookmark,
-  CheckCircle2,
   List,
-  Sparkles,
   BookOpen,
   Award,
   ChevronRight,
@@ -42,38 +38,98 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
   onGoToTheory,
 }) => {
   const lesson = customLesson || getVideoLessonForTopic(topicId);
+
+  // Playback state
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
+  const [activeCaptionIndex, setActiveCaptionIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [playbackRate, setPlaybackRate] = useState<number>(1);
   const [hasVoiceAudio, setHasVoiceAudio] = useState(true);
   const [showCaptions, setShowCaptions] = useState(true);
   const [showChaptersDrawer, setShowChaptersDrawer] = useState(false);
-  const [showTranscriptDrawer, setShowTranscriptDrawer] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
+  const [isControlsCollapsed, setIsControlsCollapsed] = useState(true);
 
   // Checkpoint Quiz State
   const [selectedQuizOption, setSelectedQuizOption] = useState<string | null>(null);
   const [quizResult, setQuizResult] = useState<{ isCorrect: boolean; feedback: string } | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const isPlayingRef = useRef(false);
+  const currentChapterIndexRef = useRef(0);
+  const activeCaptionIndexRef = useRef(0);
+  const playbackRateRef = useRef(1);
+  const hasVoiceAudioRef = useRef(true);
+  const mutedTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const nextChapterTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Reset playback and audio when topic changes
+  // Synchronize refs for async callbacks
   useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
+  useEffect(() => {
+    currentChapterIndexRef.current = currentChapterIndex;
+  }, [currentChapterIndex]);
+
+  useEffect(() => {
+    activeCaptionIndexRef.current = activeCaptionIndex;
+  }, [activeCaptionIndex]);
+
+  useEffect(() => {
+    playbackRateRef.current = playbackRate;
+  }, [playbackRate]);
+
+  useEffect(() => {
+    hasVoiceAudioRef.current = hasVoiceAudio;
+  }, [hasVoiceAudio]);
+
+  const activeChapter: VideoChapter =
+    lesson.chapters[currentChapterIndex] || lesson.chapters[0];
+
+  const currentCaptionObj =
+    activeChapter.captions[activeCaptionIndex] || activeChapter.captions[0];
+  const currentCaption = currentCaptionObj?.text || '';
+
+  // Calculate current playback time from chapter and caption progress
+  const updateCurrentTime = (chapIdx: number, capIdx: number) => {
+    const chap = lesson.chapters[chapIdx];
+    if (!chap) return;
+    const totalCaps = Math.max(1, chap.captions.length);
+    const progress = capIdx / totalCaps;
+    const time = chap.startTime + Math.round(progress * chap.duration);
+    setCurrentTime(Math.min(lesson.totalDuration, time));
+  };
+
+  // Clear timers helper
+  const clearAllTimers = () => {
+    if (mutedTimerRef.current) {
+      clearTimeout(mutedTimerRef.current);
+      mutedTimerRef.current = null;
+    }
+    if (nextChapterTimerRef.current) {
+      clearTimeout(nextChapterTimerRef.current);
+      nextChapterTimerRef.current = null;
+    }
+  };
+
+  // Reset playback when topic changes
+  useEffect(() => {
+    clearAllTimers();
     setIsPlaying(false);
+    setCurrentChapterIndex(0);
+    setActiveCaptionIndex(0);
     setCurrentTime(0);
     setSelectedQuizOption(null);
     setQuizResult(null);
     audioSpeech.stop();
   }, [topicId]);
-  const transcriptListRef = useRef<HTMLDivElement>(null);
-  const seekDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Sync fullscreen state with native document events
   useEffect(() => {
     const handleFullscreenChange = () => {
-      const isDocFs = !!document.fullscreenElement;
-      setIsFullscreen(isDocFs);
+      setIsFullscreen(!!document.fullscreenElement);
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
@@ -89,27 +145,6 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
     };
   }, []);
 
-  // Compute active chapter based on currentTime
-  const currentChapterIndex = lesson.chapters.findIndex((chap, idx) => {
-    const nextChap = lesson.chapters[idx + 1];
-    if (!nextChap) return true;
-    return currentTime >= chap.startTime && currentTime < nextChap.startTime;
-  });
-
-  const activeChapter: VideoChapter =
-    lesson.chapters[currentChapterIndex !== -1 ? currentChapterIndex : 0];
-
-  // Compute active caption index within activeChapter
-  const activeCaptionIndex = activeChapter.captions.reduce((bestIdx, curr, idx) => {
-    if (currentTime >= curr.time) {
-      return idx;
-    }
-    return bestIdx;
-  }, 0);
-
-  const currentCaptionObj = activeChapter.captions[activeCaptionIndex];
-  const currentCaption = currentCaptionObj?.text || '';
-
   // Format seconds to mm:ss
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -117,71 +152,170 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  // Helper to trigger voice reading from a specific caption index within a chapter
-  const speakFromCaption = (
-    chapter: VideoChapter,
-    captionIndex: number,
-    rate: number = playbackRate,
-    force: boolean = true
+  // Speak captions or run timer for muted playback
+  const playFromPosition = (
+    chapIdx: number,
+    capIdx: number,
+    rate: number = playbackRateRef.current
   ) => {
-    if (!hasVoiceAudio) return;
-    const remaining = chapter.captions.slice(captionIndex);
-    const textToSpeak = remaining.length > 0
-      ? remaining.map(c => c.spokenText || c.text).join(' ')
-      : chapter.teacherSpokenScript;
+    clearAllTimers();
+    const chap = lesson.chapters[chapIdx];
+    if (!chap) return;
 
-    // Use a unique session key so seeking within the same caption or chapter starts smoothly
-    const speakId = `video-clip-${chapter.id}-${captionIndex}-${Date.now()}`;
+    if (!hasVoiceAudioRef.current) {
+      // Muted voice mode: advance captions via calculated reading timer
+      runMutedCaptionTimer(chapIdx, capIdx);
+      return;
+    }
 
-    audioSpeech.speak(
-      speakId,
-      textToSpeak,
-      {
+    const captions = chap.captions;
+    if (!captions || captions.length === 0) {
+      // Fallback if chapter has no individual captions
+      audioSpeech.speak(`chap-${chap.id}`, chap.teacherSpokenScript, {
         rate,
-        label: `Mrs. Davies: ${chapter.title}`,
-        forcePlay: force,
-      }
-    );
+        label: chap.title,
+        forcePlay: true,
+        onEnd: () => {
+          handleChapterAudioComplete(chapIdx);
+        },
+      });
+      return;
+    }
+
+    const sessionKey = `clip-${chap.id}-${capIdx}-${Date.now()}`;
+    audioSpeech.speakCaptions(sessionKey, captions, {
+      rate,
+      startIndex: capIdx,
+      label: chap.title,
+      forcePlay: true,
+      onCaptionStart: (index) => {
+        if (!isPlayingRef.current) return;
+        setActiveCaptionIndex(index);
+        updateCurrentTime(chapIdx, index);
+      },
+      onEnd: () => {
+        handleChapterAudioComplete(chapIdx);
+      },
+    });
   };
 
-  // Track chapter transition during playback
-  const lastChapterIdRef = useRef<string | null>(null);
+  // Muted caption pacing timer
+  const runMutedCaptionTimer = (chapIdx: number, capIdx: number) => {
+    clearAllTimers();
+    const chap = lesson.chapters[chapIdx];
+    if (!chap || !chap.captions || chap.captions.length === 0) return;
 
-  useEffect(() => {
-    if (isPlaying && hasVoiceAudio) {
-      if (lastChapterIdRef.current !== activeChapter.id) {
-        lastChapterIdRef.current = activeChapter.id;
-        speakFromCaption(activeChapter, activeCaptionIndex, playbackRate, true);
+    const cap = chap.captions[capIdx];
+    const wordCount = (cap?.text || '').trim().split(/\s+/).length;
+    const durationMs = Math.max(2200, ((wordCount * 360) / playbackRateRef.current) + 500);
+
+    mutedTimerRef.current = setTimeout(() => {
+      if (!isPlayingRef.current) return;
+      if (capIdx < chap.captions.length - 1) {
+        const nextCap = capIdx + 1;
+        setActiveCaptionIndex(nextCap);
+        updateCurrentTime(chapIdx, nextCap);
+        runMutedCaptionTimer(chapIdx, nextCap);
+      } else {
+        handleChapterAudioComplete(chapIdx);
       }
+    }, durationMs);
+  };
+
+  // Chapter finished handler: advances to next chapter with a natural 400ms transition
+  const handleChapterAudioComplete = (finishedChapIdx: number) => {
+    clearAllTimers();
+    if (!isPlayingRef.current) return;
+
+    if (finishedChapIdx < lesson.chapters.length - 1) {
+      const nextChapIdx = finishedChapIdx + 1;
+      // Brief natural pause of 400ms between chapters (no dead silence!)
+      nextChapterTimerRef.current = setTimeout(() => {
+        if (!isPlayingRef.current) return;
+        setCurrentChapterIndex(nextChapIdx);
+        setActiveCaptionIndex(0);
+        updateCurrentTime(nextChapIdx, 0);
+        playFromPosition(nextChapIdx, 0, playbackRateRef.current);
+      }, 400);
     } else {
-      if (!isPlaying) {
-        audioSpeech.stop();
-      }
+      // Completed all chapters
+      setIsPlaying(false);
+      audioSpeech.stop();
+      setCurrentTime(lesson.totalDuration);
     }
-  }, [isPlaying, activeChapter.id, hasVoiceAudio, playbackRate]);
+  };
 
-  // Playback timer interval
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+  // Play / Pause toggle
+  const handleTogglePlay = () => {
     if (isPlaying) {
-      interval = setInterval(() => {
-        setCurrentTime((prev) => {
-          const next = prev + 1;
-          if (next >= lesson.totalDuration) {
-            setIsPlaying(false);
-            audioSpeech.stop();
-            return lesson.totalDuration;
-          }
-          return next;
-        });
-      }, 1000 / playbackRate);
+      setIsPlaying(false);
+      clearAllTimers();
+      audioSpeech.stop();
+    } else {
+      setIsPlaying(true);
+      playFromPosition(currentChapterIndex, activeCaptionIndex, playbackRate);
     }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isPlaying, playbackRate, lesson.totalDuration]);
+  };
 
-  // Keep screen awake while video is playing
+  // Seek handler
+  const handleSeek = (targetTime: number) => {
+    clearAllTimers();
+    const clamped = Math.max(0, Math.min(lesson.totalDuration, targetTime));
+    setCurrentTime(clamped);
+
+    // Find corresponding chapter
+    const targetChapIdx = lesson.chapters.findIndex((chap, idx) => {
+      const nextChap = lesson.chapters[idx + 1];
+      if (!nextChap) return true;
+      return clamped >= chap.startTime && clamped < nextChap.startTime;
+    });
+
+    const chapIdx = targetChapIdx !== -1 ? targetChapIdx : 0;
+    const targetChap = lesson.chapters[chapIdx];
+
+    // Find caption index within that chapter
+    const capIdx = targetChap.captions.reduce((bestIdx, curr, idx) => {
+      if (clamped >= curr.time) {
+        return idx;
+      }
+      return bestIdx;
+    }, 0);
+
+    setCurrentChapterIndex(chapIdx);
+    setActiveCaptionIndex(capIdx);
+
+    if (isPlaying) {
+      playFromPosition(chapIdx, capIdx, playbackRate);
+    }
+  };
+
+  const handleSkip = (seconds: number) => {
+    handleSeek(currentTime + seconds);
+  };
+
+  const handleJumpToChapter = (chapter: VideoChapter) => {
+    clearAllTimers();
+    const idx = lesson.chapters.findIndex((c) => c.id === chapter.id);
+    if (idx === -1) return;
+
+    setCurrentChapterIndex(idx);
+    setActiveCaptionIndex(0);
+    setCurrentTime(chapter.startTime);
+
+    if (isPlaying) {
+      playFromPosition(idx, 0, playbackRate);
+    }
+  };
+
+  // Handle rate change
+  const handleChangePlaybackRate = (rate: number) => {
+    setPlaybackRate(rate);
+    if (isPlaying) {
+      playFromPosition(currentChapterIndex, activeCaptionIndex, rate);
+    }
+  };
+
+  // Keep screen awake while playing
   useEffect(() => {
     if (isPlaying) {
       wakeLockController.request();
@@ -190,84 +324,24 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
     }
   }, [isPlaying]);
 
-  // Clean up audio speech, timers and wake lock on unmount
+  // Clean up on unmount
   useEffect(() => {
     return () => {
-      if (seekDebounceRef.current) clearTimeout(seekDebounceRef.current);
+      clearAllTimers();
       audioSpeech.stop();
       wakeLockController.release();
     };
   }, []);
 
-  // Handlers
-  const handleTogglePlay = () => {
-    if (isPlaying) {
-      setIsPlaying(false);
-      audioSpeech.stop();
-    } else {
-      setIsPlaying(true);
-      if (hasVoiceAudio) {
-        speakFromCaption(activeChapter, activeCaptionIndex, playbackRate, true);
-        lastChapterIdRef.current = activeChapter.id;
-      }
+  const handleCheckpointAnswer = (
+    isCorrect: boolean,
+    feedback: string,
+    teacherSpokenFeedback?: string,
+    optId?: string
+  ) => {
+    if (optId) {
+      setSelectedQuizOption(optId);
     }
-  };
-
-  const handleSeek = (newTime: number, immediateAudio: boolean = false) => {
-    const clamped = Math.max(0, Math.min(lesson.totalDuration, newTime));
-    setCurrentTime(clamped);
-
-    const targetChap = lesson.chapters.find((chap, idx) => {
-      const nextChap = lesson.chapters[idx + 1];
-      if (!nextChap) return true;
-      return clamped >= chap.startTime && clamped < nextChap.startTime;
-    }) || activeChapter;
-
-    const targetCapIdx = targetChap.captions.reduce((bestIdx, curr, idx) => {
-      if (clamped >= curr.time) {
-        return idx;
-      }
-      return bestIdx;
-    }, 0);
-
-    lastChapterIdRef.current = targetChap.id;
-
-    if (isPlaying && hasVoiceAudio) {
-      if (immediateAudio) {
-        if (seekDebounceRef.current) clearTimeout(seekDebounceRef.current);
-        speakFromCaption(targetChap, targetCapIdx, playbackRate, true);
-      } else {
-        // Debounce continuous slider scrub so browser TTS isn't overloaded
-        if (seekDebounceRef.current) clearTimeout(seekDebounceRef.current);
-        seekDebounceRef.current = setTimeout(() => {
-          speakFromCaption(targetChap, targetCapIdx, playbackRate, true);
-        }, 90);
-      }
-    }
-  };
-
-  const handleSkip = (seconds: number) => {
-    handleSeek(currentTime + seconds, true);
-  };
-
-  const handleJumpToChapter = (chapter: VideoChapter) => {
-    handleSeek(chapter.startTime, true);
-    if (!isPlaying) {
-      setIsPlaying(true);
-      if (hasVoiceAudio) {
-        speakFromCaption(chapter, 0, playbackRate, true);
-      }
-    }
-  };
-
-  const handleJumpToCaption = (targetTime: number) => {
-    handleSeek(targetTime, true);
-    if (!isPlaying) {
-      setIsPlaying(true);
-    }
-  };
-
-  const handleCheckpointAnswer = (isCorrect: boolean, feedback: string) => {
     setQuizResult({ isCorrect, feedback });
     if (isCorrect) {
       soundEffects.playCorrectSound();
@@ -275,11 +349,14 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
       soundEffects.playWrongSound();
     }
     if (hasVoiceAudio) {
+      const spokenFeedback =
+        teacherSpokenFeedback ||
+        (isCorrect
+          ? `Superb! Spot on! ${feedback}`
+          : `Watch out! ${feedback}`);
       audioSpeech.speak(
-        `video-quiz-feedback-${Date.now()}`,
-        isCorrect
-          ? "Superb! Spot on, mathematician! You avoided the trap. The common denominator for 4 and 3 is 12. 1 quarter is 3 twelfths, and 2 thirds is 8 twelfths. 3 plus 8 is 11 twelfths! Brilliant!"
-          : "Watch out! You fell into the classic pizza trap! You cannot add the denominators 4 and 3 together. Denominators tell us slice size. Find the common denominator 12 first!",
+        `quiz-feedback-${Date.now()}`,
+        spokenFeedback,
         { rate: playbackRate, label: 'Teacher Feedback', forcePlay: true }
       );
     }
@@ -295,8 +372,7 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
         await document.exitFullscreen?.();
         setIsFullscreen(false);
       }
-    } catch (err) {
-      // Fallback state toggle if fullscreen API fails in embedded iframe
+    } catch {
       setIsFullscreen(!isFullscreen);
     }
   };
@@ -307,8 +383,8 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
       id="video-tutoring-player-container"
       className={
         isFullscreen
-          ? "fixed inset-0 z-50 rounded-none border-0 h-screen w-screen overflow-y-auto flex flex-col bg-[var(--bg-card)] text-[var(--text-primary)] shadow-none"
-          : "rounded-3xl border shadow-lg overflow-hidden flex flex-col transition-all relative"
+          ? 'fixed inset-0 z-50 rounded-none border-0 h-screen w-screen overflow-y-auto flex flex-col bg-[var(--bg-card)] text-[var(--text-primary)] shadow-none'
+          : 'rounded-3xl border shadow-lg overflow-hidden flex flex-col transition-all relative'
       }
       style={{
         backgroundColor: 'var(--bg-card)',
@@ -325,17 +401,16 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
       >
         <div className="flex items-center gap-2.5 min-w-0">
           <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
-          <span className="uppercase tracking-wider text-[11px] font-extrabold text-amber-600 dark:text-amber-400 shrink-0">
-            Interactive Classroom Video Clip
-          </span>
-          <span className="text-stone-300 dark:text-stone-700">|</span>
-          <span className="truncate font-semibold text-xs" style={{ color: 'var(--text-secondary)' }}>
+          <span
+            className="truncate font-bold text-xs sm:text-sm"
+            style={{ color: 'var(--text-primary)' }}
+          >
             Scene {activeChapter.chapterNumber} of {lesson.chapters.length}: {activeChapter.title}
           </span>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {/* Quick Scene Jump Dropdown for Instant Selection */}
+          {/* Quick Scene Dropdown */}
           <select
             value={activeChapter.id}
             onChange={(e) => {
@@ -348,51 +423,32 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
               color: 'var(--text-primary)',
               borderColor: 'var(--border-card)',
             }}
-            title="Quick Chapter Jump"
+            title="Jump to scene"
           >
             {lesson.chapters.map((c) => (
               <option key={c.id} value={c.id}>
-                Scene {c.chapterNumber}: {c.title} ({formatTime(c.startTime)})
+                Scene {c.chapterNumber}: {c.title}
               </option>
             ))}
           </select>
 
+          {/* Chapters Drawer Toggle */}
           <button
             type="button"
-            onClick={() => {
-              setShowTranscriptDrawer(!showTranscriptDrawer);
-              setShowChaptersDrawer(false);
-            }}
-            className="px-2.5 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer shadow-2xs flex items-center gap-1.5 hover:opacity-90"
-            style={{
-              backgroundColor: showTranscriptDrawer ? 'var(--accent-primary)' : 'var(--bg-card)',
-              color: showTranscriptDrawer ? 'var(--accent-contrast)' : 'var(--text-primary)',
-              borderColor: 'var(--border-card)',
-            }}
-            title="Toggle live synchronized transcript"
-          >
-            <Sparkles size={13} />
-            <span className="hidden sm:inline">Transcript</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setShowChaptersDrawer(!showChaptersDrawer);
-              setShowTranscriptDrawer(false);
-            }}
+            onClick={() => setShowChaptersDrawer(!showChaptersDrawer)}
             className="px-2.5 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer shadow-2xs flex items-center gap-1.5 hover:opacity-90"
             style={{
               backgroundColor: showChaptersDrawer ? 'var(--accent-primary)' : 'var(--bg-card)',
               color: showChaptersDrawer ? 'var(--accent-contrast)' : 'var(--text-primary)',
               borderColor: 'var(--border-card)',
             }}
-            title="Toggle chapter list"
+            title="View chapters"
           >
             <List size={13} />
-            <span className="hidden sm:inline">Chapters ({lesson.chapters.length})</span>
+            <span className="hidden sm:inline">Chapters</span>
           </button>
 
+          {/* Collapse / Expand Controls */}
           <button
             type="button"
             onClick={() => setIsControlsCollapsed(!isControlsCollapsed)}
@@ -402,12 +458,13 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
               color: isControlsCollapsed ? 'var(--text-secondary)' : 'var(--accent-contrast)',
               borderColor: 'var(--border-card)',
             }}
-            title={isControlsCollapsed ? 'Expand Seek Bar & Controls' : 'Collapse Seek Bar'}
+            title={isControlsCollapsed ? 'Show Controls' : 'Hide Controls'}
           >
             <Sliders size={13} />
-            <span className="hidden md:inline">{isControlsCollapsed ? 'Show Controls' : 'Hide Bar'}</span>
+            <span className="hidden md:inline">{isControlsCollapsed ? 'Controls' : 'Hide'}</span>
           </button>
 
+          {/* Fullscreen Toggle */}
           <button
             type="button"
             onClick={toggleFullscreen}
@@ -417,14 +474,14 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
               color: 'var(--text-primary)',
               borderColor: 'var(--border-card)',
             }}
-            title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Video'}
+            title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
           >
             {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
           </button>
         </div>
       </div>
 
-      {/* Chapters Overlay Modal / Drawer (High Z-Index, Guaranteed Visible in Fullscreen) */}
+      {/* Chapters Overlay Modal */}
       {showChaptersDrawer && (
         <div
           className="p-4 sm:p-6 border-b space-y-4 animate-fadeIn select-none z-40 relative shadow-xl"
@@ -435,9 +492,9 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <List size={16} className="text-amber-600 dark:text-amber-400" />
-              <span className="text-sm font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                Classroom Lesson Index ({lesson.chapters.length} Scenes)
+              <List size={16} style={{ color: 'var(--accent-primary)' }} />
+              <span className="text-sm font-extrabold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
+                Chapters ({lesson.chapters.length})
               </span>
             </div>
             <button
@@ -449,13 +506,13 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                 borderColor: 'var(--border-card)',
               }}
             >
-              ✕ Close Index
+              Close
             </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 max-h-[60vh] overflow-y-auto pr-1">
-            {lesson.chapters.map((chap) => {
-              const isActive = chap.id === activeChapter.id;
+            {lesson.chapters.map((chap, idx) => {
+              const isActive = idx === currentChapterIndex;
               return (
                 <button
                   key={chap.id}
@@ -494,84 +551,10 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                   {isActive && (
                     <div className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-                      Now Playing
+                      Active
                     </div>
                   )}
                 </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Live Synchronized Transcript Drawer */}
-      {showTranscriptDrawer && (
-        <div
-          className="p-4 border-b space-y-3 animate-fadeIn select-none z-40 relative shadow-xl"
-          style={{
-            backgroundColor: 'var(--bg-card-subtle)',
-            borderColor: 'var(--border-card)',
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles size={14} className="text-amber-600 dark:text-amber-400" />
-              <span className="text-xs font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                Live Speech Transcript (Click any line to seek & play audio)
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setShowTranscriptDrawer(false)}
-              className="text-xs font-bold px-3 py-1 rounded-lg border cursor-pointer hover:opacity-80"
-              style={{ borderColor: 'var(--border-card)' }}
-            >
-              ✕ Close
-            </button>
-          </div>
-
-          <div
-            ref={transcriptListRef}
-            className="max-h-56 overflow-y-auto space-y-1.5 pr-1 text-xs"
-          >
-            {activeChapter.captions.map((cap, idx) => {
-              const isCurrent = idx === activeCaptionIndex;
-              return (
-                <div
-                  key={cap.id}
-                  onClick={() => handleJumpToCaption(cap.time)}
-                  className={`p-2.5 rounded-xl border flex items-start justify-between gap-3 cursor-pointer transition-all ${
-                    isCurrent
-                      ? 'ring-2 ring-amber-500 font-bold shadow-xs'
-                      : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-80'
-                  }`}
-                  style={{
-                    backgroundColor: isCurrent ? 'var(--reading-highlight-bg)' : 'var(--bg-card)',
-                    borderColor: isCurrent ? 'var(--accent-primary)' : 'var(--border-card)',
-                    color: 'var(--text-primary)',
-                  }}
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="font-mono text-[10px] px-1.5 py-0.5 rounded border font-semibold shrink-0"
-                      style={{
-                        backgroundColor: 'var(--bg-card-subtle)',
-                        borderColor: 'var(--border-card)',
-                        color: 'var(--text-secondary)',
-                      }}
-                    >
-                      {formatTime(cap.time)}
-                    </span>
-                    <span className="leading-snug">{cap.text}</span>
-                  </div>
-
-                  {isCurrent && isPlaying && (
-                    <span className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-widest shrink-0 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-                      Speaking
-                    </span>
-                  )}
-                </div>
               );
             })}
           </div>
@@ -598,10 +581,11 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
             }}
           />
 
-          {/* Whiteboard Content with live time sync */}
+          {/* Whiteboard Content with live sync */}
           <div className="relative z-10 flex-1">
             <WhiteboardVisuals
               chapter={activeChapter}
+              lesson={lesson}
               currentTime={currentTime}
               activeCaptionIndex={activeCaptionIndex}
               isPlaying={isPlaying}
@@ -611,29 +595,26 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
             />
           </div>
 
-          {/* Real-time Subtitles / Karaoke Captions Bar */}
-          {showCaptions && (
+          {/* Synchronized Captions Bar */}
+          {showCaptions && currentCaption && (
             <div
-              className="mt-4 p-2.5 sm:p-3 rounded-xl border text-center relative z-10 transition-all shadow-xs"
+              className="mt-4 p-3 rounded-xl border text-center relative z-10 transition-all shadow-xs"
               style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                backgroundColor: 'rgba(0, 0, 0, 0.88)',
                 color: '#ffffff',
                 borderColor: 'rgba(255, 255, 255, 0.2)',
               }}
             >
               <div className="flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold tracking-wide">
-                <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
-                <span className="text-amber-400 font-extrabold uppercase text-[10px] tracking-wider shrink-0">
-                  Captions:
-                </span>
-                <p className="leading-snug">"{currentCaption}"</p>
+                <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0 animate-pulse" />
+                <p className="leading-snug">{currentCaption}</p>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Video Controls Bar (Collapsible / Expandable) */}
+      {/* Video Controls Bar */}
       {isControlsCollapsed ? (
         /* Collapsed Compact Dock */
         <div
@@ -643,7 +624,7 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
             borderColor: 'var(--border-card-strong)',
           }}
         >
-          {/* Left: Quick Play & Time */}
+          {/* Play & Time */}
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
@@ -654,7 +635,7 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                 borderColor: 'var(--accent-primary)',
                 color: 'var(--accent-contrast)',
               }}
-              title={isPlaying ? 'Pause Video' : 'Play Video'}
+              title={isPlaying ? 'Pause' : 'Play'}
             >
               {isPlaying ? <Pause size={13} className="fill-current" /> : <Play size={13} className="fill-current ml-0.5" />}
               <span className="hidden xs:inline">{isPlaying ? 'Pause' : 'Play'}</span>
@@ -665,47 +646,35 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
             </span>
           </div>
 
-          {/* Center: Slim Scrubbable Progress Line */}
+          {/* Progress Slider */}
           <div className="flex-1 max-w-xl mx-1 sm:mx-3 flex items-center gap-2 group cursor-pointer relative">
-            <div className="relative w-full h-3 flex items-center">
-              <div className="absolute inset-x-0 h-1.5 rounded-full bg-stone-200 dark:bg-stone-800 overflow-hidden pointer-events-none">
-                {lesson.chapters.map((ch) => (
-                  <div
-                    key={ch.id}
-                    className="absolute top-0 bottom-0 w-0.5 bg-stone-400 dark:bg-stone-600 opacity-60"
-                    style={{ left: `${(ch.startTime / lesson.totalDuration) * 100}%` }}
-                  />
-                ))}
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={lesson.totalDuration}
-                value={currentTime}
-                onChange={(e) => handleSeek(Number(e.target.value), false)}
-                onPointerUp={(e) => handleSeek(Number((e.target as HTMLInputElement).value), true)}
-                onTouchEnd={(e) => handleSeek(Number((e.target as HTMLInputElement).value), true)}
-                onKeyUp={() => handleSeek(currentTime, true)}
-                className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-amber-600 dark:accent-amber-400 bg-transparent relative z-10"
-                title="Scrub timeline (Click anywhere to seek)"
-              />
-            </div>
-            <span className="hidden md:inline text-[11px] font-extrabold text-amber-600 dark:text-amber-400 shrink-0">
-              Scene {activeChapter.chapterNumber}
-            </span>
+            <input
+              type="range"
+              min={0}
+              max={lesson.totalDuration}
+              value={currentTime}
+              onChange={(e) => handleSeek(Number(e.target.value))}
+              className="w-full h-1.5 rounded-full appearance-none cursor-pointer relative z-10"
+              style={{
+                backgroundColor: 'var(--bg-card-subtle)',
+                accentColor: 'var(--accent-primary)',
+              }}
+              title="Seek"
+            />
           </div>
 
-          {/* Right: Quick Narration Toggle & Expand Controls Button */}
+          {/* Audio toggle & Expand */}
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               type="button"
               onClick={() => {
-                const nextState = !hasVoiceAudio;
-                setHasVoiceAudio(nextState);
-                if (!nextState) {
+                const next = !hasVoiceAudio;
+                setHasVoiceAudio(next);
+                if (!next) {
                   audioSpeech.stop();
+                  if (isPlaying) runMutedCaptionTimer(currentChapterIndex, activeCaptionIndex);
                 } else if (isPlaying) {
-                  speakFromCaption(activeChapter, activeCaptionIndex, playbackRate, true);
+                  playFromPosition(currentChapterIndex, activeCaptionIndex, playbackRate);
                 }
               }}
               className="p-1.5 rounded-lg border transition-all cursor-pointer shadow-2xs hover:opacity-90"
@@ -714,7 +683,7 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                 color: hasVoiceAudio ? 'var(--accent-contrast)' : 'var(--text-primary)',
                 borderColor: hasVoiceAudio ? 'var(--accent-primary)' : 'var(--border-card)',
               }}
-              title={hasVoiceAudio ? 'Voice Narration ON' : 'Voice Narration Muted'}
+              title={hasVoiceAudio ? 'Mute' : 'Unmute'}
             >
               {hasVoiceAudio ? <Volume2 size={13} /> : <VolumeX size={13} />}
             </button>
@@ -728,10 +697,10 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                 borderColor: 'var(--border-card)',
                 color: 'var(--text-primary)',
               }}
-              title="Expand full seek bar and playback controls"
+              title="Expand Controls"
             >
-              <ChevronUp size={14} />
-              <span className="hidden sm:inline">Expand Bar</span>
+              <ChevronDown size={14} />
+              <span className="hidden sm:inline">Controls</span>
             </button>
           </div>
         </div>
@@ -744,34 +713,24 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
             borderColor: 'var(--border-card)',
           }}
         >
-          {/* Scrubbable Timeline Progress Bar with Scene Markers */}
+          {/* Progress Bar */}
           <div className="space-y-1">
             <div className="relative w-full h-4 flex items-center group cursor-pointer">
-              {/* Background track with chapter divider ticks */}
-              <div className="absolute inset-x-0 h-2 rounded-lg bg-stone-200 dark:bg-stone-800 overflow-hidden pointer-events-none">
-                {lesson.chapters.map((ch) => (
-                  <div
-                    key={ch.id}
-                    className="absolute top-0 bottom-0 w-0.5 bg-stone-400 dark:bg-stone-600 opacity-60"
-                    style={{ left: `${(ch.startTime / lesson.totalDuration) * 100}%` }}
-                  />
-                ))}
-              </div>
-
               <input
                 type="range"
                 min={0}
                 max={lesson.totalDuration}
                 value={currentTime}
-                onChange={(e) => handleSeek(Number(e.target.value), false)}
-                onPointerUp={(e) => handleSeek(Number((e.target as HTMLInputElement).value), true)}
-                onTouchEnd={(e) => handleSeek(Number((e.target as HTMLInputElement).value), true)}
-                onKeyUp={() => handleSeek(currentTime, true)}
-                className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-amber-600 dark:accent-amber-400 bg-transparent relative z-10"
+                onChange={(e) => handleSeek(Number(e.target.value))}
+                className="w-full h-2 rounded-lg appearance-none cursor-pointer relative z-10"
+                style={{
+                  backgroundColor: 'var(--bg-card-subtle)',
+                  accentColor: 'var(--accent-primary)',
+                }}
               />
             </div>
 
-            {/* Time & Chapter Progress Indicators */}
+            {/* Time & Chapter Progress */}
             <div className="flex items-center justify-between text-[11px] font-bold" style={{ color: 'var(--text-muted)' }}>
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs" style={{ color: 'var(--text-primary)' }}>
@@ -786,14 +745,13 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
               </span>
 
               <span className="text-[10px] uppercase tracking-wider font-extrabold" style={{ color: 'var(--accent-primary)' }}>
-                {Math.round((currentTime / lesson.totalDuration) * 100)}% Complete
+                {Math.round((currentTime / lesson.totalDuration) * 100)}%
               </span>
             </div>
           </div>
 
-          {/* Control Buttons Row */}
+          {/* Control Buttons */}
           <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-            {/* Playback Transport Buttons */}
             <div className="flex items-center gap-1.5 sm:gap-2">
               {/* Prev Chapter */}
               <button
@@ -805,23 +763,23 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                 disabled={currentChapterIndex === 0}
                 className="p-2 rounded-xl border transition-all cursor-pointer shadow-2xs disabled:opacity-40 hover:opacity-90"
                 style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}
-                title="Previous Chapter"
+                title="Previous Scene"
               >
                 <ChevronLeft size={16} />
               </button>
 
-              {/* Skip -10s */}
+              {/* Rewind */}
               <button
                 type="button"
                 onClick={() => handleSkip(-10)}
                 className="p-2 rounded-xl border transition-all cursor-pointer shadow-2xs hover:opacity-90"
                 style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}
-                title="Rewind 10 seconds"
+                title="Rewind 10s"
               >
                 <RotateCcw size={15} />
               </button>
 
-              {/* Play / Pause Primary Button */}
+              {/* Play / Pause */}
               <button
                 type="button"
                 onClick={handleTogglePlay}
@@ -831,19 +789,19 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                   borderColor: 'var(--accent-primary)',
                   color: 'var(--accent-contrast)',
                 }}
-                title={isPlaying ? 'Pause Video' : 'Play Video Clip'}
+                title={isPlaying ? 'Pause' : 'Play'}
               >
                 {isPlaying ? <Pause size={17} className="fill-current" /> : <Play size={17} className="fill-current ml-0.5" />}
-                <span>{isPlaying ? 'Pause' : 'Play Lesson'}</span>
+                <span>{isPlaying ? 'Pause' : 'Play'}</span>
               </button>
 
-              {/* Skip +10s */}
+              {/* Forward */}
               <button
                 type="button"
                 onClick={() => handleSkip(10)}
                 className="p-2 rounded-xl border transition-all cursor-pointer shadow-2xs hover:opacity-90"
                 style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}
-                title="Skip forward 10 seconds"
+                title="Skip forward 10s"
               >
                 <SkipForward size={15} />
               </button>
@@ -858,22 +816,23 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                 disabled={currentChapterIndex === lesson.chapters.length - 1}
                 className="p-2 rounded-xl border transition-all cursor-pointer shadow-2xs disabled:opacity-40 hover:opacity-90"
                 style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}
-                title="Next Chapter"
+                title="Next Scene"
               >
                 <ChevronRight size={16} />
               </button>
             </div>
 
-            {/* Right Controls: Speed, Captions, Narration & Collapse Button */}
+            {/* Speed, Captions, Mute & Collapse */}
             <div className="flex items-center gap-2">
-              {/* Speed Selector */}
-              <div className="flex items-center rounded-lg border overflow-hidden shadow-2xs text-xs font-bold"
-                style={{ borderColor: 'var(--border-card)' }}>
+              <div
+                className="flex items-center rounded-lg border overflow-hidden shadow-2xs text-xs font-bold"
+                style={{ borderColor: 'var(--border-card)' }}
+              >
                 {[0.75, 1, 1.25, 1.5].map((speed) => (
                   <button
                     key={speed}
                     type="button"
-                    onClick={() => setPlaybackRate(speed)}
+                    onClick={() => handleChangePlaybackRate(speed)}
                     className="px-2 py-1 transition-colors cursor-pointer"
                     style={{
                       backgroundColor: playbackRate === speed ? 'var(--accent-primary)' : 'var(--bg-card)',
@@ -895,21 +854,22 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                   color: showCaptions ? 'var(--accent-contrast)' : 'var(--text-primary)',
                   borderColor: showCaptions ? 'var(--accent-primary)' : 'var(--border-card)',
                 }}
-                title={showCaptions ? 'Captions ON' : 'Captions OFF'}
+                title={showCaptions ? 'Captions On' : 'Captions Off'}
               >
                 <Subtitles size={15} />
               </button>
 
-              {/* Voice Audio Toggle */}
+              {/* Voice Mute Toggle */}
               <button
                 type="button"
                 onClick={() => {
-                  const nextState = !hasVoiceAudio;
-                  setHasVoiceAudio(nextState);
-                  if (!nextState) {
+                  const next = !hasVoiceAudio;
+                  setHasVoiceAudio(next);
+                  if (!next) {
                     audioSpeech.stop();
+                    if (isPlaying) runMutedCaptionTimer(currentChapterIndex, activeCaptionIndex);
                   } else if (isPlaying) {
-                    speakFromCaption(activeChapter, activeCaptionIndex, playbackRate, true);
+                    playFromPosition(currentChapterIndex, activeCaptionIndex, playbackRate);
                   }
                 }}
                 className="p-2 rounded-xl border transition-all cursor-pointer shadow-2xs hover:opacity-90"
@@ -918,12 +878,12 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                   color: hasVoiceAudio ? 'var(--accent-contrast)' : 'var(--text-primary)',
                   borderColor: hasVoiceAudio ? 'var(--accent-primary)' : 'var(--border-card)',
                 }}
-                title={hasVoiceAudio ? 'Voice Narration ON' : 'Voice Narration Muted'}
+                title={hasVoiceAudio ? 'Narration On' : 'Narration Muted'}
               >
                 {hasVoiceAudio ? <Volume2 size={15} /> : <VolumeX size={15} />}
               </button>
 
-              {/* Collapse Seek Bar Button */}
+              {/* Hide Controls */}
               <button
                 type="button"
                 onClick={() => setIsControlsCollapsed(true)}
@@ -933,38 +893,34 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                   borderColor: 'var(--border-card)',
                   color: 'var(--text-secondary)',
                 }}
-                title="Collapse seek bar to maximize chalkboard view"
+                title="Hide bar"
               >
-                <ChevronDown size={15} />
-                <span className="hidden sm:inline">Hide Bar</span>
+                <ChevronUp size={15} />
+                <span className="hidden sm:inline">Hide</span>
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Classroom Quick Links & Next Steps Footer */}
+      {/* Footer Navigation Buttons */}
       <div
-        className="p-4 border-t flex flex-col sm:flex-row items-center justify-between gap-3 text-xs"
+        className="p-3.5 sm:p-4 border-t flex items-center justify-between gap-3 text-xs"
         style={{
           backgroundColor: 'var(--bg-card-subtle)',
           borderColor: 'var(--border-card)',
         }}
       >
-        <div className="flex items-center gap-2">
-          <Bookmark size={14} className="text-amber-600 dark:text-amber-400" />
-          <span className="font-bold">Next Recommended Activity:</span>
-          <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>
-            Take the 25-Question Fractions Syllabus Assessment
-          </span>
-        </div>
+        <span className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
+          {activeChapter.title}
+        </span>
 
         <div className="flex items-center gap-2">
           {onGoToTheory && (
             <button
               type="button"
               onClick={onGoToTheory}
-              className="px-3 py-1.5 rounded-xl border font-bold text-xs transition-all cursor-pointer shadow-2xs hover:opacity-90 flex items-center gap-1.5"
+              className="px-3.5 py-1.5 rounded-xl border font-bold text-xs transition-all cursor-pointer shadow-2xs hover:opacity-90 flex items-center gap-1.5"
               style={{
                 backgroundColor: 'var(--bg-card)',
                 color: 'var(--text-primary)',
@@ -988,7 +944,7 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
               }}
             >
               <Award size={13} />
-              <span>Start 25 Qs Assessment</span>
+              <span>Practice Questions</span>
             </button>
           )}
         </div>

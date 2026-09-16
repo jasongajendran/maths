@@ -16,6 +16,18 @@ export const FloatingAudioController: React.FC = () => {
     return null;
   }
 
+  // In video lessons, keep the floating audio controller in hide mode without exposing external controls
+  const isVideoLessonAudio =
+    audioState.activeId?.startsWith('clip-') ||
+    audioState.activeId?.startsWith('chap-') ||
+    audioState.activeId?.startsWith('quiz-feedback-') ||
+    audioState.activeId?.startsWith('video-') ||
+    audioState.activeId?.includes('masterclass');
+
+  if (isVideoLessonAudio) {
+    return null;
+  }
+
   const rates = [
     { label: '0.8x', value: 0.8 },
     { label: '1x', value: 0.95 },

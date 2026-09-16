@@ -1,21 +1,28 @@
 import React, { useState } from 'react';
 import { MathView } from '../MathView';
 import { Check, X, ArrowRight, Sparkles, RefreshCw, AlertTriangle, Layers, Award, GitCompare, HelpCircle } from 'lucide-react';
-import { VideoChapter, WhiteboardType } from '../../data/videoLessons/types';
+import { VideoChapter, VideoLesson, WhiteboardType } from '../../data/videoLessons/types';
 import { ExpandedWhiteboardScenes } from './ExpandedWhiteboardScenes';
 
 interface WhiteboardVisualsProps {
   chapter: VideoChapter;
+  lesson?: VideoLesson;
   currentTime?: number;
   activeCaptionIndex?: number;
   isPlaying?: boolean;
-  onCheckpointAnswer?: (isCorrect: boolean, feedback: string) => void;
+  onCheckpointAnswer?: (
+    isCorrect: boolean,
+    feedback: string,
+    teacherSpokenFeedback?: string,
+    optId?: string
+  ) => void;
   selectedQuizOption?: string | null;
   quizResult?: { isCorrect: boolean; feedback: string } | null;
 }
 
 export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
   chapter,
+  lesson,
   currentTime = 0,
   activeCaptionIndex = 0,
   isPlaying = false,
@@ -61,10 +68,21 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
     'cube_3d_blocks',
     'factor_rainbow_board',
     'place_value_houses',
+    'place_value_shift',
+    'negative_thermometer',
     'rounding_mountain',
     'fdp_grid_board',
+    'fdp_benchmark_highway',
+    'fdp_lego_blocks',
+    'fdp_reverse_trick',
+    'ratio_squash_drink',
     'ratio_bar_board',
+    'ratio_recipe_scaling',
+    'ratio_difference_board',
     'bidmas_priority_board',
+    'bidmas_brackets_board',
+    'bidmas_indices_board',
+    'bidmas_left_to_right',
     'algebra_balance_board',
     'metric_staircase_board',
     'perimeter_area_volume_board',
@@ -494,11 +512,11 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
 
               {/* Fractions: 3/4 + 2/5 */}
               {/* Fraction 1 (3/4) */}
-              <text x="130" y="96" textAnchor="middle" fontSize="22" fontWeight="900" fill="#18181b">
+              <text x="130" y="96" textAnchor="middle" fontSize="22" fontWeight="900" fill="var(--text-primary)">
                 3
               </text>
-              <line x1="110" y1="105" x2="150" y2="105" stroke="#18181b" strokeWidth="2.5" strokeLinecap="round" />
-              <text x="130" y="132" textAnchor="middle" fontSize="22" fontWeight="900" fill="#18181b">
+              <line x1="110" y1="105" x2="150" y2="105" stroke="var(--text-primary)" strokeWidth="2.5" strokeLinecap="round" />
+              <text x="130" y="132" textAnchor="middle" fontSize="22" fontWeight="900" fill="var(--text-primary)">
                 4
               </text>
 
@@ -508,11 +526,11 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
               </text>
 
               {/* Fraction 2 (2/5) */}
-              <text x="210" y="96" textAnchor="middle" fontSize="22" fontWeight="900" fill="#18181b">
+              <text x="210" y="96" textAnchor="middle" fontSize="22" fontWeight="900" fill="var(--text-primary)">
                 2
               </text>
-              <line x1="190" y1="105" x2="230" y2="105" stroke="#18181b" strokeWidth="2.5" strokeLinecap="round" />
-              <text x="210" y="132" textAnchor="middle" fontSize="22" fontWeight="900" fill="#18181b">
+              <line x1="190" y1="105" x2="230" y2="105" stroke="var(--text-primary)" strokeWidth="2.5" strokeLinecap="round" />
+              <text x="210" y="132" textAnchor="middle" fontSize="22" fontWeight="900" fill="var(--text-primary)">
                 5
               </text>
 
@@ -728,9 +746,10 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
                       <span className="text-xs font-bold text-amber-600 dark:text-amber-400">Butterfly Wings</span>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-stone-900 text-white text-center font-bold text-base space-y-1">
+                    <div className="p-3 rounded-lg border text-center font-bold text-base space-y-1 shadow-2xs"
+                      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card-strong)', color: 'var(--text-primary)' }}>
                       <div><MathView math={'\\frac{3}{4} + \\frac{2}{5} = \\frac{(3 \\times 5) + (2 \\times 4)}{4 \\times 5}'} /></div>
-                      <div className="text-amber-400 text-lg font-extrabold">
+                      <div className="text-lg font-extrabold" style={{ color: 'var(--accent-primary)' }}>
                         <MathView math={'= \\frac{15 + 8}{20} = \\mathbf{\\frac{23}{20} = 1\\frac{3}{20}}'} />
                       </div>
                     </div>
@@ -748,9 +767,10 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
                       <span className="text-xs font-bold text-blue-600 dark:text-blue-400">Highway Straight Across</span>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-stone-900 text-white text-center font-bold text-base space-y-1">
+                    <div className="p-3 rounded-lg border text-center font-bold text-base space-y-1 shadow-2xs"
+                      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card-strong)', color: 'var(--text-primary)' }}>
                       <div><MathView math={'\\frac{3}{4} \\times \\frac{2}{5} = \\frac{3 \\times 2}{4 \\times 5}'} /></div>
-                      <div className="text-blue-400 text-lg font-extrabold">
+                      <div className="text-lg font-extrabold" style={{ color: 'var(--tool-model2-badge-text)' }}>
                         <MathView math={'= \\frac{6}{20} = \\mathbf{\\frac{3}{10}}'} />
                       </div>
                     </div>
@@ -794,8 +814,16 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
                               ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-300 opacity-60'
                               : isColInFourFifths
                               ? 'bg-blue-100 dark:bg-blue-950/40 border-blue-300 opacity-60'
-                              : 'bg-stone-100 dark:bg-stone-800 border-stone-300 opacity-30'
+                              : 'border-dashed opacity-30'
                           }`}
+                          style={
+                            !isOverlap && !isRowInTwoThirds && !isColInFourFifths
+                              ? {
+                                  backgroundColor: 'var(--bg-card-subtle)',
+                                  borderColor: 'var(--border-card-strong)',
+                                }
+                              : undefined
+                          }
                           title={isOverlap ? 'Overlap square (8 total)' : 'Non-overlap square'}
                         >
                           {isOverlap ? '★' : ''}
@@ -892,42 +920,54 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
      * SCENE 7: INTERACTIVE CHECKPOINT (Student Try It!)
      * ---------------------------------------------------- */
     case 'interactive_quiz':
-      const quiz = {
+      const quiz = lesson?.checkpointQuestion || {
         question: 'Solve this live on your whiteboard:',
-        mathQuestion: '\\frac{1}{4} + \\frac{2}{3} = \\; ?',
+        mathQuestion: chapter.mathFormulas?.[0] || '\\frac{1}{4} + \\frac{2}{3} = \\; ?',
         options: [
           {
             id: 'A',
+            label: 'A',
             math: '\\frac{3}{7}',
             isCorrect: false,
             feedback: 'Watch out! You fell into the pizza trap of adding denominators 4+3=7! You must find common 12ths.',
+            teacherSpokenFeedback: 'Watch out! Never add denominators directly. Find a common denominator first!',
           },
           {
             id: 'B',
+            label: 'B',
             math: '\\frac{11}{12}',
             isCorrect: true,
             feedback: 'Spot on! LCM(4, 3) = 12. 1/4 scales to 3/12, and 2/3 scales to 8/12. 3 + 8 = 11/12!',
+            teacherSpokenFeedback: 'Spot on! Common denominator of 12 gives 3 over 12 plus 8 over 12, which equals 11 over 12!',
           },
           {
             id: 'C',
+            label: 'C',
             math: '\\frac{3}{12}',
             isCorrect: false,
             feedback: 'Close! 1/4 is indeed 3/12, but you forgot to convert 2/3 into 8/12 before combining.',
+            teacherSpokenFeedback: 'Close! 1 quarter is 3 twelfths, but convert 2 thirds into 8 twelfths as well.',
           },
           {
             id: 'D',
+            label: 'D',
             math: '\\frac{8}{12}',
             isCorrect: false,
             feedback: '2/3 is 8/12, but do not forget to add the 3/12 from the first fraction!',
+            teacherSpokenFeedback: '2 thirds is 8 twelfths, but remember to add the first fraction too!',
           },
         ],
       };
 
+      const quizPrompt = quiz.question || 'Tap your answer to check your understanding:';
+
       return (
         <div className="space-y-4 animate-fadeIn">
           {/* Question Banner */}
-          <div className="p-4 rounded-xl border text-center space-y-2 shadow-2xs"
-            style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}>
+          <div
+            className="p-4 rounded-xl border text-center space-y-2 shadow-2xs"
+            style={{ backgroundColor: 'var(--bg-card-subtle)', borderColor: 'var(--border-card)' }}
+          >
             <span className="text-xs font-extrabold uppercase tracking-wide text-amber-600 dark:text-amber-400">
               ⚡ Classroom Live Checkpoint
             </span>
@@ -935,21 +975,23 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
               <MathView math={quiz.mathQuestion} />
             </div>
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              Tap your answer to see if you avoid the denominator trap:
+              {quizPrompt}
             </p>
           </div>
 
           {/* Interactive Multiple Choice Buttons */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {quiz.options.map((opt) => {
-              const isSelected = selectedQuizOption === opt.id;
+            {quiz.options.map((opt, idx) => {
+              const optKey = opt.id || String(idx);
+              const isSelected = selectedQuizOption === optKey || selectedQuizOption === opt.label || selectedQuizOption === opt.id;
               const showResult = isSelected && quizResult;
+              const displayBadge = opt.label || opt.id || String.fromCharCode(65 + idx);
 
               return (
                 <button
-                  key={opt.id}
+                  key={optKey}
                   type="button"
-                  onClick={() => onCheckpointAnswer?.(opt.isCorrect, opt.feedback)}
+                  onClick={() => onCheckpointAnswer?.(opt.isCorrect, opt.feedback, opt.teacherSpokenFeedback, optKey)}
                   className="p-3.5 rounded-xl border text-left font-bold text-sm flex items-center justify-between gap-3 transition-all cursor-pointer shadow-2xs hover:scale-101 active:scale-98"
                   style={{
                     backgroundColor: showResult
@@ -971,14 +1013,14 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
                 >
                   <div className="flex items-center gap-3">
                     <span
-                      className="w-7 h-7 rounded-lg text-xs font-black flex items-center justify-center border"
+                      className="w-7 h-7 rounded-lg text-xs font-black flex items-center justify-center border shrink-0"
                       style={{
                         backgroundColor: 'var(--bg-card-subtle)',
                         borderColor: 'var(--border-card)',
                         color: 'var(--text-primary)',
                       }}
                     >
-                      {opt.id}
+                      {displayBadge}
                     </span>
                     <MathView math={opt.math} />
                   </div>

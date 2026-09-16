@@ -221,69 +221,17 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
           >
             {topic.summary}
           </p>
-
-          {/* Masterclass Video Tutoring Promotional Banner */}
-          {topicVideoLesson && (
-            <div
-              className="p-3.5 sm:p-4 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-3.5 shadow-2xs mt-3 tactile-card"
-              style={{
-                backgroundColor: 'var(--reading-highlight-bg)',
-                borderColor: 'var(--accent-primary)',
-              }}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border shadow-2xs"
-                  style={{
-                    backgroundColor: 'var(--accent-primary)',
-                    color: 'var(--accent-contrast)',
-                    borderColor: 'var(--accent-primary)',
-                  }}
-                >
-                  <Video size={22} className="animate-pulse" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="font-extrabold text-sm sm:text-base tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                      {topicVideoLesson.title}
-                    </h4>
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full uppercase bg-amber-500 text-stone-900 border border-amber-600">
-                      Mrs. Davies (Year 5/6 Lead)
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-sm font-medium mt-0.5" style={{ color: 'var(--text-secondary)' }}>
-                    {topicVideoLesson.subtitle || topicVideoLesson.description}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                id="watch-video-banner-btn"
-                onClick={() => setActiveTab('video')}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold border transition-all cursor-pointer shadow-xs active:scale-95 flex items-center justify-center gap-2 shrink-0 tactile-btn"
-                style={{
-                  backgroundColor: 'var(--accent-primary)',
-                  borderColor: 'var(--accent-primary)',
-                  color: 'var(--accent-contrast)',
-                }}
-              >
-                <Play size={14} className="fill-current" />
-                <span>Watch Teacher Lesson</span>
-              </button>
-            </div>
-          )}
         </div>
 
-        {/* Navigation Tabs - Cleanly outside any speech container */}
+        {/* Navigation Tabs */}
         <div
-          className="flex flex-wrap items-center gap-2 mt-6 pt-5 border-t"
+          className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t"
           style={{ borderColor: 'var(--border-card)' }}
         >
           <button
             type="button"
             onClick={() => setActiveTab('theory')}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs tactile-btn"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border shadow-2xs tactile-btn"
             style={{
               backgroundColor: activeTab === 'theory' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: activeTab === 'theory' ? 'var(--accent-primary)' : 'var(--border-card)',
@@ -291,7 +239,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
             }}
           >
             <BookOpen size={16} />
-            <span>Concepts & Worked Examples</span>
+            <span>Concepts</span>
           </button>
 
           {topicVideoLesson && (
@@ -299,33 +247,23 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
               type="button"
               id="tab-topic-video-btn"
               onClick={() => setActiveTab('video')}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs relative tactile-btn"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border shadow-2xs relative tactile-btn"
               style={{
                 backgroundColor: activeTab === 'video' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
                 borderColor: activeTab === 'video' ? 'var(--accent-primary)' : 'var(--border-card)',
                 color: activeTab === 'video' ? 'var(--accent-contrast)' : 'var(--text-primary)',
               }}
-              title="Watch interactive teacher video tutoring lesson"
+              title="Video Lesson"
             >
               <Video size={16} />
-              <span>Video Tutoring Clip</span>
-              <span
-                className="text-[10px] font-black px-1.5 py-0.5 rounded-full uppercase ml-0.5 border"
-                style={{
-                  backgroundColor: activeTab === 'video' ? 'var(--bg-card)' : 'var(--badge-bg)',
-                  color: activeTab === 'video' ? 'var(--text-primary)' : 'var(--badge-text)',
-                  borderColor: 'var(--border-card)',
-                }}
-              >
-                Teacher Clip
-              </span>
+              <span>Video Lesson</span>
             </button>
           )}
 
           <button
             type="button"
             onClick={() => setActiveTab('tips')}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs tactile-btn"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border shadow-2xs tactile-btn"
             style={{
               backgroundColor: activeTab === 'tips' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: activeTab === 'tips' ? 'var(--accent-primary)' : 'var(--border-card)',
@@ -333,13 +271,13 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
             }}
           >
             <Sparkles size={16} />
-            <span>Tips & Tricks ({topic.tipsAndTricks.length})</span>
+            <span>Tips & Tricks</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('formulas')}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs tactile-btn"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border shadow-2xs tactile-btn"
             style={{
               backgroundColor: activeTab === 'formulas' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: activeTab === 'formulas' ? 'var(--accent-primary)' : 'var(--border-card)',
@@ -347,13 +285,13 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
             }}
           >
             <Award size={16} />
-            <span>Key Formulas & Important Info</span>
+            <span>Formulas</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('practice')}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs tactile-btn"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border shadow-2xs tactile-btn"
             style={{
               backgroundColor: activeTab === 'practice' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
               borderColor: activeTab === 'practice' ? 'var(--accent-primary)' : 'var(--border-card)',
@@ -361,14 +299,14 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
             }}
           >
             <GraduationCap size={16} />
-            <span>Self-Check Practice ({topic.practiceQuestions.length})</span>
+            <span>Practice</span>
           </button>
 
           {topic.toolType && (
             <button
               type="button"
               onClick={() => setActiveTab('tools')}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs tactile-btn"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border shadow-2xs tactile-btn"
               style={{
                 backgroundColor: activeTab === 'tools' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
                 borderColor: activeTab === 'tools' ? 'var(--accent-primary)' : 'var(--border-card)',
@@ -376,7 +314,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
               }}
             >
               <Cpu size={16} />
-              <span>Interactive Visual Tool</span>
+              <span>Tools</span>
             </button>
           )}
 
@@ -385,26 +323,15 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
               type="button"
               id="tab-topic-assessment-btn"
               onClick={() => setActiveTab('assessment')}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer border shadow-2xs relative tactile-btn"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border shadow-2xs relative tactile-btn"
               style={{
                 backgroundColor: activeTab === 'assessment' ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
                 borderColor: activeTab === 'assessment' ? 'var(--accent-primary)' : 'var(--border-card)',
                 color: activeTab === 'assessment' ? 'var(--accent-contrast)' : 'var(--text-primary)',
               }}
-              title="Take the dedicated 25-question syllabus assessment for this topic"
             >
               <Award size={16} />
-              <span>Topic Assessment</span>
-              <span
-                className="text-[10px] font-black px-1.5 py-0.5 rounded-full uppercase ml-0.5 border"
-                style={{
-                  backgroundColor: activeTab === 'assessment' ? 'var(--bg-card)' : 'var(--badge-bg)',
-                  color: activeTab === 'assessment' ? 'var(--text-primary)' : 'var(--badge-text)',
-                  borderColor: 'var(--border-card)',
-                }}
-              >
-                25 Qs
-              </span>
+              <span>Assessment</span>
             </button>
           )}
         </div>

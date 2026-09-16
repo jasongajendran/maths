@@ -41,6 +41,15 @@
   --contrast-teal: #064e3b; /* Deep pine emerald */
   --contrast-teal-bg: #d1fae5;
   --contrast-teal-border: #6ee7b7;
+  /* Dedicated Interactive Tool & Visual Model Tokens */
+  --tool-model1-bg: #b45309;
+  --tool-model1-text: #ffffff;
+  --tool-model1-badge-bg: #fef3c7;
+  --tool-model1-badge-text: #92400e;
+  --tool-model2-bg: #1d4ed8;
+  --tool-model2-text: #ffffff;
+  --tool-model2-badge-bg: #dbeafe;
+  --tool-model2-badge-text: #1e40af;
 }
 
 [data-theme="sage"] {
@@ -78,6 +87,15 @@
   --contrast-teal: #064e3b;
   --contrast-teal-bg: #d1fae5;
   --contrast-teal-border: #6ee7b7;
+  /* Dedicated Interactive Tool & Visual Model Tokens */
+  --tool-model1-bg: #c2410c;
+  --tool-model1-text: #ffffff;
+  --tool-model1-badge-bg: #ffedd5;
+  --tool-model1-badge-text: #9a3412;
+  --tool-model2-bg: #0f766e;
+  --tool-model2-text: #ffffff;
+  --tool-model2-badge-bg: #ccfbf1;
+  --tool-model2-badge-text: #115e59;
 }
 
 [data-theme="obsidian"] {
@@ -115,6 +133,15 @@
   --contrast-teal: #6ee7b7; /* Radiant mint */
   --contrast-teal-bg: #064e3b;
   --contrast-teal-border: #10b981;
+  /* Dedicated Interactive Tool & Visual Model Tokens */
+  --tool-model1-bg: #f59e0b;
+  --tool-model1-text: #090d16;
+  --tool-model1-badge-bg: #451a03;
+  --tool-model1-badge-text: #fbbf24;
+  --tool-model2-bg: #38bdf8;
+  --tool-model2-text: #090d16;
+  --tool-model2-badge-bg: #082f49;
+  --tool-model2-badge-text: #7dd3fc;
 }
 
 /* Global anti-overflow and typography rules */
