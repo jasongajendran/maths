@@ -99,6 +99,6 @@ export interface MathTopic {
   tipsAndTricks: TipOrTrick[];
   importantInfo: ImportantInfo[];
   practiceQuestions: PracticeQuestion[];
-  toolType?: 'fractions' | 'bidmas' | 'angles' | 'area-perimeter' | 'roman-numerals' | 'times-tables';
+  toolType?: 'fractions' | 'bidmas' | 'angles' | 'area-perimeter' | 'roman-numerals' | 'times-tables' | 'place-value' | 'decimals-percentages' | 'factors-multiples' | 'averages-data' | 'coordinates';
 }
 

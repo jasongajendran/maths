@@ -32,6 +32,11 @@ import { BidmasEvaluator } from './tools/BidmasEvaluator';
 import { AnglesExplorer } from './tools/AnglesExplorer';
 import { AreaPerimeterSandbox } from './tools/AreaPerimeterSandbox';
 import { RomanNumeralsConverter } from './tools/RomanNumeralsConverter';
+import { PlaceValueSandbox } from './tools/PlaceValueSandbox';
+import { DecimalsPercentagesConverter } from './tools/DecimalsPercentagesConverter';
+import { FactorsMultiplesLaboratory } from './tools/FactorsMultiplesLaboratory';
+import { AveragesDataStudio } from './tools/AveragesDataStudio';
+import { CoordinatesTransformStudio } from './tools/CoordinatesTransformStudio';
 import { AssessmentView } from './AssessmentView';
 import { getAssessmentForTopic } from '../data/assessments';
 import { VideoTutoringClip } from './video/VideoTutoringClip';
@@ -1616,6 +1621,11 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
           {topic.toolType === 'angles' && <AnglesExplorer />}
           {topic.toolType === 'area-perimeter' && <AreaPerimeterSandbox />}
           {topic.toolType === 'roman-numerals' && <RomanNumeralsConverter />}
+          {topic.toolType === 'place-value' && <PlaceValueSandbox />}
+          {topic.toolType === 'decimals-percentages' && <DecimalsPercentagesConverter />}
+          {topic.toolType === 'factors-multiples' && <FactorsMultiplesLaboratory />}
+          {topic.toolType === 'averages-data' && <AveragesDataStudio />}
+          {topic.toolType === 'coordinates' && <CoordinatesTransformStudio />}
         </div>
       )}
 

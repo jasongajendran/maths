@@ -700,6 +700,7 @@ const rawMathTopics: MathTopic[] = [
     iconName: 'Hash',
     color: 'amber',
     readTimeMinutes: 5,
+    toolType: 'place-value',
     keyFormulas: [
       {
         id: 'pv-mult10',
@@ -1571,6 +1572,7 @@ const rawMathTopics: MathTopic[] = [
     iconName: 'Percent',
     color: 'blue',
     readTimeMinutes: 5,
+    toolType: 'decimals-percentages',
     keyFormulas: [
       {
         id: 'fdp-pct-def',
@@ -1873,6 +1875,7 @@ const rawMathTopics: MathTopic[] = [
     iconName: 'Sparkles',
     color: 'indigo',
     readTimeMinutes: 6,
+    toolType: 'factors-multiples',
     keyFormulas: [
       {
         id: 'calc-prime-def',
@@ -2460,6 +2463,7 @@ const rawMathTopics: MathTopic[] = [
     iconName: 'BarChart2',
     color: 'teal',
     readTimeMinutes: 5,
+    toolType: 'averages-data',
     keyFormulas: [
       {
         id: 'stat-mean',
@@ -2835,6 +2839,7 @@ const rawMathTopics: MathTopic[] = [
     iconName: 'Grid',
     color: 'amber',
     readTimeMinutes: 5,
+    toolType: 'coordinates',
     keyFormulas: [
       {
         id: 'coord-rule',
