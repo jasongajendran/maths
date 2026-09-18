@@ -378,7 +378,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
                     style={{
                       backgroundColor: 'var(--badge-bg)',
                       borderColor: 'var(--border-card-strong)',
-                      color: 'var(--accent-primary)',
+                      color: 'var(--badge-text)',
                     }}
                   >
                     <Layers size={16} />
@@ -455,7 +455,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
                         className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-black shrink-0"
                         style={{
                           backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : 'var(--badge-bg)',
-                          color: isActive ? 'var(--accent-contrast)' : 'var(--accent-primary)',
+                          color: isActive ? 'var(--accent-contrast)' : 'var(--badge-text)',
                         }}
                       >
                         {sIdx + 1}
@@ -562,11 +562,11 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
                       }`}
                       label={`Refresher: ${prereq.term}`}
                       highlightStyle="inner"
-                      className="p-3.5 sm:p-4 rounded-xl border space-y-2.5 shadow-2xs transition-all"
+                      className="p-3.5 sm:p-4 rounded-xl border-2 space-y-2.5 shadow-2xs transition-all"
                       ariaLabel={`Prerequisite Guide for ${prereq.term}`}
                       style={{
-                        backgroundColor: 'var(--badge-bg)',
-                        borderColor: 'var(--border-card-strong)',
+                        backgroundColor: 'var(--bg-card)',
+                        borderColor: 'var(--contrast-amber-border)',
                       }}
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -585,7 +585,17 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
                             style={{ color: 'var(--text-primary)' }}
                           >
                             Wait, what is{' '}
-                            <span style={{ color: 'var(--accent-primary)' }}>{prereq.term}</span>?
+                            <span
+                              className="px-2.5 py-0.5 rounded-md font-black tracking-wide inline-block shadow-2xs border"
+                              style={{
+                                backgroundColor: 'var(--badge-bg)',
+                                color: 'var(--badge-text)',
+                                borderColor: 'var(--border-card-strong)',
+                              }}
+                            >
+                              {prereq.term}
+                            </span>
+                            ?
                           </span>
                         </div>
 
@@ -630,15 +640,15 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({
                       <div
                         className="p-2.5 sm:p-3 rounded-lg border text-xs sm:text-sm leading-relaxed"
                         style={{
-                          backgroundColor: 'var(--bg-card)',
+                          backgroundColor: 'var(--bg-card-subtle)',
                           borderColor: 'var(--border-card)',
                           color: 'var(--text-primary)',
                         }}
                       >
-                        <span className="font-extrabold" style={{ color: 'var(--accent-primary)' }}>
-                          Quick Guide:{' '}
+                        <span className="font-extrabold mr-1" style={{ color: 'var(--contrast-amber)' }}>
+                          Quick Guide:
                         </span>
-                        <span>{prereq.quickDefinition}</span>
+                        <span style={{ color: 'var(--text-secondary)' }}>{prereq.quickDefinition}</span>
                       </div>
                     </ReadableCard>
                   ))}

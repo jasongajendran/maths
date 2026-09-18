@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type PastelThemeId = 'butter' | 'sage' | 'obsidian';
+export type PastelThemeId = 'butter' | 'obsidian';
 
 export interface PastelTheme {
   id: PastelThemeId;
@@ -17,32 +17,21 @@ export interface PastelTheme {
 export const PASTEL_THEMES: PastelTheme[] = [
   {
     id: 'butter',
-    name: 'Buttercup & Honey',
-    shortName: 'Honey',
-    emoji: '🍯',
-    shortDesc: 'Warm custard cream with rich amber & crisp carbon ink (Daytime Default)',
-    canvasHex: '#fffdf5',
-    cardHex: '#fbf5e6',
+    name: 'Daylight Amber & Cream',
+    shortName: 'Day Mode',
+    emoji: '☀️',
+    shortDesc: 'Crisp sunlight cream with deep pitch carbon ink & rich golden amber (High Contrast Day)',
+    canvasHex: '#fcfaf4',
+    cardHex: '#f6efe1',
     accentHex: '#b45309',
-    isDark: false,
-  },
-  {
-    id: 'sage',
-    name: 'Sage & Terracotta',
-    shortName: 'Sage',
-    emoji: '🌿',
-    shortDesc: 'Calming botanical eucalyptus with warm terracotta & deep pine (Focus & Comfort)',
-    canvasHex: '#f2f7f4',
-    cardHex: '#e4eee7',
-    accentHex: '#c2410c',
     isDark: false,
   },
   {
     id: 'obsidian',
     name: 'Obsidian & Amber',
-    shortName: 'Obsidian',
+    shortName: 'Night Mode',
     emoji: '🌙',
-    shortDesc: 'Velvet slate dark study with glowing honey amber & pure crisp text (Night Mode)',
+    shortDesc: 'Velvet slate dark study with glowing honey amber & brilliant off-white text (Night Mode)',
     canvasHex: '#090d16',
     cardHex: '#131b28',
     accentHex: '#f59e0b',

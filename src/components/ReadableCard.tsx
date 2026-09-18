@@ -95,7 +95,11 @@ export const ReadableCard: React.FC<ReadableCardProps> = ({
           ? `z-10 ${activeClassName}`
           : 'hover:border-opacity-100 hover:shadow-xs'
       } ${className}`}
-      style={{ ...getCardStyle(), ...style }}
+      style={
+        isActive
+          ? { ...style, ...getCardStyle() }
+          : { ...getCardStyle(), ...style }
+      }
     >
       {children}
     </Component>

@@ -19,7 +19,20 @@ class WakeLockController {
   constructor() {
     if (typeof window !== 'undefined') {
       this.initVisibilityListener();
+      this.initGestureListener();
     }
+  }
+
+  private initGestureListener() {
+    if (typeof window === 'undefined') return;
+    const handleGesture = async () => {
+      if (this.isRequested && (!this.sentinel || this.sentinel.released)) {
+        await this.request();
+      }
+    };
+    window.addEventListener('pointerdown', handleGesture, { passive: true });
+    window.addEventListener('touchstart', handleGesture, { passive: true });
+    window.addEventListener('keydown', handleGesture, { passive: true });
   }
 
   private initVisibilityListener() {

@@ -71,7 +71,7 @@ export const ThemeSelector: React.FC = () => {
               Choose Reading Palette
             </span>
             <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
-              3 refined, eye-safe high-contrast themes
+              2 high-contrast themes (Day & Night)
             </span>
           </div>
 
@@ -99,16 +99,12 @@ export const ThemeSelector: React.FC = () => {
                       <div className="flex items-center gap-1.5">
                         <span className="font-bold leading-tight">{t.name}</span>
                         {t.isDark ? (
-                          <span className="text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase bg-amber-500/20 text-amber-600 dark:text-amber-300">
+                          <span className="text-[9px] px-1.5 py-0.5 rounded font-extrabold uppercase bg-amber-500/20 text-amber-600 dark:text-amber-300">
                             Night
                           </span>
-                        ) : t.id === 'butter' ? (
-                          <span className="text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase bg-amber-600/10 text-amber-700">
-                            Default
-                          </span>
                         ) : (
-                          <span className="text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase bg-emerald-600/10 text-emerald-800">
-                            Calm
+                          <span className="text-[9px] px-1.5 py-0.5 rounded font-extrabold uppercase bg-amber-600/20 text-amber-900">
+                            Day
                           </span>
                         )}
                       </div>

@@ -109,7 +109,7 @@ export const AveragesDataStudio: React.FC = () => {
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
               Sample Datasets:
             </span>
             {presets.map((p, idx) => (
@@ -117,7 +117,12 @@ export const AveragesDataStudio: React.FC = () => {
                 key={idx}
                 type="button"
                 onClick={() => setDataPoints(p.data)}
-                className="px-3 py-1.5 rounded-xl text-xs font-black border bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-200 cursor-pointer shadow-2xs"
+                className="px-3 py-1.5 rounded-xl text-xs font-black border transition-all cursor-pointer shadow-2xs"
+                style={{
+                  backgroundColor: JSON.stringify(dataPoints) === JSON.stringify(p.data) ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
+                  borderColor: JSON.stringify(dataPoints) === JSON.stringify(p.data) ? 'var(--accent-primary)' : 'var(--border-card)',
+                  color: JSON.stringify(dataPoints) === JSON.stringify(p.data) ? 'var(--accent-contrast)' : 'var(--text-primary)',
+                }}
               >
                 {p.label}
               </button>
@@ -127,23 +132,34 @@ export const AveragesDataStudio: React.FC = () => {
 
         {/* Interactive Data Point Pills */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs font-bold text-slate-500">
+          <div className="flex flex-wrap items-center justify-between text-xs font-bold gap-2" style={{ color: 'var(--text-secondary)' }}>
             <span>Active Data Points ({dataPoints.length} values):</span>
-            <span>Sorted: [{sortedData.join(', ')}]</span>
+            <span className="font-mono" style={{ color: 'var(--text-muted)' }}>Sorted: [{sortedData.join(', ')}]</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 min-h-[52px]">
+          <div
+            className="flex flex-wrap items-center gap-2 p-3 rounded-xl border min-h-[52px]"
+            style={{
+              backgroundColor: 'var(--bg-card-subtle)',
+              borderColor: 'var(--border-card)',
+            }}
+          >
             {dataPoints.map((val, idx) => (
               <div
                 key={idx}
-                className="px-3 py-1.5 rounded-lg border bg-blue-500/10 border-blue-500/30 text-blue-800 dark:text-blue-200 text-xs font-black flex items-center gap-2 shadow-2xs animate-scaleIn"
+                className="px-3 py-1.5 rounded-lg border text-xs font-black flex items-center gap-2 shadow-2xs animate-scaleIn"
+                style={{
+                  backgroundColor: 'var(--contrast-blue-bg)',
+                  borderColor: 'var(--contrast-blue-border)',
+                  color: 'var(--contrast-blue)',
+                }}
               >
                 <span>{val}</span>
                 {dataPoints.length > 2 && (
                   <button
                     type="button"
                     onClick={() => removePoint(idx)}
-                    className="text-slate-400 hover:text-red-500 cursor-pointer text-xs"
+                    className="opacity-70 hover:opacity-100 hover:text-red-500 cursor-pointer text-xs transition-opacity"
                     title="Remove"
                   >
                     ×
@@ -156,7 +172,12 @@ export const AveragesDataStudio: React.FC = () => {
               <button
                 type="button"
                 onClick={() => addPoint(Math.floor(Math.random() * 15) + 1)}
-                className="px-2.5 py-1.5 rounded-lg border border-dashed border-slate-300 dark:border-slate-600 text-slate-500 hover:text-blue-600 text-xs font-bold cursor-pointer hover:bg-blue-50/50"
+                className="px-2.5 py-1.5 rounded-lg border border-dashed text-xs font-bold cursor-pointer transition-all shadow-2xs"
+                style={{
+                  borderColor: 'var(--border-card-strong)',
+                  backgroundColor: 'var(--bg-card)',
+                  color: 'var(--accent-primary)',
+                }}
               >
                 + Add Value
               </button>
@@ -167,67 +188,98 @@ export const AveragesDataStudio: React.FC = () => {
         {/* 4 Summary Stat Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {/* Mean */}
-          <div className="p-3.5 rounded-xl border bg-blue-500/10 border-blue-500/30 text-center space-y-1">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-700 dark:text-blue-300 block">
+          <div
+            className="p-3.5 rounded-xl border text-center space-y-1 shadow-2xs"
+            style={{
+              backgroundColor: 'var(--contrast-blue-bg)',
+              borderColor: 'var(--contrast-blue-border)',
+            }}
+          >
+            <span className="text-[10px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--contrast-blue)' }}>
               Mean (Average)
             </span>
-            <div className="text-2xl font-mono font-black text-blue-800 dark:text-blue-200">
+            <div className="text-2xl font-mono font-black" style={{ color: 'var(--contrast-blue)' }}>
               {mean}
             </div>
-            <span className="text-[10px] text-blue-600/80 dark:text-blue-400/80 block">
+            <span className="text-[10px] font-bold block" style={{ color: 'var(--contrast-blue)' }}>
               Sum ({sum}) ÷ Count ({count})
             </span>
           </div>
 
           {/* Median */}
-          <div className="p-3.5 rounded-xl border bg-emerald-500/10 border-emerald-500/30 text-center space-y-1">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 block">
+          <div
+            className="p-3.5 rounded-xl border text-center space-y-1 shadow-2xs"
+            style={{
+              backgroundColor: 'var(--contrast-teal-bg)',
+              borderColor: 'var(--contrast-teal-border)',
+            }}
+          >
+            <span className="text-[10px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--contrast-teal)' }}>
               Median (Middle)
             </span>
-            <div className="text-2xl font-mono font-black text-emerald-800 dark:text-emerald-200">
+            <div className="text-2xl font-mono font-black" style={{ color: 'var(--contrast-teal)' }}>
               {median}
             </div>
-            <span className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 block">
-              Middle value of ordered list
+            <span className="text-[10px] font-bold block" style={{ color: 'var(--contrast-teal)' }}>
+              Middle of ordered list
             </span>
           </div>
 
           {/* Mode */}
-          <div className="p-3.5 rounded-xl border bg-amber-500/10 border-amber-500/30 text-center space-y-1">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-300 block">
+          <div
+            className="p-3.5 rounded-xl border text-center space-y-1 shadow-2xs"
+            style={{
+              backgroundColor: 'var(--contrast-amber-bg)',
+              borderColor: 'var(--contrast-amber-border)',
+            }}
+          >
+            <span className="text-[10px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--contrast-amber)' }}>
               Mode (Most Common)
             </span>
-            <div className="text-2xl font-mono font-black text-amber-800 dark:text-amber-200 truncate">
+            <div className="text-2xl font-mono font-black truncate" style={{ color: 'var(--contrast-amber)' }}>
               {mode}
             </div>
-            <span className="text-[10px] text-amber-600/80 dark:text-amber-400/80 block">
-              Most frequent occurrence
+            <span className="text-[10px] font-bold block" style={{ color: 'var(--contrast-amber)' }}>
+              Most frequent value
             </span>
           </div>
 
           {/* Range */}
-          <div className="p-3.5 rounded-xl border bg-purple-500/10 border-purple-500/30 text-center space-y-1">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-700 dark:text-purple-300 block">
+          <div
+            className="p-3.5 rounded-xl border text-center space-y-1 shadow-2xs"
+            style={{
+              backgroundColor: 'var(--contrast-purple-bg)',
+              borderColor: 'var(--contrast-purple-border)',
+            }}
+          >
+            <span className="text-[10px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--contrast-purple)' }}>
               Range (Spread)
             </span>
-            <div className="text-2xl font-mono font-black text-purple-800 dark:text-purple-200">
+            <div className="text-2xl font-mono font-black" style={{ color: 'var(--contrast-purple)' }}>
               {range}
             </div>
-            <span className="text-[10px] text-purple-600/80 dark:text-purple-400/80 block">
+            <span className="text-[10px] font-bold block" style={{ color: 'var(--contrast-purple)' }}>
               Max ({max}) − Min ({min})
             </span>
           </div>
         </div>
 
         {/* Step-by-Step Calculation Formula Box */}
-        <div className="p-4 rounded-xl border bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-xs font-mono space-y-1.5">
-          <div className="font-bold text-slate-700 dark:text-slate-300 font-sans">
+        <div
+          className="p-4 rounded-xl border text-xs font-mono space-y-1.5 shadow-2xs"
+          style={{
+            backgroundColor: 'var(--bg-card-subtle)',
+            borderColor: 'var(--border-card)',
+            color: 'var(--text-secondary)',
+          }}
+        >
+          <div className="font-bold font-sans" style={{ color: 'var(--text-primary)' }}>
             📝 Step-by-Step Working:
           </div>
-          <div>1. Sum of all values = {dataPoints.join(' + ')} = <strong>{sum}</strong></div>
-          <div>2. Mean = {sum} ÷ {count} = <strong>{mean}</strong></div>
-          <div>3. Ordered list = [{sortedData.join(', ')}] ➔ Middle is <strong>{median}</strong></div>
-          <div>4. Range = {max} − {min} = <strong>{range}</strong></div>
+          <div>1. Sum of all values = {dataPoints.join(' + ')} = <strong style={{ color: 'var(--accent-primary)' }}>{sum}</strong></div>
+          <div>2. Mean = {sum} ÷ {count} = <strong style={{ color: 'var(--accent-primary)' }}>{mean}</strong></div>
+          <div>3. Ordered list = [{sortedData.join(', ')}] ➔ Middle is <strong style={{ color: 'var(--accent-primary)' }}>{median}</strong></div>
+          <div>4. Range = {max} − {min} = <strong style={{ color: 'var(--accent-primary)' }}>{range}</strong></div>
         </div>
       </div>
     </div>

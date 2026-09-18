@@ -55,17 +55,29 @@ class WhiteboardErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="p-6 rounded-2xl border text-center space-y-3 bg-amber-500/10 border-amber-500/30 text-amber-800 dark:text-amber-200">
+        <div
+          className="p-6 rounded-2xl border text-center space-y-3"
+          style={{
+            backgroundColor: 'var(--contrast-amber-bg)',
+            borderColor: 'var(--contrast-amber-border)',
+            color: 'var(--contrast-amber)',
+          }}
+        >
           <p className="font-extrabold text-sm sm:text-base">
             ⚡ Scene Display Refreshed
           </p>
-          <p className="text-xs text-slate-600 dark:text-slate-300">
+          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
             Select another chapter or click below to resume.
           </p>
           <button
             type="button"
             onClick={() => this.setState({ hasError: false })}
-            className="px-4 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-amber-500 text-white border-amber-600 hover:bg-amber-600"
+            className="px-4 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer shadow-2xs"
+            style={{
+              backgroundColor: 'var(--accent-primary)',
+              color: 'var(--accent-contrast)',
+              borderColor: 'var(--border-card-strong)',
+            }}
           >
             Reset Scene
           </button>
@@ -601,8 +613,14 @@ export const VideoTutoringClip: React.FC<VideoTutoringClipProps> = ({
                     </p>
                   </div>
                   {isActive && (
-                    <div className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                    <div
+                      className="text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1.5"
+                      style={{ color: 'var(--contrast-amber)' }}
+                    >
+                      <span
+                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ backgroundColor: 'var(--contrast-amber)' }}
+                      />
                       Active
                     </div>
                   )}

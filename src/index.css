@@ -7,40 +7,49 @@
 
 :root,
 [data-theme="butter"] {
-  /* Buttercup & Honey (Default Daytime) - Warm radiant custard cream canvas, rich caramel amber, crisp carbon ink */
-  --bg-canvas: #fffdf5; /* Gentle warm eggshell cream - zero eye glare, optimal reading comfort */
-  --bg-card: #fbf5e6;   /* Rich honey-custard card base with subtle warmth */
-  --bg-card-hover: #f6ecce; /* Tactile sunny cream hover state */
-  --bg-card-subtle: #f1e2bc; /* Biscuit layer for tags, formula callouts & inputs */
-  --border-card: #dfcc9a; /* Crisp tactile border with clear spatial separation */
-  --border-card-strong: #b88628; /* High-contrast golden amber border */
-  --text-primary: #140f06; /* Obsidian carbon with warm amber undertone (>19:1 WCAG AAA contrast) */
-  --text-secondary: #2f2310; /* Solid dark roast ink for descriptions and guidance */
-  --text-muted: #69522d; /* Warm bronze sepia for secondary notes */
+  /* Daylight Amber & Cream (High-Contrast Day Mode) - Crisp warm ivory canvas, pitch carbon ink, rich golden amber */
+  --bg-canvas: #fcfaf4; /* Crisp gentle warm ivory - zero eye glare, maximum text contrast */
+  --bg-card: #f6efe1;   /* Rich warm cream card base with clear boundary separation */
+  --bg-card-hover: #ece2ce; /* Tactile hover state */
+  --bg-card-subtle: #ebdcb9; /* Biscuit inset layer for formulas, callouts, chips & inputs */
+  --border-card: #c5ad72; /* Crisp tactile border with high optical definition */
+  --border-card-strong: #8c5d12; /* High-contrast bronze amber boundary */
+  --text-primary: #0c0a06; /* Pitch obsidian carbon ink (>20:1 WCAG AAA contrast) */
+  --text-secondary: #221a0e; /* Solid dark roast ink for descriptions (>15:1 contrast) */
+  --text-muted: #4e3a1b; /* Rich deep bronze ink for labels & captions (>8.5:1 contrast) */
   --accent-primary: #b45309; /* Rich golden honey amber */
-  --accent-hover: #92400e; /* Deep caramelized amber */
+  --accent-hover: #8f3f07; /* Deep caramelized amber */
   --accent-light: #fef3c7; /* Luminous sunny glow */
-  --accent-contrast: #ffffff;
-  --reading-highlight-bg: #fee380; /* Bright buttercup active reading highlight */
-  --reading-highlight-border: #140f06; /* High-contrast carbon border when playing/focused */
-  --reading-highlight-ring: rgba(20, 15, 6, 0.28);
-  --badge-bg: #fde047; /* Bright buttercup gold */
-  --badge-text: #140f06; /* Crisp pitch black text */
-  /* High contrast accent tokens */
-  --contrast-black: #140f06;
-  --contrast-black-bg: #1f180d;
-  --contrast-warm: #b91c1c; /* Crimson alert */
+  --accent-contrast: #ffffff; /* Crisp white text on amber buttons */
+  --reading-highlight-bg: #fde68a; /* Luminous buttercup reading highlight */
+  --reading-highlight-border: #0c0a06; /* High-contrast carbon border when playing/focused */
+  --reading-highlight-ring: rgba(12, 10, 6, 0.32);
+  --badge-bg: #b45309; /* Rich amber badge background */
+  --badge-text: #ffffff; /* Crisp white text */
+  /* High contrast accessible accent tokens */
+  --contrast-black: #0c0a06;
+  --contrast-black-bg: #1c150a;
+  --contrast-warm: #991b1b; /* Crimson alert */
   --contrast-warm-bg: #fee2e2;
-  --contrast-warm-border: #f87171;
+  --contrast-warm-border: #ef4444;
   --contrast-amber: #b45309;
   --contrast-amber-bg: #fef3c7;
   --contrast-amber-border: #f59e0b;
   --contrast-indigo: #1e1b4b; /* Deep obsidian indigo */
   --contrast-indigo-bg: #ede9fe;
-  --contrast-indigo-border: #a5b4fc;
+  --contrast-indigo-border: #818cf8;
   --contrast-teal: #064e3b; /* Deep pine emerald */
   --contrast-teal-bg: #d1fae5;
-  --contrast-teal-border: #6ee7b7;
+  --contrast-teal-border: #10b981;
+  --contrast-blue: #1e40af; /* Deep navy sapphire */
+  --contrast-blue-bg: #dbeafe;
+  --contrast-blue-border: #3b82f6;
+  --contrast-purple: #581c87; /* Deep royal amethyst */
+  --contrast-purple-bg: #f3e8ff;
+  --contrast-purple-border: #a855f7;
+  --contrast-rose: #9f1239; /* Deep rose */
+  --contrast-rose-bg: #ffe4e6;
+  --contrast-rose-border: #f43f5e;
   /* Dedicated Interactive Tool & Visual Model Tokens */
   --tool-model1-bg: #b45309;
   --tool-model1-text: #ffffff;
@@ -52,63 +61,17 @@
   --tool-model2-badge-text: #1e40af;
 }
 
-[data-theme="sage"] {
-  /* Sage & Terracotta - Calming botanical eucalyptus, deep pine ink & warm terracotta accents */
-  --bg-canvas: #f2f7f4; /* Soothing soft eucalyptus mist - reduces visual fatigue */
-  --bg-card: #e4eee7;   /* Harmonious botanical card surface */
-  --bg-card-hover: #d5e5da;
-  --bg-card-subtle: #c6dcce; /* Fresh herbal tint for formula boxes and badges */
-  --border-card: #9bc0a8; /* Defined herbal boundary */
-  --border-card-strong: #3b7450; /* Deep botanical pine boundary */
-  --text-primary: #041f11; /* Deep evergreen pine (>18:1 contrast) */
-  --text-secondary: #0f351e; /* Crisp secondary pine ink */
-  --text-muted: #285538; /* Legible botanical green */
-  --accent-primary: #c2410c; /* Warm, energetic Terracotta */
-  --accent-hover: #9a3412;
-  --accent-light: #ffedd5;
-  --accent-contrast: #ffffff;
-  --reading-highlight-bg: #c7f0d8; /* Calming mint reading spotlight */
-  --reading-highlight-border: #041f11;
-  --reading-highlight-ring: rgba(4, 31, 17, 0.28);
-  --badge-bg: #15803d;
-  --badge-text: #ffffff;
-  /* Contrasting accents */
-  --contrast-black: #041f11;
-  --contrast-black-bg: #0c2b18;
-  --contrast-warm: #c2410c;
-  --contrast-warm-bg: #ffedd5;
-  --contrast-warm-border: #fdba74;
-  --contrast-amber: #b45309;
-  --contrast-amber-bg: #fef3c7;
-  --contrast-amber-border: #fcd34d;
-  --contrast-indigo: #1e1b4b;
-  --contrast-indigo-bg: #e0e7ff;
-  --contrast-indigo-border: #818cf8;
-  --contrast-teal: #064e3b;
-  --contrast-teal-bg: #d1fae5;
-  --contrast-teal-border: #6ee7b7;
-  /* Dedicated Interactive Tool & Visual Model Tokens */
-  --tool-model1-bg: #c2410c;
-  --tool-model1-text: #ffffff;
-  --tool-model1-badge-bg: #ffedd5;
-  --tool-model1-badge-text: #9a3412;
-  --tool-model2-bg: #0f766e;
-  --tool-model2-text: #ffffff;
-  --tool-model2-badge-bg: #ccfbf1;
-  --tool-model2-badge-text: #115e59;
-}
-
 [data-theme="obsidian"] {
-  /* Obsidian & Amber - High-contrast dark study mode, velvet slate with glowing honey amber */
+  /* Obsidian & Amber (High-Contrast Night Mode) - Velvet slate with glowing honey amber */
   --bg-canvas: #090d16; /* Deepest velvet slate - eliminates screen glare at night */
   --bg-card: #131b28;   /* Refined dark card base (within optical 10% brightness step) */
-  --bg-card-hover: #1b2639; /* Sleek card hover */
-  --bg-card-subtle: #0e1520; /* Deep inset layer for math inputs and chips */
-  --border-card: #27374d; /* Tactile slate border with crisp edge definition */
-  --border-card-strong: #415a7d; /* Luminous border for focused/active states */
-  --text-primary: #f8fafc; /* Crisp, brilliant off-white for zero eye strain */
-  --text-secondary: #cbd5e1; /* Radiant silver slate */
-  --text-muted: #94a3b8; /* Clear legible slate chalk */
+  --bg-card-hover: #1c273a; /* Sleek card hover */
+  --bg-card-subtle: #0c1320; /* Deep inset layer for math inputs, chips & formulas */
+  --border-card: #2d3f58; /* Crisp slate border with sharp edge definition */
+  --border-card-strong: #4f6f9c; /* Luminous boundary for focused and active states */
+  --text-primary: #f8fafc; /* Crisp, brilliant off-white for zero eye strain (>18:1 contrast) */
+  --text-secondary: #d5e0ee; /* Radiant silver slate (>12:1 contrast) */
+  --text-muted: #a6b7cc; /* Clear legible chalk slate (>7:1 contrast) */
   --accent-primary: #f59e0b; /* Luminous Honey Amber glow */
   --accent-hover: #fbbf24;
   --accent-light: #2d1804;
@@ -133,6 +96,15 @@
   --contrast-teal: #6ee7b7; /* Radiant mint */
   --contrast-teal-bg: #064e3b;
   --contrast-teal-border: #10b981;
+  --contrast-blue: #93c5fd; /* Radiant sky blue */
+  --contrast-blue-bg: #1e3a8a;
+  --contrast-blue-border: #60a5fa;
+  --contrast-purple: #d8b4fe; /* Radiant lavender */
+  --contrast-purple-bg: #581c87;
+  --contrast-purple-border: #c084fc;
+  --contrast-rose: #fda4af; /* Radiant blush rose */
+  --contrast-rose-bg: #881337;
+  --contrast-rose-border: #fb7185;
   /* Dedicated Interactive Tool & Visual Model Tokens */
   --tool-model1-bg: #f59e0b;
   --tool-model1-text: #090d16;

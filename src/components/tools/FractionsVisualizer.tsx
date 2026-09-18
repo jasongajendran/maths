@@ -179,7 +179,7 @@ export const FractionsVisualizer: React.FC = () => {
             return (
               <div key={barIdx} className="space-y-1">
                 {isImproper && (
-                  <div className="flex justify-between items-center text-[10px] font-bold text-muted px-0.5">
+                  <div className="flex justify-between items-center text-[10px] font-bold px-0.5" style={{ color: 'var(--text-muted)' }}>
                     <span>Bar Unit {barIdx + 1} of {displayBars}</span>
                     <span>{shadedInThisBar}/{den} shaded</span>
                   </div>
@@ -218,7 +218,7 @@ export const FractionsVisualizer: React.FC = () => {
           })}
         </div>
 
-        <p className="text-xs leading-relaxed text-muted pt-1 border-t" style={{ borderColor: 'var(--border-card)' }}>
+        <p className="text-xs leading-relaxed pt-1 border-t" style={{ borderColor: 'var(--border-card)', color: 'var(--text-secondary)' }}>
           {isImproper ? (
             <>
               Improper fraction: <strong>{num}</strong> parts of size <strong>1/{den}</strong> (equals {Math.floor(num / den)} whole bar{Math.floor(num / den) > 1 ? 's' : ''} + {num % den}/{den}).
@@ -744,7 +744,7 @@ export const FractionsVisualizer: React.FC = () => {
               return (
                 <div key={barIdx} className="space-y-1">
                   {res.simpNum > res.simpDen && (
-                    <div className="flex justify-between items-center text-[10px] font-bold text-muted px-0.5">
+                    <div className="flex justify-between items-center text-[10px] font-bold px-0.5" style={{ color: 'var(--text-muted)' }}>
                       <span>Result Whole Unit {barIdx + 1}</span>
                       <span>{shadedInThisBar}/{res.simpDen} shaded</span>
                     </div>

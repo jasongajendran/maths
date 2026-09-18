@@ -646,7 +646,7 @@ export const WhiteboardVisuals: React.FC<WhiteboardVisualsProps> = ({
 
                   {/* Dashed Road Divider Line */}
                   <div className="border-t-2 border-dashed border-amber-400/60 my-2 relative">
-                    <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 px-2 bg-stone-900 text-[10px] uppercase font-bold text-stone-400 tracking-widest">
+                    <span className="absolute left-1/2 -translate-x-1/2 -top-2.5 px-2 bg-stone-900 text-[10px] uppercase font-black text-amber-300 tracking-widest">
                       Drive Straight Across • Never Cross Lanes
                     </span>
                   </div>

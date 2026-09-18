@@ -244,7 +244,10 @@ export const TeacherAvatar: React.FC<TeacherAvatarProps> = ({
             <div className="font-medium flex-1">
               {activeCaptionText ? (
                 <span>
-                  <strong className="text-amber-600 dark:text-amber-400 mr-1 not-italic text-[11px] uppercase tracking-wider font-extrabold">
+                  <strong
+                    className="mr-1 not-italic text-[11px] uppercase tracking-wider font-black"
+                    style={{ color: 'var(--contrast-amber)' }}
+                  >
                     {isSpeaking ? 'Speaking Now:' : 'Current Note:'}
                   </strong>
                   <span className="italic">{activeCaptionText}</span>

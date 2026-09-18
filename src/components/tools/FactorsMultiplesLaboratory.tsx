@@ -49,12 +49,32 @@ export const FactorsMultiplesLaboratory: React.FC = () => {
 
   const factorPairsA = getFactorPairs(numA);
 
-  const rainbowColors = [
-    'border-red-500 text-red-700 dark:text-red-300 bg-red-500/10',
-    'border-amber-500 text-amber-700 dark:text-amber-300 bg-amber-500/10',
-    'border-emerald-500 text-emerald-700 dark:text-emerald-300 bg-emerald-500/10',
-    'border-blue-500 text-blue-700 dark:text-blue-300 bg-blue-500/10',
-    'border-purple-500 text-purple-700 dark:text-purple-300 bg-purple-500/10',
+  const rainbowTokenStyles = [
+    {
+      backgroundColor: 'var(--contrast-warm-bg)',
+      borderColor: 'var(--contrast-warm-border)',
+      color: 'var(--contrast-warm)',
+    },
+    {
+      backgroundColor: 'var(--contrast-amber-bg)',
+      borderColor: 'var(--contrast-amber-border)',
+      color: 'var(--contrast-amber)',
+    },
+    {
+      backgroundColor: 'var(--contrast-teal-bg)',
+      borderColor: 'var(--contrast-teal-border)',
+      color: 'var(--contrast-teal)',
+    },
+    {
+      backgroundColor: 'var(--contrast-blue-bg)',
+      borderColor: 'var(--contrast-blue-border)',
+      color: 'var(--contrast-blue)',
+    },
+    {
+      backgroundColor: 'var(--contrast-purple-bg)',
+      borderColor: 'var(--contrast-purple-border)',
+      color: 'var(--contrast-purple)',
+    },
   ];
 
   return (
@@ -107,8 +127,8 @@ export const FactorsMultiplesLaboratory: React.FC = () => {
         }}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
               Primary Number (A):
             </span>
             {[12, 18, 24, 30, 48].map((val) => (
@@ -116,11 +136,12 @@ export const FactorsMultiplesLaboratory: React.FC = () => {
                 key={val}
                 type="button"
                 onClick={() => setNumA(val)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-black border transition-all cursor-pointer ${
-                  numA === val
-                    ? 'bg-blue-600 text-white border-blue-700 shadow-xs'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-200'
-                }`}
+                className="px-3 py-1.5 rounded-xl text-xs font-black border transition-all cursor-pointer shadow-2xs"
+                style={{
+                  backgroundColor: numA === val ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
+                  borderColor: numA === val ? 'var(--accent-primary)' : 'var(--border-card)',
+                  color: numA === val ? 'var(--accent-contrast)' : 'var(--text-primary)',
+                }}
               >
                 {val}
               </button>
@@ -128,7 +149,7 @@ export const FactorsMultiplesLaboratory: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <label htmlFor="factors-custom-a" className="text-xs font-bold text-slate-500">
+            <label htmlFor="factors-custom-a" className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
               Input A:
             </label>
             <input
@@ -149,35 +170,50 @@ export const FactorsMultiplesLaboratory: React.FC = () => {
         </div>
 
         {/* Factor Rainbow Display */}
-        <div className="p-4 rounded-xl border bg-blue-500/10 border-blue-500/30 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-blue-800 dark:text-blue-300">
+        <div
+          className="p-4 rounded-xl border space-y-3 shadow-2xs"
+          style={{
+            backgroundColor: 'var(--contrast-blue-bg)',
+            borderColor: 'var(--contrast-blue-border)',
+          }}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs font-extrabold uppercase tracking-wider block" style={{ color: 'var(--contrast-blue)' }}>
               🌈 Factor Rainbow for {numA} ({factorsA.length} total factors)
             </span>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-blue-600 text-white">
+            <span
+              className="text-xs font-bold px-2 py-0.5 rounded-md border shadow-2xs"
+              style={{
+                backgroundColor: 'var(--bg-card)',
+                borderColor: 'var(--contrast-blue-border)',
+                color: 'var(--contrast-blue)',
+              }}
+            >
               {isPrime(numA) ? '⭐ Prime Number!' : 'Composite Number'}
             </span>
           </div>
 
           {/* Factor Pairs as Rainbow Arches */}
           <div className="flex flex-wrap items-center justify-center gap-2 py-2">
-            {factorPairsA.map((pair, idx) => (
-              <div
-                key={idx}
-                className={`px-3 py-1.5 rounded-xl border font-mono text-xs font-black flex items-center gap-2 shadow-2xs ${
-                  rainbowColors[idx % rainbowColors.length]
-                }`}
-              >
-                <span>{pair[0]}</span>
-                <span className="text-[10px] font-normal opacity-70">×</span>
-                <span>{pair[1]}</span>
-                <span className="text-[10px] font-normal opacity-70">= {numA}</span>
-              </div>
-            ))}
+            {factorPairsA.map((pair, idx) => {
+              const styleToken = rainbowTokenStyles[idx % rainbowTokenStyles.length];
+              return (
+                <div
+                  key={idx}
+                  className="px-3 py-1.5 rounded-xl border font-mono text-xs font-black flex items-center gap-2 shadow-2xs"
+                  style={styleToken}
+                >
+                  <span>{pair[0]}</span>
+                  <span className="text-[10px] font-normal opacity-70">×</span>
+                  <span>{pair[1]}</span>
+                  <span className="text-[10px] font-normal opacity-70">= {numA}</span>
+                </div>
+              );
+            })}
           </div>
 
           {/* Factor list */}
-          <div className="text-xs text-center text-slate-600 dark:text-slate-300 font-mono font-bold">
+          <div className="text-xs text-center font-mono font-bold" style={{ color: 'var(--contrast-blue)' }}>
             All Factors: [{factorsA.join(', ')}]
           </div>
         </div>
@@ -193,16 +229,16 @@ export const FactorsMultiplesLaboratory: React.FC = () => {
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+            <h3 className="text-base font-extrabold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
               <span>⚖️ Compare Two Numbers: HCF &amp; LCM</span>
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
               Find Highest Common Factor and Lowest Common Multiple.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <label htmlFor="factors-custom-b" className="text-xs font-bold text-slate-500">
+            <label htmlFor="factors-custom-b" className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
               Number B:
             </label>
             <input
@@ -224,27 +260,39 @@ export const FactorsMultiplesLaboratory: React.FC = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* HCF Box */}
-          <div className="p-4 rounded-xl border bg-emerald-500/10 border-emerald-500/30 space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 block">
+          <div
+            className="p-4 rounded-xl border space-y-2 shadow-2xs"
+            style={{
+              backgroundColor: 'var(--contrast-teal-bg)',
+              borderColor: 'var(--contrast-teal-border)',
+            }}
+          >
+            <span className="text-xs font-bold uppercase tracking-wider block" style={{ color: 'var(--contrast-teal)' }}>
               Highest Common Factor (HCF)
             </span>
-            <div className="text-2xl font-black text-emerald-900 dark:text-emerald-100">
-              HCF({numA}, {numB}) = <span className="underline decoration-emerald-500">{hcf}</span>
+            <div className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>
+              HCF({numA}, {numB}) = <span className="underline font-extrabold" style={{ color: 'var(--contrast-teal)' }}>{hcf}</span>
             </div>
-            <p className="text-xs text-emerald-700 dark:text-emerald-300">
+            <p className="text-xs font-medium" style={{ color: 'var(--contrast-teal)' }}>
               Common factors: [{commonFactors.join(', ')}]. Largest shared divisor is {hcf}.
             </p>
           </div>
 
           {/* LCM Box */}
-          <div className="p-4 rounded-xl border bg-indigo-500/10 border-indigo-500/30 space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-800 dark:text-indigo-300 block">
+          <div
+            className="p-4 rounded-xl border space-y-2 shadow-2xs"
+            style={{
+              backgroundColor: 'var(--contrast-indigo-bg)',
+              borderColor: 'var(--contrast-indigo-border)',
+            }}
+          >
+            <span className="text-xs font-bold uppercase tracking-wider block" style={{ color: 'var(--contrast-indigo)' }}>
               Lowest Common Multiple (LCM)
             </span>
-            <div className="text-2xl font-black text-indigo-900 dark:text-indigo-100">
-              LCM({numA}, {numB}) = <span className="underline decoration-indigo-500">{lcm}</span>
+            <div className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>
+              LCM({numA}, {numB}) = <span className="underline font-extrabold" style={{ color: 'var(--contrast-indigo)' }}>{lcm}</span>
             </div>
-            <p className="text-xs text-indigo-700 dark:text-indigo-300">
+            <p className="text-xs font-medium" style={{ color: 'var(--contrast-indigo)' }}>
               Smallest multiple that both {numA} and {numB} divide into evenly.
             </p>
           </div>

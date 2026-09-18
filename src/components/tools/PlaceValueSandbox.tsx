@@ -89,7 +89,7 @@ export const PlaceValueSandbox: React.FC = () => {
         }}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
               Presets:
             </span>
@@ -98,11 +98,12 @@ export const PlaceValueSandbox: React.FC = () => {
                 key={val}
                 type="button"
                 onClick={() => setCurrentNum(val)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-black border transition-all cursor-pointer ${
-                  currentNum === val
-                    ? 'bg-blue-600 text-white border-blue-700 shadow-xs'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-200'
-                }`}
+                className="px-3 py-1.5 rounded-xl text-xs font-black border transition-all cursor-pointer shadow-xs"
+                style={{
+                  backgroundColor: currentNum === val ? 'var(--accent-primary)' : 'var(--bg-card-subtle)',
+                  borderColor: currentNum === val ? 'var(--accent-primary)' : 'var(--border-card)',
+                  color: currentNum === val ? 'var(--accent-contrast)' : 'var(--text-primary)',
+                }}
               >
                 {val}
               </button>
@@ -132,102 +133,188 @@ export const PlaceValueSandbox: React.FC = () => {
         {/* Place Value Column Chart */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+            <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>
               🏛️ Place Value Columns (Decimal point remains anchored)
             </span>
-            <span className="text-xs font-mono font-extrabold text-slate-500">
+            <span className="text-xs font-mono font-extrabold" style={{ color: 'var(--text-muted)' }}>
               Current: {currentNum}
             </span>
           </div>
 
           <div className="grid grid-cols-6 gap-2 text-center">
             {/* Thousands */}
-            <div className="p-3 rounded-xl border bg-slate-100/70 dark:bg-slate-800/70 border-slate-300 dark:border-slate-700">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block">Thousands (1,000)</span>
-              <span className="text-2xl font-black text-slate-800 dark:text-slate-100 mt-1 block">
+            <div
+              className="p-3 rounded-xl border shadow-2xs"
+              style={{
+                backgroundColor: 'var(--bg-card-subtle)',
+                borderColor: 'var(--border-card-strong)',
+              }}
+            >
+              <span className="text-[10px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--text-muted)' }}>
+                Thousands (1,000)
+              </span>
+              <span className="text-2xl font-black mt-1 block" style={{ color: 'var(--text-primary)' }}>
                 {thousands > 0 || currentNum >= 1000 ? thousands : '-'}
               </span>
-              <span className="text-[10px] text-slate-400">{thousands > 0 ? `${thousands * 1000}` : '0'}</span>
+              <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>
+                {thousands > 0 ? `${thousands * 1000}` : '0'}
+              </span>
             </div>
 
             {/* Hundreds */}
-            <div className="p-3 rounded-xl border bg-blue-500/10 border-blue-500/30">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-700 dark:text-blue-300 block">Hundreds (100)</span>
-              <span className="text-2xl font-black text-blue-800 dark:text-blue-200 mt-1 block">
+            <div
+              className="p-3 rounded-xl border shadow-2xs"
+              style={{
+                backgroundColor: 'var(--contrast-blue-bg)',
+                borderColor: 'var(--contrast-blue-border)',
+              }}
+            >
+              <span className="text-[10px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--contrast-blue)' }}>
+                Hundreds (100)
+              </span>
+              <span className="text-2xl font-black mt-1 block" style={{ color: 'var(--contrast-blue)' }}>
                 {hundreds > 0 || currentNum >= 100 ? hundreds : '-'}
               </span>
-              <span className="text-[10px] text-blue-600/70 dark:text-blue-400/70">{hundreds > 0 ? `${hundreds * 100}` : '0'}</span>
+              <span className="text-[10px] font-bold" style={{ color: 'var(--contrast-blue)' }}>
+                {hundreds > 0 ? `${hundreds * 100}` : '0'}
+              </span>
             </div>
 
             {/* Tens */}
-            <div className="p-3 rounded-xl border bg-indigo-500/10 border-indigo-500/30">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 block">Tens (10)</span>
-              <span className="text-2xl font-black text-indigo-800 dark:text-indigo-200 mt-1 block">
+            <div
+              className="p-3 rounded-xl border shadow-2xs"
+              style={{
+                backgroundColor: 'var(--contrast-indigo-bg)',
+                borderColor: 'var(--contrast-indigo-border)',
+              }}
+            >
+              <span className="text-[10px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--contrast-indigo)' }}>
+                Tens (10)
+              </span>
+              <span className="text-2xl font-black mt-1 block" style={{ color: 'var(--contrast-indigo)' }}>
                 {tens > 0 || currentNum >= 10 ? tens : '-'}
               </span>
-              <span className="text-[10px] text-indigo-600/70 dark:text-indigo-400/70">{tens > 0 ? `${tens * 10}` : '0'}</span>
+              <span className="text-[10px] font-bold" style={{ color: 'var(--contrast-indigo)' }}>
+                {tens > 0 ? `${tens * 10}` : '0'}
+              </span>
             </div>
 
             {/* Ones */}
-            <div className="p-3 rounded-xl border bg-emerald-500/10 border-emerald-500/30">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 block">Ones (1)</span>
-              <span className="text-2xl font-black text-emerald-800 dark:text-emerald-200 mt-1 block">
+            <div
+              className="p-3 rounded-xl border shadow-2xs"
+              style={{
+                backgroundColor: 'var(--contrast-teal-bg)',
+                borderColor: 'var(--contrast-teal-border)',
+              }}
+            >
+              <span className="text-[10px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--contrast-teal)' }}>
+                Ones (1)
+              </span>
+              <span className="text-2xl font-black mt-1 block" style={{ color: 'var(--contrast-teal)' }}>
                 {ones}
               </span>
-              <span className="text-[10px] text-emerald-600/70 dark:text-emerald-400/70">{ones}</span>
+              <span className="text-[10px] font-bold" style={{ color: 'var(--contrast-teal)' }}>
+                {ones}
+              </span>
             </div>
 
             {/* Tenths */}
-            <div className="p-3 rounded-xl border bg-amber-500/10 border-amber-500/30">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-300 block">Tenths (0.1)</span>
-              <span className="text-2xl font-black text-amber-800 dark:text-amber-200 mt-1 block">
+            <div
+              className="p-3 rounded-xl border shadow-2xs"
+              style={{
+                backgroundColor: 'var(--contrast-amber-bg)',
+                borderColor: 'var(--contrast-amber-border)',
+              }}
+            >
+              <span className="text-[10px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--contrast-amber)' }}>
+                Tenths (0.1)
+              </span>
+              <span className="text-2xl font-black mt-1 block" style={{ color: 'var(--contrast-amber)' }}>
                 {tenths}
               </span>
-              <span className="text-[10px] text-amber-600/70 dark:text-amber-400/70">{`0.${tenths}`}</span>
+              <span className="text-[10px] font-bold" style={{ color: 'var(--contrast-amber)' }}>
+                {`0.${tenths}`}
+              </span>
             </div>
 
             {/* Hundredths */}
-            <div className="p-3 rounded-xl border bg-rose-500/10 border-rose-500/30">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-700 dark:text-rose-300 block">Hundredths (0.01)</span>
-              <span className="text-2xl font-black text-rose-800 dark:text-rose-200 mt-1 block">
+            <div
+              className="p-3 rounded-xl border shadow-2xs"
+              style={{
+                backgroundColor: 'var(--contrast-rose-bg)',
+                borderColor: 'var(--contrast-rose-border)',
+              }}
+            >
+              <span className="text-[10px] font-extrabold uppercase tracking-wider block" style={{ color: 'var(--contrast-rose)' }}>
+                Hundredths (0.01)
+              </span>
+              <span className="text-2xl font-black mt-1 block" style={{ color: 'var(--contrast-rose)' }}>
                 {hundredths}
               </span>
-              <span className="text-[10px] text-rose-600/70 dark:text-rose-400/70">{`0.0${hundredths}`}</span>
+              <span className="text-[10px] font-bold" style={{ color: 'var(--contrast-rose)' }}>
+                {`0.0${hundredths}`}
+              </span>
             </div>
           </div>
         </div>
 
         {/* Powers of 10 Shifter Buttons */}
-        <div className="p-3 rounded-xl border bg-black/5 dark:bg-white/5 flex flex-wrap items-center justify-between gap-2">
-          <span className="text-xs font-extrabold text-slate-700 dark:text-slate-200">
+        <div
+          className="p-3 rounded-xl border flex flex-wrap items-center justify-between gap-2"
+          style={{
+            backgroundColor: 'var(--bg-card-subtle)',
+            borderColor: 'var(--border-card)',
+          }}
+        >
+          <span className="text-xs font-extrabold" style={{ color: 'var(--text-primary)' }}>
             ⚡ Quick Shift Operations:
           </span>
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               type="button"
               onClick={() => shiftLeft(10)}
-              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 cursor-pointer shadow-xs"
+              className="px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs border"
+              style={{
+                backgroundColor: 'var(--contrast-blue-bg)',
+                borderColor: 'var(--contrast-blue-border)',
+                color: 'var(--contrast-blue)',
+              }}
             >
               × 10 (Slide 1 Left)
             </button>
             <button
               type="button"
               onClick={() => shiftLeft(100)}
-              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 cursor-pointer shadow-xs"
+              className="px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs border"
+              style={{
+                backgroundColor: 'var(--contrast-blue-bg)',
+                borderColor: 'var(--contrast-blue-border)',
+                color: 'var(--contrast-blue)',
+              }}
             >
               × 100 (Slide 2 Left)
             </button>
             <button
               type="button"
               onClick={() => shiftRight(10)}
-              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-600 text-white hover:bg-amber-700 cursor-pointer shadow-xs"
+              className="px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs border"
+              style={{
+                backgroundColor: 'var(--contrast-amber-bg)',
+                borderColor: 'var(--contrast-amber-border)',
+                color: 'var(--contrast-amber)',
+              }}
             >
               ÷ 10 (Slide 1 Right)
             </button>
             <button
               type="button"
               onClick={() => shiftRight(100)}
-              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-600 text-white hover:bg-amber-700 cursor-pointer shadow-xs"
+              className="px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs border"
+              style={{
+                backgroundColor: 'var(--contrast-amber-bg)',
+                borderColor: 'var(--contrast-amber-border)',
+                color: 'var(--contrast-amber)',
+              }}
             >
               ÷ 100 (Slide 2 Right)
             </button>
@@ -245,26 +332,27 @@ export const PlaceValueSandbox: React.FC = () => {
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+            <h3 className="text-base font-extrabold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
               <span>⛰️ Rounding Mountain Explorer</span>
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
               5 or more rounds UP, 4 or less rounds DOWN.
             </p>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="text-xs font-bold text-slate-500">Round to nearest:</span>
+            <span className="text-xs font-bold" style={{ color: 'var(--text-muted)' }}>Round to nearest:</span>
             {(['ten', 'hundred', 'unit', 'tenth'] as const).map((t) => (
               <button
                 key={t}
                 type="button"
                 onClick={() => setRoundTarget(t)}
-                className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer capitalize ${
-                  roundTarget === t
-                    ? 'bg-purple-600 text-white border-purple-700 shadow-xs'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700'
-                }`}
+                className="px-3 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer capitalize shadow-2xs"
+                style={{
+                  backgroundColor: roundTarget === t ? 'var(--contrast-purple)' : 'var(--bg-card-subtle)',
+                  borderColor: roundTarget === t ? 'var(--contrast-purple-border)' : 'var(--border-card)',
+                  color: roundTarget === t ? '#ffffff' : 'var(--text-primary)',
+                }}
               >
                 {t === 'unit' ? 'Whole Number' : t}
               </button>
@@ -273,17 +361,30 @@ export const PlaceValueSandbox: React.FC = () => {
         </div>
 
         {/* Rounding Result Card */}
-        <div className="p-4 rounded-xl border bg-purple-500/10 border-purple-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div
+          className="p-4 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs"
+          style={{
+            backgroundColor: 'var(--contrast-purple-bg)',
+            borderColor: 'var(--contrast-purple-border)',
+          }}
+        >
           <div>
-            <span className="text-xs font-bold text-purple-700 dark:text-purple-300 block">
+            <span className="text-xs font-bold block" style={{ color: 'var(--contrast-purple)' }}>
               Rounding Result for {currentNum}:
             </span>
-            <div className="text-xl font-black text-purple-900 dark:text-purple-100 mt-0.5">
+            <div className="text-xl font-black mt-0.5" style={{ color: 'var(--text-primary)' }}>
               {currentNum} rounded to nearest {roundTarget === 'unit' ? 'whole number' : roundTarget} is{' '}
-              <span className="underline decoration-purple-500 font-extrabold">{roundedVal}</span>
+              <span className="underline font-extrabold" style={{ color: 'var(--contrast-purple)' }}>{roundedVal}</span>
             </div>
           </div>
-          <div className="p-2.5 rounded-lg bg-white/80 dark:bg-slate-800 border border-purple-200 dark:border-purple-800 text-xs font-mono font-bold text-purple-700 dark:text-purple-300">
+          <div
+            className="p-2.5 rounded-lg border text-xs font-mono font-bold shadow-2xs"
+            style={{
+              backgroundColor: 'var(--bg-card)',
+              borderColor: 'var(--contrast-purple-border)',
+              color: 'var(--contrast-purple)',
+            }}
+          >
             {currentNum} ≈ {roundedVal}
           </div>
         </div>

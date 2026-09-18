@@ -292,15 +292,27 @@ export const ConceptExplainerCard: React.FC<ConceptExplainerCardProps> = ({
 
             {/* Quick Human Notes on 1 and 2 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <div className="p-2.5 rounded-lg border bg-black/5 dark:bg-white/5">
-                <span className="font-bold text-amber-600 dark:text-amber-400 block mb-0.5">Why isn’t 1 a Prime?</span>
-                <p className="text-stone-600 dark:text-stone-400">
+              <div
+                className="p-2.5 rounded-lg border"
+                style={{
+                  backgroundColor: 'var(--bg-card)',
+                  borderColor: 'var(--border-card)',
+                }}
+              >
+                <span className="font-bold block mb-0.5" style={{ color: 'var(--contrast-amber)' }}>Why isn’t 1 a Prime?</span>
+                <p style={{ color: 'var(--text-secondary)' }}>
                   A stick needs TWO different dimensions (length and width must be distinct numbers, like 1 × 7). 1 is just a single dot (1 × 1) with only ONE factor!
                 </p>
               </div>
-              <div className="p-2.5 rounded-lg border bg-black/5 dark:bg-white/5">
-                <span className="font-bold text-amber-600 dark:text-amber-400 block mb-0.5">Why is 2 the ONLY Even Prime?</span>
-                <p className="text-stone-600 dark:text-stone-400">
+              <div
+                className="p-2.5 rounded-lg border"
+                style={{
+                  backgroundColor: 'var(--bg-card)',
+                  borderColor: 'var(--border-card)',
+                }}
+              >
+                <span className="font-bold block mb-0.5" style={{ color: 'var(--contrast-amber)' }}>Why is 2 the ONLY Even Prime?</span>
+                <p style={{ color: 'var(--text-secondary)' }}>
                   2 tiles only make a 1 × 2 stick. But 4 makes 2 × 2, 6 makes 2 × 3, 8 makes 2 × 4. Every other even number can be split into 2 equal rows!
                 </p>
               </div>
@@ -358,7 +370,13 @@ export const ConceptExplainerCard: React.FC<ConceptExplainerCardProps> = ({
           </div>
 
           {/* Visual Square Grid */}
-          <div className="p-5 rounded-xl border bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 flex flex-col items-center justify-center">
+          <div
+            className="p-5 rounded-xl border flex flex-col items-center justify-center"
+            style={{
+              backgroundColor: 'var(--bg-card)',
+              borderColor: 'var(--border-card)',
+            }}
+          >
             <div className="flex items-center justify-center gap-4 mb-3">
               <span className="text-xs font-black text-blue-600 dark:text-blue-400">
                 Width = {squareBase} tiles
@@ -451,7 +469,13 @@ export const ConceptExplainerCard: React.FC<ConceptExplainerCardProps> = ({
           </div>
 
           {/* Cube Visual Layers */}
-          <div className="p-5 rounded-xl border bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 flex flex-col items-center justify-center space-y-4">
+          <div
+            className="p-5 rounded-xl border flex flex-col items-center justify-center space-y-4"
+            style={{
+              backgroundColor: 'var(--bg-card)',
+              borderColor: 'var(--border-card)',
+            }}
+          >
             <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-purple-700 dark:text-purple-300">
               <span>{cubeBase} wide</span> × <span>{cubeBase} deep</span> × <span>{cubeBase} high</span> ={' '}
               <span className="px-2 py-0.5 rounded-md bg-purple-600 text-white font-extrabold text-sm">
@@ -540,7 +564,13 @@ export const ConceptExplainerCard: React.FC<ConceptExplainerCardProps> = ({
             </div>
 
             {/* Rainbow Pairs Display */}
-            <div className="p-4 rounded-xl border bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 space-y-3">
+            <div
+              className="p-4 rounded-xl border space-y-3"
+              style={{
+                backgroundColor: 'var(--bg-card)',
+                borderColor: 'var(--border-card)',
+              }}
+            >
               <span className="text-xs font-bold text-stone-500 block">
                 Factor Pairs multiplying to {rainbowTarget}:
               </span>

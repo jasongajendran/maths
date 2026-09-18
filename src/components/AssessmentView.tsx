@@ -542,7 +542,7 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
               </span>
               <div className="flex items-center gap-3">
                 {incorrectQuestionsCount > 0 && (
-                  <span className="text-amber-700 dark:text-amber-400 font-bold flex items-center gap-1">
+                  <span className="font-bold flex items-center gap-1" style={{ color: 'var(--contrast-amber)' }}>
                     <AlertTriangle size={13} />
                     {incorrectQuestionsCount} to review
                   </span>
@@ -1032,7 +1032,7 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
               >
                 <span>
                   {selectedLeftKey ? (
-                    <span className="text-amber-600 font-bold flex items-center gap-1.5 animate-pulse">
+                    <span className="font-bold flex items-center gap-1.5 animate-pulse" style={{ color: 'var(--contrast-amber)' }}>
                       <Sparkles size={14} /> Selected: "{selectedLeftKey}" — Now click its match on the Right!
                     </span>
                   ) : (
@@ -1151,7 +1151,7 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
                         )}
 
                         {isSelected && !matchedRight && (
-                          <span className="text-[10px] font-bold text-amber-600">
+                          <span className="text-[10px] font-bold" style={{ color: 'var(--contrast-amber)' }}>
                             Select match on right...
                           </span>
                         )}
@@ -1238,7 +1238,7 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
                         )}
 
                         {selectedLeftKey && !linkedLeftKey && (
-                          <span className="text-[10px] font-bold text-amber-600">
+                          <span className="text-[10px] font-bold" style={{ color: 'var(--contrast-amber)' }}>
                             Click to link to "{selectedLeftKey}"
                           </span>
                         )}
@@ -1652,7 +1652,7 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({ assessment, onBa
                     borderColor: 'var(--border-card)',
                   }}
                 >
-                  <Edit3 size={13} className="shrink-0 mt-0.5 text-amber-600" />
+                  <Edit3 size={13} className="shrink-0 mt-0.5" style={{ color: 'var(--contrast-amber)' }} />
                   <div>
                     <span className="font-bold">Your Reflection Note: </span>
                     <span className="italic">"{currentAttempt.studentExplanation}"</span>

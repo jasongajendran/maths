@@ -90,7 +90,7 @@ export const AreaPerimeterSandbox: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
         {/* Visual Box */}
         <div
-          className="flex flex-col items-center justify-center p-6 rounded-2xl border min-h-[200px]"
+          className="flex flex-col items-center justify-center py-10 px-8 sm:px-12 rounded-2xl border min-h-[220px]"
           style={{
             backgroundColor: 'var(--bg-card-subtle)',
             borderColor: 'var(--border-card)',
